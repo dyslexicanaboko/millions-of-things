@@ -1,17 +1,17 @@
--- Table: public.User
+-- Table: public.user
 
--- DROP TABLE IF EXISTS public."User";
+-- DROP TABLE IF EXISTS public.user;
 
-CREATE TABLE IF NOT EXISTS public."User"
+CREATE TABLE IF NOT EXISTS public.user
 (
-    "UserId" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    "Username" text COLLATE pg_catalog."default" NOT NULL,
-    "CreatedOn" timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
-    "ModifiedOn" timestamp(0) without time zone,
-    CONSTRAINT "User_pkey" PRIMARY KEY ("UserId")
+    user_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    created_on timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
+    modified_on timestamp(0) without time zone,
+    CONSTRAINT user_pkey PRIMARY KEY (user_id)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public."User"
+ALTER TABLE IF EXISTS public.user
     OWNER to postgres;

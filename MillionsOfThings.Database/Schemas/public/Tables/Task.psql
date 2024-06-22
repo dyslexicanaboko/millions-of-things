@@ -1,25 +1,25 @@
--- Table: public.Task
+-- Table: public.task
 
--- DROP TABLE IF EXISTS public."Task";
+-- DROP TABLE IF EXISTS public.task;
 
-CREATE TABLE IF NOT EXISTS public."Task"
+CREATE TABLE IF NOT EXISTS public.task
 (
-    "TaskId" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-    "UserId" integer NOT NULL,
-    "CategoryId" integer,
-    "Description" text COLLATE pg_catalog."default" NOT NULL,
-    "IsFinished" boolean NOT NULL DEFAULT false,
-    "FinishedOn" timestamp(0) without time zone,
-    "CreatedOn" timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
-    "ModifiedOn" timestamp(0) without time zone,
-    CONSTRAINT "Task_pkey" PRIMARY KEY ("TaskId"),
-    CONSTRAINT "Task_CategoryId_fkey" FOREIGN KEY ("CategoryId")
-        REFERENCES public."Category" ("CategoryId") MATCH SIMPLE
+    task_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    user_id integer NOT NULL,
+    category_id integer,
+    description character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    is_finished boolean NOT NULL DEFAULT false,
+    finished_on timestamp(0) without time zone,
+    created_on timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
+    modified_on timestamp(0) without time zone,
+    CONSTRAINT task_pkey PRIMARY KEY (task_id),
+    CONSTRAINT task_category_id_fkey FOREIGN KEY (category_id)
+        REFERENCES public.category (category_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID,
-    CONSTRAINT "Task_UserId_fkey" FOREIGN KEY ("UserId")
-        REFERENCES public."User" ("UserId") MATCH SIMPLE
+    CONSTRAINT task_user_id_fkey FOREIGN KEY (user_id)
+        REFERENCES public.user (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
@@ -27,5 +27,5 @@ CREATE TABLE IF NOT EXISTS public."Task"
 
 TABLESPACE pg_default;
 
-ALTER TABLE IF EXISTS public."Task"
+ALTER TABLE IF EXISTS public.task
     OWNER to postgres;

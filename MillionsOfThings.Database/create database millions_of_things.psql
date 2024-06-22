@@ -1,4 +1,4 @@
-CREATE DATABASE MillionsOfThings
+CREATE DATABASE millions_of_things
     WITH
     OWNER = postgres
     ENCODING = 'UTF8'

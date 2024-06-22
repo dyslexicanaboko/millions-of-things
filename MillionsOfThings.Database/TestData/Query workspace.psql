@@ -1,13 +1,14 @@
 -- Select all lists and their tasks for user 1
 SELECT
-	 l."ListId"
-	,l."Name"
-	,t."TaskId"
-	,t."Description"
-	,lnk."ListTaskLinkId"
-FROM public."List" AS l
-	INNER JOIN public."ListTaskLink" AS lnk
-		ON l."ListId" = lnk."ListId"
-	INNER JOIN public."Task" AS t
-		ON t."TaskId" = lnk."TaskId"
-WHERE l."UserId" = 1
+     l.list_id
+    ,l.name
+    ,t.task_id
+    ,t.description
+    ,lnk.list_task_link_id
+		,lnk.task_order
+FROM public.list AS l
+    INNER JOIN public.list_task_link AS lnk
+        ON l.list_id = lnk.list_id
+    INNER JOIN public.task AS t
+        ON t.task_id = lnk.task_id
+WHERE l.user_id = 1
