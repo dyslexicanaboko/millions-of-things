@@ -1,0 +1,31 @@
+-- Table: public.Task
+
+-- DROP TABLE IF EXISTS public."Task";
+
+CREATE TABLE IF NOT EXISTS public."Task"
+(
+    "TaskId" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    "UserId" integer NOT NULL,
+    "CategoryId" integer,
+    "Description" text COLLATE pg_catalog."default" NOT NULL,
+    "IsFinished" boolean NOT NULL DEFAULT false,
+    "FinishedOn" timestamp(0) without time zone,
+    "CreatedOn" timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
+    "ModifiedOn" timestamp(0) without time zone,
+    CONSTRAINT "Task_pkey" PRIMARY KEY ("TaskId"),
+    CONSTRAINT "Task_CategoryId_fkey" FOREIGN KEY ("CategoryId")
+        REFERENCES public."Category" ("CategoryId") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT "Task_UserId_fkey" FOREIGN KEY ("UserId")
+        REFERENCES public."User" ("UserId") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Task"
+    OWNER to postgres;

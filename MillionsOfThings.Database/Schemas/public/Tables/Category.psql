@@ -1,0 +1,23 @@
+-- Table: public.Category
+
+-- DROP TABLE IF EXISTS public."Category";
+
+CREATE TABLE IF NOT EXISTS public."Category"
+(
+    "CategoryId" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    "UserId" integer NOT NULL,
+    "Name" text COLLATE pg_catalog."default" NOT NULL,
+    "CreatedOn" timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
+    "ModifiedOn" timestamp(0) without time zone,
+    CONSTRAINT "Category_pkey" PRIMARY KEY ("CategoryId"),
+    CONSTRAINT "Category_UserId_fkey" FOREIGN KEY ("UserId")
+        REFERENCES public."User" ("UserId") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Category"
+    OWNER to postgres;

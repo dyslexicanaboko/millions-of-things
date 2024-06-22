@@ -1,0 +1,40 @@
+INSERT INTO public."Category"("UserId", "Name")
+	VALUES 
+	(1, 'Cat A'),
+	(1, 'Cat B'),
+	(1, 'Cat C')
+
+SELECT * FROM public."Category"
+	
+INSERT INTO public."Task"(
+	"UserId", 
+	"CategoryId", 
+	"Description")
+VALUES 
+	(1, null, 'Uncategorized task'),
+	(1, 1, 'Cat 1 task'),
+	(1, 2, 'Cat 2 task'),
+	(1, 3, 'Cat 3 task')
+
+SELECT * FROM public."Task"
+	
+INSERT INTO public."List"(
+	"UserId", 
+	"Name") 
+VALUES
+	(1, 'Main list')
+
+SELECT * FROM public."List"
+	
+INSERT INTO public."ListTaskLink" (
+	 "ListId"
+	,"TaskId")
+SELECT
+	 1 AS "ListId"
+	,"TaskId"
+FROM public."Task"
+WHERE "UserId" = 1
+
+SELECT * FROM public."ListTaskLink"
+
+

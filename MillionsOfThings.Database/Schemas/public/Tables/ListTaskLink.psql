@@ -1,0 +1,28 @@
+-- Table: public.ListTaskLink
+
+-- DROP TABLE IF EXISTS public."ListTaskLink";
+
+CREATE TABLE IF NOT EXISTS public."ListTaskLink"
+(
+    "ListTaskLinkId" integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    "ListId" integer NOT NULL,
+    "TaskId" integer NOT NULL,
+    "CreatedOn" timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
+    "ModifiedOn" timestamp(0) without time zone,
+    CONSTRAINT "ListTaskLink_pkey" PRIMARY KEY ("ListTaskLinkId"),
+    CONSTRAINT "ListTaskLink_ListId_fkey" FOREIGN KEY ("ListId")
+        REFERENCES public."List" ("ListId") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID,
+    CONSTRAINT "ListTaskLink_TaskId_fkey" FOREIGN KEY ("TaskId")
+        REFERENCES public."Task" ("TaskId") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+        NOT VALID    
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."ListTaskLink"
+    OWNER to postgres;

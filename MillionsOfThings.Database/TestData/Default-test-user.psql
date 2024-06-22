@@ -1,0 +1,8 @@
+USE MillionsOfThings;
+
+INSERT INTO public."User"(
+	"Username")
+	VALUES ('Default-test-User');
+
+ -- SELECT * FROM public."User"
+  
