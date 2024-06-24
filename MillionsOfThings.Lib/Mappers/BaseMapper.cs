@@ -1,6 +1,6 @@
 ﻿namespace MillionsOfThings.Lib.Mappers
 {
-  public abstract class MapperBase
+  public abstract class BaseMapper
   {
     protected IList<TModel> ToList<TEntity, TModel>(IList<TEntity>? target, Func<TEntity?, TModel?> mapper)
       where TEntity : class, new()

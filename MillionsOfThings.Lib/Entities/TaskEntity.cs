@@ -1,8 +1,29 @@
-﻿namespace MillionsOfThings.Lib.Entities
+﻿using MillionsOfThings.Lib.Models.Client;
+
+namespace MillionsOfThings.Lib.Entities
 {
   public class TaskEntity
-    : ITask, IEquatable<TaskEntity>
+      : ITask, IEquatable<TaskEntity>
   {
+    public TaskEntity()
+    {
+
+    }
+
+    public TaskEntity(int userId, TaskV1CreateModel model)
+    {
+      UserId = userId;
+      CategoryId = model.CategoryId;
+      Description = model.Description;
+    }
+
+    public TaskEntity(int userId, TaskV1PatchModel model)
+    {
+      UserId = userId;
+      CategoryId = model.CategoryId;
+      Description = model.Description;
+    }
+
     public int TaskId { get; set; }
 
     public int UserId { get; set; }

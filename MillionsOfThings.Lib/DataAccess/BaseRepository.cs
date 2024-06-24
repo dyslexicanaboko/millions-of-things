@@ -1,11 +1,11 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using MillionsOfThings.Lib.Services;
-using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
-  public abstract class RepositoryBase
+  public abstract class BaseRepository
     : IDisposable
   {
     protected SqlConnection? Connection;
@@ -14,23 +14,23 @@ namespace MillionsOfThings.Lib.DataAccess
 
     protected SqlTransaction? Transaction;
 
-    protected RepositoryBase()
+    protected BaseRepository()
     {
       //NOTE: Do not instantiate the connection or transaction objects here. This is mostly for the purposes of DI.
     }
 
     //Primary constructor
-    protected RepositoryBase(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
+    protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
     //Used with the Transaction Manager
-    protected RepositoryBase(SqlConnection connection)
+    protected BaseRepository(SqlConnection connection)
     {
       Connection = connection;
 
       ConnectionString = Connection.ConnectionString;
     }
 
-    protected RepositoryBase(SqlTransaction transaction)
+    protected BaseRepository(SqlTransaction transaction)
       : this(transaction.Connection)
       => Transaction = transaction;
 

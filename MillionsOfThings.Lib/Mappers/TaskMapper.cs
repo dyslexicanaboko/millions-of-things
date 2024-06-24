@@ -1,10 +1,11 @@
 ﻿using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Models;
+using MillionsOfThings.Lib.Models.Client;
 
 namespace MillionsOfThings.Lib.Mappers
 {
   public class TaskMapper
-    : MapperBase, ITaskMapper
+    : BaseMapper, ITaskMapper
   {
     public TaskEntity ToEntity(TaskModel model)
     {
@@ -20,6 +21,15 @@ namespace MillionsOfThings.Lib.Mappers
 
       return entity;
     }
+
+    public TaskEntity? ToEntity(int userId, TaskV1CreateModel? model)
+      => model == null ? null : new TaskEntity(userId, model);
+
+    public TaskV1PatchModel? ToPatchModel(TaskEntity? model)
+      => model == null ? null : new TaskV1PatchModel(model);
+
+    public TaskEntity ToEntity(int userId, TaskV1PatchModel model)
+      => new (userId, model);
 
     public TaskModel ToModel(TaskEntity entity)
     {

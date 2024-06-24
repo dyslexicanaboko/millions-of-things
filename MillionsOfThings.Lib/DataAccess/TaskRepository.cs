@@ -1,21 +1,20 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
-using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
 	public class TaskRepository
-	  : RepositoryBase, ITaskRepository
-  {
+		: BaseRepository, ITaskRepository
+	{
 		public TaskRepository(IAppConfiguration configuration)
 			: base(configuration)
 		{
-
 		}
 
-		public TaskEntity Select(int taskId)
+		public TaskEntity? Select(int taskId)
 		{
 			const string sql = @"
 			SELECT
@@ -34,7 +33,27 @@ namespace MillionsOfThings.Lib.DataAccess
 
 			var lst = connection.Query<TaskEntity>(sql, new { TaskId = taskId }).ToList();
 
-			return !lst.Any() ? null : lst.Single();
+			return lst.SingleOrDefault();
+		}
+
+		public IEnumerable<TaskEntity> SelectByUserId(int userId)
+		{
+			const string sql = @"
+			SELECT
+								TaskId,
+								UserId,
+								CategoryId,
+								Description,
+								IsFinished,
+								FinishedOn,
+								CreatedOn,
+								ModifiedOn
+			FROM dbo.Task
+			WHERE UserId = @UserId";
+
+			using var connection = new SqlConnection(ConnectionString);
+
+			return connection.Query<TaskEntity>(sql, new { UserId = userId });
 		}
 
 		public IEnumerable<TaskEntity> SelectAll()
@@ -81,13 +100,34 @@ namespace MillionsOfThings.Lib.DataAccess
 			using var connection = new SqlConnection(ConnectionString);
 
 			var p = new DynamicParameters();
-			p.Add(name: "@UserId", dbType: DbType.Int32, value: entity.UserId);
-			p.Add(name: "@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
-			p.Add(name: "@Description", dbType: DbType.AnsiString, value: entity.Description, size: 255);
-			p.Add(name: "@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
-			p.Add(name: "@FinishedOn", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
-			p.Add(name: "@CreatedOn", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
-			p.Add(name: "@ModifiedOn", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
+			p.Add("@UserId", dbType: DbType.Int32, value: entity.UserId);
+			p.Add("@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
+
+			p.Add(
+				"@Description",
+				dbType: DbType.AnsiString,
+				value: entity.Description,
+				size: 255);
+
+			p.Add("@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
+
+			p.Add(
+				"@FinishedOn",
+				dbType: DbType.DateTime2,
+				value: entity.FinishedOn,
+				scale: 0);
+
+			p.Add(
+				"@CreatedOn",
+				dbType: DbType.DateTime2,
+				value: entity.CreatedOn,
+				scale: 0);
+
+			p.Add(
+				"@ModifiedOn",
+				dbType: DbType.DateTime2,
+				value: entity.ModifiedOn,
+				scale: 0);
 
 			return connection.ExecuteScalar<int>(sql, entity);
 		}
@@ -107,26 +147,47 @@ namespace MillionsOfThings.Lib.DataAccess
 			using var connection = new SqlConnection(ConnectionString);
 
 			var p = new DynamicParameters();
-			p.Add(name: "@TaskId", dbType: DbType.Int32, value: entity.TaskId);
-			p.Add(name: "@UserId", dbType: DbType.Int32, value: entity.UserId);
-			p.Add(name: "@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
-			p.Add(name: "@Description", dbType: DbType.AnsiString, value: entity.Description, size: 255);
-			p.Add(name: "@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
-			p.Add(name: "@FinishedOn", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
-			p.Add(name: "@CreatedOn", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
-			p.Add(name: "@ModifiedOn", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
+			p.Add("@TaskId", dbType: DbType.Int32, value: entity.TaskId);
+			p.Add("@UserId", dbType: DbType.Int32, value: entity.UserId);
+			p.Add("@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
+
+			p.Add(
+				"@Description",
+				dbType: DbType.AnsiString,
+				value: entity.Description,
+				size: 255);
+
+			p.Add("@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
+
+			p.Add(
+				"@FinishedOn",
+				dbType: DbType.DateTime2,
+				value: entity.FinishedOn,
+				scale: 0);
+
+			p.Add(
+				"@CreatedOn",
+				dbType: DbType.DateTime2,
+				value: entity.CreatedOn,
+				scale: 0);
+
+			p.Add(
+				"@ModifiedOn",
+				dbType: DbType.DateTime2,
+				value: entity.ModifiedOn,
+				scale: 0);
 
 			connection.Execute(sql, p);
 		}
 
-		public void Delete(TaskEntity entity)
+		public void Delete(int taskId)
 		{
 			const string sql = "DELETE FROM dbo.Task WHERE TaskId = @TaskId";
 
 			using var connection = new SqlConnection(ConnectionString);
 
 			var p = new DynamicParameters();
-			p.Add(name: "@TaskId", dbType: DbType.Int32, value: entity.TaskId);
+			p.Add("@TaskId", dbType: DbType.Int32, value: taskId);
 
 			connection.Execute(sql, p);
 		}

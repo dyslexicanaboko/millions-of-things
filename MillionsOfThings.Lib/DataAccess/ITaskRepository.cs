@@ -2,9 +2,11 @@
 
 namespace MillionsOfThings.Lib.DataAccess;
 
-public interface ITaskRepository
+public interface ITaskRepository : IRepository
 {
-  TaskEntity Select(int taskId);
+  TaskEntity? Select(int taskId);
+
+  IEnumerable<TaskEntity> SelectByUserId(int userId);
 
   IEnumerable<TaskEntity> SelectAll();
 
@@ -12,7 +14,5 @@ public interface ITaskRepository
 
   void Update(TaskEntity entity);
 
-  void Delete(TaskEntity entity);
-
-  void Dispose();
+  void Delete(int taskId);
 }
