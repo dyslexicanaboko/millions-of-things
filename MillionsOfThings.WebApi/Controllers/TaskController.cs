@@ -9,7 +9,7 @@ using MillionsOfThings.Lib.Validation;
 
 namespace MillionsOfThings.WebApi.Controllers
 {
-  [Route("api/tasks")]
+  [Route("api/v1/tasks")]
   [ApiController]
   public class TaskController
     : AppBaseController
