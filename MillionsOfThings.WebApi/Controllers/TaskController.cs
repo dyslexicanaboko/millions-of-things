@@ -53,7 +53,7 @@ namespace MillionsOfThings.WebApi.Controllers
 
       Validations.IsNotNull(entity, nameof(model));
 
-      var result = (await Task.FromResult(_service.Add(entity)));
+      var result = await Task.FromResult(_service.Add(entity));
 
       var m = _mapper.ToModel(result);
 
