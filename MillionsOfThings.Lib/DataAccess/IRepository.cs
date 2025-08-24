@@ -1,4 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Npgsql;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
@@ -6,19 +6,19 @@ namespace MillionsOfThings.Lib.DataAccess
     : IRepository
     where T : class, new()
   {
-    T? Select(int earningsId);
+    Task<T?> Select(int earningsId);
 
-    IEnumerable<T> SelectAll();
+    Task<IEnumerable<T>> SelectAll();
 
-    int Insert(T entity);
+    Task<int> Insert(T entity);
 
-    void Update(T entity);
+    Task Update(T entity);
   }
 
   public interface IRepository
     : IDisposable
   {
     //This exists just to unify all repositories as being "a type of" repository
-    void SetTransaction(SqlTransaction transaction);
+    void SetTransaction(NpgsqlTransaction transaction);
   }
 }

@@ -4,13 +4,13 @@ namespace MillionsOfThings.Lib.Services;
 
 public interface ITaskService
 {
-  TaskEntity? GetTask(int taskId);
+  Task<TaskEntity?> GetTask(int taskId);
 
-  IList<TaskEntity> GetAllForUser(int userId);
+  Task<IList<TaskEntity>> GetAllForUser(int userId);
 
-  TaskEntity Add(TaskEntity task);
-  
-  void Edit(TaskEntity task);
+  Task<TaskEntity> Add(TaskEntity? entity);
 
-  void Remove(int taskId);
+  Task Edit(TaskEntity entity);
+
+  Task Remove(int taskId);
 }

@@ -7,65 +7,59 @@ namespace MillionsOfThings.Lib.Services
   public class TaskService
     : ITaskService
   {
-    private readonly ITaskRepository _repoTask;
+    private readonly ITaskRepository _repository;
     private readonly ITaskValidation _validation;
 
     public TaskService(
-      ITaskRepository repoTask,
+      ITaskRepository repository,
       ITaskValidation validation)
     {
-      _repoTask = repoTask;
+      _repository = repository;
       _validation = validation;
     }
 
-    public TaskEntity? GetTask(int taskId)
+    public async Task<TaskEntity?> GetTask(int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      var dbEntity = _repoTask.Using(x => x.Select(taskId));
+      var dbEntity = await _repository.Using(x => x.Select(taskId));
 
       return dbEntity;
     }
 
-    public IList<TaskEntity> GetAllForUser(int userId)
+    public async Task<IList<TaskEntity>> GetAllForUser(int userId)
     {
       Validations.ThrowOnError(
         () => Validations.IsUserIdValid(userId, false));
 
-      var lst = _repoTask
-        .Using(x => x.SelectByUserId(userId))
+      var lst = (await _repository
+        .Using(x => x.SelectByUserId(userId)))
         .ToList();
 
       return lst;
     }
 
-    public TaskEntity Add(TaskEntity? task)
+    public async Task<TaskEntity> Add(TaskEntity? entity)
     {
-      Validations.IsValid(_validation, task, nameof(task));
+      Validations.IsValid(_validation, entity, nameof(entity));
 
-      using (_repoTask)
-      {
-        task.TaskId = _repoTask.Insert(task);
-      }
+      entity.TaskId = await _repository.Using(x => x.Insert(entity));
 
-      return task;
+      return entity;
     }
 
-    public void Edit(TaskEntity task)
+    public async Task Edit(TaskEntity entity)
     {
-      Validations.IsNotNull(task, nameof(task));
+      Validations.IsNotNull(entity, nameof(entity));
 
-      using (_repoTask)
-      {
-        _repoTask.Update(task);
-      }
+      await _repository.Using(x => x.Update(entity));
     }
 
-    public void Remove(int taskId)
+    public async Task Remove(int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      _repoTask.Using(x => x.Delete(taskId));
+      await _repository.Using(x => x.Delete(taskId));
     }
   }
 }

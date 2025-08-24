@@ -1,42 +1,20 @@
-﻿using System.Data;
-using Dapper;
-using Microsoft.Data.SqlClient;
+﻿using Dapper;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
+using Npgsql;
+using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
-	public class TaskRepository
+  public class TaskRepository
 		: BaseRepository, ITaskRepository
-	{
+  {
 		public TaskRepository(IAppConfiguration configuration)
 			: base(configuration)
 		{
 		}
 
-		public TaskEntity? Select(int taskId)
-		{
-			const string sql = @"
-			SELECT
-								TaskId,
-								UserId,
-								CategoryId,
-								Description,
-								IsFinished,
-								FinishedOn,
-								CreatedOn,
-								ModifiedOn
-			FROM dbo.Task
-			WHERE TaskId = @TaskId";
-
-			using var connection = new SqlConnection(ConnectionString);
-
-			var lst = connection.Query<TaskEntity>(sql, new { TaskId = taskId }).ToList();
-
-			return lst.SingleOrDefault();
-		}
-
-		public IEnumerable<TaskEntity> SelectByUserId(int userId)
+		public async Task<IEnumerable<TaskEntity>> SelectByUserId(int userId)
 		{
 			const string sql = @"
 			SELECT
@@ -51,145 +29,127 @@ namespace MillionsOfThings.Lib.DataAccess
 			FROM dbo.Task
 			WHERE UserId = @UserId";
 
-			using var connection = new SqlConnection(ConnectionString);
+			await using var connection = new NpgsqlConnection(ConnectionString);
 
-			return connection.Query<TaskEntity>(sql, new { UserId = userId });
+			return (await connection.QueryAsync<TaskEntity>(sql, new { UserId = userId })).ToList();
 		}
 
-		public IEnumerable<TaskEntity> SelectAll()
-		{
-			const string sql = @"
+    public async Task<TaskEntity?> Select(int taskId)
+    {
+      const string sql = @"
 			SELECT
-								TaskId,
-								UserId,
-								CategoryId,
-								Description,
-								IsFinished,
-								FinishedOn,
-								CreatedOn,
-								ModifiedOn
-			FROM dbo.Task";
+	                task_id,
+                user_id,
+                category_id,
+                description,
+                is_finished,
+                finished_on,
+                created_on,
+                modified_on
+			FROM public.task
+			WHERE task_id = @task_id";
 
-			using var connection = new SqlConnection(ConnectionString);
+      await using var connection = new NpgsqlConnection(ConnectionString);
 
-			return connection.Query<TaskEntity>(sql).ToList();
-		}
+      var lst = (await connection.QueryAsync<TaskEntity>(sql, GetPrimaryKeyParameter(taskId))).ToList();
 
-		//Preference on whether or not insert method returns a value is up to the user and the object being inserted
-		public int Insert(TaskEntity entity)
-		{
-			const string sql = @"INSERT INTO dbo.Task (
-								UserId,
-								CategoryId,
-								Description,
-								IsFinished,
-								FinishedOn,
-								CreatedOn,
-								ModifiedOn
+      return lst.SingleOrDefault();
+    }
+
+    public async Task<IEnumerable<TaskEntity>> SelectAll()
+    {
+      const string sql = @"
+			SELECT
+	                task_id,
+                user_id,
+                category_id,
+                description,
+                is_finished,
+                finished_on,
+                created_on,
+                modified_on
+			FROM public.task";
+
+      await using var connection = new NpgsqlConnection(ConnectionString);
+
+      return (await connection.QueryAsync<TaskEntity>(sql)).ToList();
+    }
+
+    public async Task<int> Insert(TaskEntity entity)
+    {
+      const string sql = @"INSERT INTO public.task (
+                user_id,
+                category_id,
+                description,
+                is_finished,
+                finished_on,
+                created_on,
+                modified_on
 						) VALUES (
-								@UserId,
-								@CategoryId,
-								@Description,
-								@IsFinished,
-								@FinishedOn,
-								@CreatedOn,
-								@ModifiedOn);
+                @user_id,
+                @category_id,
+                @description,
+                @is_finished,
+                @finished_on,
+                @created_on,
+                @modified_on)	RETURNING task_id AS PK;";
 
-			SELECT SCOPE_IDENTITY() AS PK;";
+      await using var connection = new NpgsqlConnection(ConnectionString);
 
-			using var connection = new SqlConnection(ConnectionString);
+      var p = new DynamicParameters();
+      p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
+      p.Add(name: "@category_id", dbType: DbType.Int32, value: entity.CategoryId);
+      p.Add(name: "@description", dbType: DbType.String, value: entity.Description, size: 255);
+      p.Add(name: "@is_finished", dbType: DbType.Boolean, value: entity.IsFinished);
+      p.Add(name: "@finished_on", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
+      p.Add(name: "@created_on", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
+      p.Add(name: "@modified_on", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
 
-			var p = new DynamicParameters();
-			p.Add("@UserId", dbType: DbType.Int32, value: entity.UserId);
-			p.Add("@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
+      return await connection.ExecuteScalarAsync<int>(sql, p);
+    }
 
-			p.Add(
-				"@Description",
-				dbType: DbType.AnsiString,
-				value: entity.Description,
-				size: 255);
+    public async Task Update(TaskEntity entity)
+    {
+      const string sql = @"UPDATE public.task SET 
+	                user_id = @user_id,
+                category_id = @category_id,
+                description = @description,
+                is_finished = @is_finished,
+                finished_on = @finished_on,
+                created_on = @created_on,
+                modified_on = @modified_on
+						WHERE task_id = @task_id";
 
-			p.Add("@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
+      await using var connection = new NpgsqlConnection(ConnectionString);
 
-			p.Add(
-				"@FinishedOn",
-				dbType: DbType.DateTime2,
-				value: entity.FinishedOn,
-				scale: 0);
+      var p = new DynamicParameters();
+      p.Add(name: "@task_id", dbType: DbType.Int32, value: entity.TaskId);
+      p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
+      p.Add(name: "@category_id", dbType: DbType.Int32, value: entity.CategoryId);
+      p.Add(name: "@description", dbType: DbType.String, value: entity.Description, size: 255);
+      p.Add(name: "@is_finished", dbType: DbType.Boolean, value: entity.IsFinished);
+      p.Add(name: "@finished_on", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
+      p.Add(name: "@created_on", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
+      p.Add(name: "@modified_on", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
 
-			p.Add(
-				"@CreatedOn",
-				dbType: DbType.DateTime2,
-				value: entity.CreatedOn,
-				scale: 0);
+      await connection.ExecuteAsync(sql, p);
+    }
 
-			p.Add(
-				"@ModifiedOn",
-				dbType: DbType.DateTime2,
-				value: entity.ModifiedOn,
-				scale: 0);
+    public async Task Delete(int taskId)
+    {
+      const string sql = "DELETE FROM public.task WHERE task_id = @task_id";
 
-			return connection.ExecuteScalar<int>(sql, entity);
-		}
+      await using var connection = new NpgsqlConnection(ConnectionString);
 
-		public void Update(TaskEntity entity)
-		{
-			const string sql = @"UPDATE dbo.Task SET 
-								UserId = @UserId,
-								CategoryId = @CategoryId,
-								Description = @Description,
-								IsFinished = @IsFinished,
-								FinishedOn = @FinishedOn,
-								CreatedOn = @CreatedOn,
-								ModifiedOn = @ModifiedOn
-						WHERE TaskId = @TaskId";
+      await connection.ExecuteAsync(sql, GetPrimaryKeyParameter(taskId));
+    }
 
-			using var connection = new SqlConnection(ConnectionString);
+    private DynamicParameters GetPrimaryKeyParameter(int taskId)
+    {
+      var p = new DynamicParameters();
+      p.Add(name: "@task_id", dbType: DbType.Int32, value: taskId);
 
-			var p = new DynamicParameters();
-			p.Add("@TaskId", dbType: DbType.Int32, value: entity.TaskId);
-			p.Add("@UserId", dbType: DbType.Int32, value: entity.UserId);
-			p.Add("@CategoryId", dbType: DbType.Int32, value: entity.CategoryId);
-
-			p.Add(
-				"@Description",
-				dbType: DbType.AnsiString,
-				value: entity.Description,
-				size: 255);
-
-			p.Add("@IsFinished", dbType: DbType.Boolean, value: entity.IsFinished);
-
-			p.Add(
-				"@FinishedOn",
-				dbType: DbType.DateTime2,
-				value: entity.FinishedOn,
-				scale: 0);
-
-			p.Add(
-				"@CreatedOn",
-				dbType: DbType.DateTime2,
-				value: entity.CreatedOn,
-				scale: 0);
-
-			p.Add(
-				"@ModifiedOn",
-				dbType: DbType.DateTime2,
-				value: entity.ModifiedOn,
-				scale: 0);
-
-			connection.Execute(sql, p);
-		}
-
-		public void Delete(int taskId)
-		{
-			const string sql = "DELETE FROM dbo.Task WHERE TaskId = @TaskId";
-
-			using var connection = new SqlConnection(ConnectionString);
-
-			var p = new DynamicParameters();
-			p.Add("@TaskId", dbType: DbType.Int32, value: taskId);
-
-			connection.Execute(sql, p);
-		}
-	}
+      return p;
+    }
+  }
 }

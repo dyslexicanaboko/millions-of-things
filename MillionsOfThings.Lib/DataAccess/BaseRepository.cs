@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using Dapper;
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using MillionsOfThings.Lib.Services;
 
 namespace MillionsOfThings.Lib.DataAccess
@@ -8,11 +8,11 @@ namespace MillionsOfThings.Lib.DataAccess
   public abstract class BaseRepository
     : IDisposable
   {
-    protected SqlConnection? Connection;
+    protected NpgsqlConnection? Connection;
 
     protected string? ConnectionString;
 
-    protected SqlTransaction? Transaction;
+    protected NpgsqlTransaction? Transaction;
 
     protected BaseRepository()
     {
@@ -23,14 +23,14 @@ namespace MillionsOfThings.Lib.DataAccess
     protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
     //Used with the Transaction Manager
-    protected BaseRepository(SqlConnection connection)
+    protected BaseRepository(NpgsqlConnection connection)
     {
       Connection = connection;
 
       ConnectionString = Connection.ConnectionString;
     }
 
-    protected BaseRepository(SqlTransaction transaction)
+    protected BaseRepository(NpgsqlTransaction transaction)
       : this(transaction.Connection)
       => Transaction = transaction;
 
@@ -46,10 +46,10 @@ namespace MillionsOfThings.Lib.DataAccess
       Connection.Dispose();
     }
 
-    protected SqlConnection GetConnection()
+    protected NpgsqlConnection GetConnection()
     {
       if (Connection == null || string.IsNullOrWhiteSpace(Connection.ConnectionString))
-        Connection = new SqlConnection(ConnectionString);
+        Connection = new NpgsqlConnection(ConnectionString);
 
       if (Connection.State != ConnectionState.Open) Connection.Open();
 
@@ -57,7 +57,7 @@ namespace MillionsOfThings.Lib.DataAccess
     }
 
     //Not crazy about this
-    public void SetTransaction(SqlTransaction transaction)
+    public void SetTransaction(NpgsqlTransaction transaction)
     {
       Transaction = transaction;
       Connection = Transaction.Connection;
