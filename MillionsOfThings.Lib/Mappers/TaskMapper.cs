@@ -7,7 +7,7 @@ namespace MillionsOfThings.Lib.Mappers
   public class TaskMapper
     : BaseMapper, ITaskMapper
   {
-    public TaskEntity ToEntity(TaskModel model)
+    public TaskEntity ToEntity(TaskV1Model model)
     {
       var entity = new TaskEntity();
       entity.TaskId = model.TaskId;
@@ -31,9 +31,9 @@ namespace MillionsOfThings.Lib.Mappers
     public TaskEntity ToEntity(int userId, TaskV1PatchModel model)
       => new (userId, model);
 
-    public TaskModel ToModel(TaskEntity entity)
+    public TaskV1Model ToModel(TaskEntity entity)
     {
-      var model = new TaskModel();
+      var model = new TaskV1Model();
       model.TaskId = entity.TaskId;
       model.UserId = entity.UserId;
       model.CategoryId = entity.CategoryId;
@@ -61,9 +61,9 @@ namespace MillionsOfThings.Lib.Mappers
       return entity;
     }
 
-    public TaskModel ToModel(ITask target)
+    public TaskV1Model ToModel(ITask target)
     {
-      var model = new TaskModel();
+      var model = new TaskV1Model();
       model.TaskId = target.TaskId;
       model.UserId = target.UserId;
       model.CategoryId = target.CategoryId;

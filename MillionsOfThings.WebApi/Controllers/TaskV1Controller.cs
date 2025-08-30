@@ -11,14 +11,14 @@ namespace MillionsOfThings.WebApi.Controllers
 {
   [Route("api/v1/task")]
   [ApiController]
-  public class TaskController
+  public class TaskV1Controller
       : AppBaseController
   {
     private readonly ITaskMapper _mapper;
 
     private readonly ITaskService _service;
 
-    public TaskController(
+    public TaskV1Controller(
         ITaskService service,
         ITaskMapper mapper)
     {

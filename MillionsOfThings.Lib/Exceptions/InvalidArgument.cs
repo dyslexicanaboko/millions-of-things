@@ -10,7 +10,7 @@ namespace MillionsOfThings.Lib.Exceptions
       BR.Symbol);
 
     public static InvalidArgumentException User = new("userId", "Invalid user.", BR.User);
-
+    
     public static InvalidArgumentException MalformedModel()
       => new("model", "The provided model is malformed.", BR.MalformedModel);
 
@@ -49,5 +49,11 @@ namespace MillionsOfThings.Lib.Exceptions
         argument,
         "The provided end date argument must be greater than its start date.",
         BR.EndDateLessThanStartDate);
+
+    public static InvalidArgumentException MappingNotFound(string argument)
+      => new(
+        argument,
+        "The provided mapping argument does not exist.",
+        BR.MappingDoesNotExist);
   }
 }

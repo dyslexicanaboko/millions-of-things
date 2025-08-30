@@ -27,6 +27,8 @@
       public const int OutOfBounds = 40010;
 
       public const int OutOfBoundsEnumeration = 40011;
+      
+      public const int MappingDoesNotExist = 40012;
     }
 
     //HTTP 401xx Unauthorized - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
@@ -55,6 +57,8 @@
       public const int User = 40402;
 
       public const int UserCredentials = 40403;
+     
+      public const int Category = 40404;
     }
 
     //HTTP 500xx Internal Server Error - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
@@ -62,7 +66,9 @@
     {
       public const int EntityExistsAlready = 50001;
 
-      public const int MaxEntries = 50003;
+      public const int MaxEntries = 50002;
+
+      public const int CategoryExistsAlready = 50003;
     }
   }
 }

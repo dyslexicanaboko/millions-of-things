@@ -2,7 +2,7 @@ select * from public.category
 select * from "public"."category"
 select * from millions_of_things.public.category
 select * from "millions_of_things"."public"."category"
-
+select now()
 select * from public.task t 
 
 
@@ -19,6 +19,7 @@ SELECT
 			-- delete stuff after id 4 to reset the testing
 			
 			delete from public.task where task_id > 4
+			delete from public.category where category_id > 3
 			
 do $$
 declare

@@ -2,7 +2,7 @@
 
 namespace MillionsOfThings.Lib.Models
 {
-  public class TaskModel
+  public class TaskV1Model
     : ITask
   {
     public int TaskId { get; set; }

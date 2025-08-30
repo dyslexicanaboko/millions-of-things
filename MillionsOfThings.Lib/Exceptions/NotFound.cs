@@ -2,6 +2,8 @@
 
 public static class NotFound
 {
+  public static NotFoundException Category(int id) => GetNotFound("Category", id, ErrorCodes.NotFound.Category);
+
   public static NotFoundException Task(int id) => GetNotFound("Task", id, ErrorCodes.NotFound.Task);
 
   public static NotFoundException User(int id) => GetNotFound("User", id, ErrorCodes.NotFound.User);

@@ -6,13 +6,13 @@ namespace MillionsOfThings.Lib.Mappers;
 
 public interface ITaskMapper
 {
-  TaskEntity ToEntity(TaskModel model);
+  TaskEntity ToEntity(TaskV1Model model);
 
   TaskEntity ToEntity(ITask target);
 
-  TaskModel ToModel(TaskEntity entity);
+  TaskV1Model ToModel(TaskEntity entity);
 
-  TaskModel ToModel(ITask target);
+  TaskV1Model ToModel(ITask target);
 
   TaskEntity? ToEntity(int userId, TaskV1CreateModel? model);
 

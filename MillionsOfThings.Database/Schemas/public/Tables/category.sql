@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS public.category
         REFERENCES public.user (user_id) MATCH SIMPLE
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
-        NOT VALID
+        NOT VALID,
+    CONSTRAINT category_user_id_name_unique UNIQUE (user_id, name)
 )
 
 TABLESPACE pg_default;

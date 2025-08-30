@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.DataAccess
     : IRepository
     where T : class, new()
   {
-    Task<T?> Select(int earningsId);
+    Task<T?> Select(int id);
 
     Task<IEnumerable<T>> SelectAll();
 
