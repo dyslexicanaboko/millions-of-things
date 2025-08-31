@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MillionsOfThings.Lib.DataAccess;
 using MillionsOfThings.Lib.Entities;
 using static MillionsOfThings.Lib.Exceptions.InvalidArgument;
 
@@ -12,7 +13,7 @@ namespace MillionsOfThings.Lib.Validation
   public class TaskValidation
     : AbstractValidator<TaskEntity>, ITaskValidation
   {
-    public TaskValidation()
+    public TaskValidation(ICategoryRepository repository)
     {
       RuleFor(r => r.UserId)
         .GreaterThan(0)
@@ -34,13 +35,16 @@ namespace MillionsOfThings.Lib.Validation
         {
           //This will require caching at one point
           RuleFor(r => r.CategoryId)
-            .Must((_, categoryId) =>
+            .Must((entity, categoryId) =>
             {
               if (!categoryId.HasValue) return true;
 
-              //CategoryId is not null and has a value greater than zero
-              //Verify that it maps to something in the database
-              return true;
+              var t = repository
+                .Using(x => x.Exists(entity.UserId, categoryId.Value));
+
+              t.Wait();
+              
+              return t.Result;
             })
             .WithMessageAndErrorCode(MappingNotFound(nameof(TaskEntity.CategoryId)));
         });

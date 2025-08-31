@@ -7,7 +7,7 @@ public interface ICategoryRepository : IRepository<CategoryEntity>
 {
   Task<CategoryEntity?> Select(int categoryId);
 
-  Task<IEnumerable<CategoryEntity>> SelectAll();
+  Task<IEnumerable<CategoryEntity>> SelectAll(int userId);
 
   Task<int> Insert(CategoryEntity entity);
 
@@ -15,7 +15,9 @@ public interface ICategoryRepository : IRepository<CategoryEntity>
 
   Task Delete(int categoryId);
 
-  Task<bool> Exists(CategoryEntity entity);
+  Task<bool> Exists(int userId, int categoryId);
+  
+  Task<bool> Exists(int userId, string name);
 
   void Dispose();
 

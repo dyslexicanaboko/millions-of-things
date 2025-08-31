@@ -24,13 +24,11 @@ namespace MillionsOfThings.Lib.Entities
       Name = model.Name;
     }
 
-    public CategoryEntity(CategoryV1PatchModel model)
+    public CategoryEntity(int userId, int categoryId, CategoryV1PatchModel model)
     {
-      CategoryId = model.CategoryId;
-      UserId = model.UserId;
+      UserId = userId;
+      CategoryId = categoryId;
       Name = model.Name;
-      CreatedOn = model.CreatedOn;
-      ModifiedOn = model.ModifiedOn;
     }
 
     public int CategoryId { get; set; }

@@ -10,13 +10,16 @@ namespace MillionsOfThings.Lib.Mappers
     public CategoryV1Model? ToModel(CategoryEntity? entity)
       => entity == null ? null : new CategoryV1Model(entity);
 
+    public IList<CategoryV1Model> ToModel(IList<CategoryEntity> entities)
+      => ToList(entities, ToModel);
+
     public CategoryEntity? ToEntity(int userId, CategoryV1CreateModel? model)
       => model == null ? null : new CategoryEntity(userId, model);
 
     public CategoryV1PatchModel? ToPatchModel(CategoryEntity? entity)
       => entity == null ? null : new CategoryV1PatchModel(entity);
 
-    public CategoryEntity ToEntity(CategoryV1PatchModel model)
-      => new(model);
+    public CategoryEntity ToEntity(int userId, int categoryId, CategoryV1PatchModel model)
+      => new(userId, categoryId, model);
   }
 }

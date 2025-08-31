@@ -3,6 +3,7 @@ using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
 using Npgsql;
 using System.Data;
+using static Dapper.SqlMapper;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
@@ -33,7 +34,62 @@ namespace MillionsOfThings.Lib.DataAccess
       return lst.SingleOrDefault();
     }
 
-    public async Task<bool> Exists(CategoryEntity entity)
+    public async Task<IEnumerable<CategoryEntity>> SelectAll()
+    {
+      const string sql = """
+                         SELECT
+                           category_id,
+                           user_id,
+                           name
+                         FROM public.category
+                         """;
+
+      await using var connection = new NpgsqlConnection(ConnectionString);
+
+      return await connection.QueryAsync<CategoryEntity>(sql);
+    }
+
+    public async Task<IEnumerable<CategoryEntity>> SelectAll(int userId)
+    {
+      const string sql = """
+                         SELECT
+                           category_id,
+                           user_id,
+                           name
+                         FROM public.category
+                         WHERE user_id = @user_id
+                         """;
+
+      await using var connection = new NpgsqlConnection(ConnectionString);
+
+      var p = new DynamicParameters();
+      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+
+      return await connection.QueryAsync<CategoryEntity>(sql, p);
+    }
+
+    public async Task<bool> Exists(int userId, int categoryId)
+    {
+      const string sql = """
+                         SELECT EXISTS (
+                         SELECT 1
+                         FROM public.category
+                         WHERE user_id = @user_id AND category_id = @category_id
+                         );
+                         """;
+
+      await using var connection = new NpgsqlConnection(ConnectionString);
+
+      var p = new DynamicParameters();
+      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+      p.Add("@category_id", dbType: DbType.Int32, value: categoryId);
+      
+      var exists = (bool)(await connection.ExecuteScalarAsync(sql, p));
+
+      return exists;
+    }
+
+    public async Task<bool> Exists(int userId, string name)
     {
       const string sql = """
                          SELECT EXISTS (
@@ -46,33 +102,17 @@ namespace MillionsOfThings.Lib.DataAccess
       await using var connection = new NpgsqlConnection(ConnectionString);
 
       var p = new DynamicParameters();
-      p.Add("@user_id", dbType: DbType.Int32, value: entity.UserId);
+      p.Add("@user_id", dbType: DbType.Int32, value: userId);
 
       p.Add(
         "@name",
         dbType: DbType.String,
-        value: entity.Name,
+        value: name,
         size: 20);
 
       var exists = (bool)(await connection.ExecuteScalarAsync(sql, p));
 
       return exists;
-    }
-
-    public async Task<IEnumerable<CategoryEntity>> SelectAll()
-    {
-      const string sql = @"
-			SELECT
-	                category_id,
-                user_id,
-                name,
-                created_on,
-                modified_on
-			FROM public.category";
-
-      await using var connection = new NpgsqlConnection(ConnectionString);
-
-      return (await connection.QueryAsync<CategoryEntity>(sql)).ToList();
     }
 
     public async Task<int> Insert(CategoryEntity entity)

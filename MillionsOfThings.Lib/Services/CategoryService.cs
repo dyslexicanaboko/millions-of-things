@@ -29,11 +29,20 @@ namespace MillionsOfThings.Lib.Services
       return dbEntity;
     }
 
+    public async Task<List<CategoryEntity>> GetAll(int userId)
+    {
+      Validations.IsGreaterThanZero(userId, nameof(userId));
+
+      var lst = (await _repository.Using(x => x.SelectAll(userId))).ToList();
+
+      return lst;
+    }
+
     public async Task<CategoryEntity> Add(CategoryEntity? entity)
     {
       Validations.IsValid(_validation, entity, nameof(entity));
 
-      if (await _repository.Using(x => x.Exists(entity)))
+      if (await _repository.Using(x => x.Exists(entity.UserId, entity.Name)))
         throw new CategoryExistsAlreadyException(entity);
 
       entity.CategoryId = await _repository.Using(x => x.Insert(entity));
@@ -44,8 +53,9 @@ namespace MillionsOfThings.Lib.Services
     public async Task Edit(CategoryEntity entity)
     {
       Validations.IsNotNull(entity, nameof(entity));
+      Validations.IsGreaterThanZero(entity.CategoryId, nameof(entity.CategoryId));
 
-      if (await _repository.Using(x => x.Exists(entity)))
+      if (await _repository.Using(x => x.Exists(entity.UserId, entity.Name)))
         throw new CategoryExistsAlreadyException(entity);
 
       await _repository.Using(x => x.Update(entity));

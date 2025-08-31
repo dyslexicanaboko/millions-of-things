@@ -7,10 +7,12 @@ namespace MillionsOfThings.Lib.Mappers;
 public interface ICategoryMapper
 {
   CategoryV1Model? ToModel(CategoryEntity? entity);
-  
+
+  IList<CategoryV1Model> ToModel(IList<CategoryEntity> entities);
+
   CategoryEntity? ToEntity(int userId, CategoryV1CreateModel? model);
 
-  CategoryEntity ToEntity(CategoryV1PatchModel model);
+  CategoryEntity ToEntity(int userId, int categoryId, CategoryV1PatchModel model);
 
   CategoryV1PatchModel? ToPatchModel(CategoryEntity? entity);
 }

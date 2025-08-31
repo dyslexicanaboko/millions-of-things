@@ -45,6 +45,9 @@ public class Program
       SetLooseCorsPolicyForDevelopmentPurposesOnly(app);
     }
 
+    //This is specifically so that Dapper can deal with Postgres naming conventions
+    Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
     //When working with Next.js you may have to disable https to do local development
     app.UseHttpsRedirection();
 
