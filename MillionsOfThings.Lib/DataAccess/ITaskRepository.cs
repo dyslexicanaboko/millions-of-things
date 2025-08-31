@@ -4,7 +4,7 @@ namespace MillionsOfThings.Lib.DataAccess;
 
 public interface ITaskRepository : IRepository
 {
-  Task<IEnumerable<TaskEntity>> SelectByUserId(int userId);
+  Task<IEnumerable<TaskEntity>> SelectAll(int userId);
 
   Task<TaskEntity?> Select(int taskId);
 

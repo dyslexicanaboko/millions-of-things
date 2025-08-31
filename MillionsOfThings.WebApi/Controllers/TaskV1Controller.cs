@@ -27,21 +27,32 @@ namespace MillionsOfThings.WebApi.Controllers
       _mapper = mapper;
     }
 
-    // GET api/task/5
+    // GET api/v1/task/5
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<ITask>> Get(int id)
     {
       //TODO: Need to verify that the user has access to the requested resource
-      var entity = await _service.GetTask(id); //TODO: UserId needs to be passed
+      var entity = await _service.Get(id); //TODO: UserId needs to be passed
 
       if (entity == null) throw Lib.Exceptions.NotFound.Task(id);
 
       return Ok(_mapper.ToModel(entity));
     }
 
-    // POST api/task
+    // GET api/v1/task
+    [HttpGet()]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
+    [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
+    public async Task<ActionResult<List<ITask>>> GetAll()
+    {
+      var entity = await _service.GetAll(UserId);
+
+      return Ok(_mapper.ToModel(entity));
+    }
+
+    // POST api/v1/task
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -60,7 +71,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return CreatedAtAction(nameof(Get), new { id = m!.TaskId }, m);
     }
 
-    // PATCH api/task/5
+    // PATCH api/v1/task/5
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -70,7 +81,7 @@ namespace MillionsOfThings.WebApi.Controllers
     {
       //TODO: Need more sophisticated patching that only updates what has changed #23
       //TODO: Needs proper validation #24
-      var db = await _service.GetTask(id);
+      var db = await _service.Get(id);
 
       var model = _mapper.ToPatchModel(db);
 
@@ -85,7 +96,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return NoContent();
     }
 
-    // DELETE api/task/5
+    // DELETE api/v1/task/5
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Delete(int id)

@@ -18,7 +18,7 @@ namespace MillionsOfThings.Lib.Services
       _validation = validation;
     }
 
-    public async Task<TaskEntity?> GetTask(int taskId)
+    public async Task<TaskEntity?> Get(int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
@@ -27,13 +27,13 @@ namespace MillionsOfThings.Lib.Services
       return dbEntity;
     }
 
-    public async Task<IList<TaskEntity>> GetAllForUser(int userId)
+    public async Task<IList<TaskEntity>> GetAll(int userId)
     {
       Validations.ThrowOnError(
         () => Validations.IsUserIdValid(userId, false));
 
       var lst = (await _repository
-        .Using(x => x.SelectByUserId(userId)))
+        .Using(x => x.SelectAll(userId)))
         .ToList();
 
       return lst;

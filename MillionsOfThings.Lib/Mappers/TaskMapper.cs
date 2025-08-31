@@ -46,6 +46,9 @@ namespace MillionsOfThings.Lib.Mappers
       return model;
     }
 
+    public IList<TaskV1Model> ToModel(IList<TaskEntity> entities)
+      => ToList(entities, ToModel);
+
     public TaskEntity ToEntity(ITask target)
     {
       var entity = new TaskEntity();

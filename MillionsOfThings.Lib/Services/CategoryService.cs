@@ -20,7 +20,7 @@ namespace MillionsOfThings.Lib.Services
       _validation = validation;
     }
 
-    public async Task<CategoryEntity?> GetCategory(int categoryId)
+    public async Task<CategoryEntity?> Get(int categoryId)
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 

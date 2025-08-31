@@ -14,20 +14,20 @@ namespace MillionsOfThings.Lib.DataAccess
 		{
 		}
 
-		public async Task<IEnumerable<TaskEntity>> SelectByUserId(int userId)
+		public async Task<IEnumerable<TaskEntity>> SelectAll(int userId)
 		{
 			const string sql = @"
 			SELECT
-								TaskId,
-								UserId,
-								CategoryId,
-								Description,
-								IsFinished,
-								FinishedOn,
-								CreatedOn,
-								ModifiedOn
-			FROM dbo.Task
-			WHERE UserId = @UserId";
+	              task_id,
+                user_id,
+                category_id,
+                description,
+                is_finished,
+                finished_on,
+                created_on,
+                modified_on
+			FROM public.task
+			WHERE user_id = @user_id";
 
 			await using var connection = new NpgsqlConnection(ConnectionString);
 
@@ -80,19 +80,11 @@ namespace MillionsOfThings.Lib.DataAccess
       const string sql = @"INSERT INTO public.task (
                 user_id,
                 category_id,
-                description,
-                is_finished,
-                finished_on,
-                created_on,
-                modified_on
+                description
 						) VALUES (
                 @user_id,
                 @category_id,
-                @description,
-                @is_finished,
-                @finished_on,
-                @created_on,
-                @modified_on)	RETURNING task_id AS PK;";
+                @description)	RETURNING task_id AS PK;";
 
       await using var connection = new NpgsqlConnection(ConnectionString);
 
@@ -100,10 +92,6 @@ namespace MillionsOfThings.Lib.DataAccess
       p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
       p.Add(name: "@category_id", dbType: DbType.Int32, value: entity.CategoryId);
       p.Add(name: "@description", dbType: DbType.String, value: entity.Description, size: 255);
-      p.Add(name: "@is_finished", dbType: DbType.Boolean, value: entity.IsFinished);
-      p.Add(name: "@finished_on", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
-      p.Add(name: "@created_on", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
-      p.Add(name: "@modified_on", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
 
       return await connection.ExecuteScalarAsync<int>(sql, p);
     }
@@ -111,13 +99,11 @@ namespace MillionsOfThings.Lib.DataAccess
     public async Task Update(TaskEntity entity)
     {
       const string sql = @"UPDATE public.task SET 
-	                user_id = @user_id,
                 category_id = @category_id,
                 description = @description,
                 is_finished = @is_finished,
                 finished_on = @finished_on,
-                created_on = @created_on,
-                modified_on = @modified_on
+                modified_on = now()
 						WHERE task_id = @task_id";
 
       await using var connection = new NpgsqlConnection(ConnectionString);
@@ -129,7 +115,6 @@ namespace MillionsOfThings.Lib.DataAccess
       p.Add(name: "@description", dbType: DbType.String, value: entity.Description, size: 255);
       p.Add(name: "@is_finished", dbType: DbType.Boolean, value: entity.IsFinished);
       p.Add(name: "@finished_on", dbType: DbType.DateTime2, value: entity.FinishedOn, scale: 0);
-      p.Add(name: "@created_on", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
       p.Add(name: "@modified_on", dbType: DbType.DateTime2, value: entity.ModifiedOn, scale: 0);
 
       await connection.ExecuteAsync(sql, p);

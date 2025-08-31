@@ -34,7 +34,7 @@ namespace MillionsOfThings.WebApi.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<CategoryV1Model>> Get(int id)
     {
-      var entity = await _service.GetCategory(id);
+      var entity = await _service.Get(id);
 
       if (entity == null) throw E.NotFound.Category(id);
 
@@ -79,7 +79,7 @@ namespace MillionsOfThings.WebApi.Controllers
     [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorModel))]
     public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<CategoryV1PatchModel> patchDoc)
     {
-      var db = await _service.GetCategory(id);
+      var db = await _service.Get(id);
 
       var model = _mapper.ToPatchModel(db);
 

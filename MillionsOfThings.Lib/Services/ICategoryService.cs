@@ -4,7 +4,7 @@ namespace MillionsOfThings.Lib.Services;
 
 public interface ICategoryService
 {
-  Task<CategoryEntity?> GetCategory(int categoryId);
+  Task<CategoryEntity?> Get(int categoryId);
 
   Task<List<CategoryEntity>> GetAll(int userId);
 
