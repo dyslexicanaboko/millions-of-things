@@ -49,9 +49,9 @@ namespace MillionsOfThings.Lib.Validation
             .WithMessageAndErrorCode(MappingNotFound(nameof(TaskEntity.CategoryId)));
         });
 
-      //RuleFor(r => r.TaskId)
-      //  .GreaterThan(0)
-      //  .WithMessageAndErrorCode(NotGreaterThanZero(nameof(TaskEntity.TaskId)));
+      RuleFor(r => r.Description)
+        .NotEmpty()
+        .WithMessageAndErrorCode(Empty(nameof(TaskEntity.TaskId)));
     }
   }
 }

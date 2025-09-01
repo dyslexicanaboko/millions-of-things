@@ -22,6 +22,7 @@ namespace MillionsOfThings.Lib.Entities
       UserId = userId;
       CategoryId = model.CategoryId;
       Description = model.Description;
+      IsFinished = model.IsFinished;
     }
 
     public int TaskId { get; set; }

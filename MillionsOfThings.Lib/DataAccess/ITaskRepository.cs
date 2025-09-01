@@ -1,4 +1,5 @@
 ﻿using MillionsOfThings.Lib.Entities;
+using MillionsOfThings.Lib.Services.Utility;
 
 namespace MillionsOfThings.Lib.DataAccess;
 
@@ -13,6 +14,8 @@ public interface ITaskRepository : IRepository
   Task<int> Insert(TaskEntity entity);
 
   Task Update(TaskEntity entity);
+
+  Task UpdatePartial(int taskId, IList<UpdateInstruction> instructions);
 
   Task Delete(int taskId);
 }
