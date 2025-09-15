@@ -132,31 +132,12 @@ namespace MillionsOfThings.Lib.DataAccess
 
     public async Task UpdatePartial(int taskId, IList<UpdateInstruction> instructions)
     {
-      if (!instructions.Any()) return;
-
+      const string template = @"UPDATE public.task SET {0}, modified_on = now() WHERE task_id = @task_id";
+      
       var p = new DynamicParameters();
       p.Add(name: "@task_id", dbType: DbType.Int32, value: taskId);
 
-      var lst = new List<string>(instructions.Count);
-
-      foreach (var instr in instructions)
-      {
-        var col = UpdatePartialColumns.SingleOrDefault(x => x.Property == instr.Property);
-        
-        if (col == null) throw new ArgumentException($"The property '{instr.Property}' is not valid for partial updates.", nameof(instructions));
-
-        lst.Add($"{col.Name} = @{col.Name}");
-
-        p.Add(name: col.Name, dbType: col.DbType, value: instr.Value, size: col.Size, scale: col.Scale);
-      }
-
-      await using var connection = new NpgsqlConnection(ConnectionString);
-
-      const string template = @"UPDATE public.task SET {0}, modified_on = now() WHERE task_id = @task_id";
-      
-      var sql = string.Format(template, string.Join(", ", lst));
-
-      await connection.ExecuteAsync(sql, p);
+      await UpdatePartial(template, UpdatePartialColumns, p, instructions);
     }
 
     public async Task Delete(int taskId)

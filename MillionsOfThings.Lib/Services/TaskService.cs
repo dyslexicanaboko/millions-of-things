@@ -9,7 +9,7 @@ using MillionsOfThings.Lib.Validation;
 namespace MillionsOfThings.Lib.Services
 {
   public class TaskService
-    : ITaskService
+    : BaseService, ITaskService
   {
     private readonly ITaskRepository _repository;
     private readonly ITaskValidation _validation;
@@ -77,37 +77,16 @@ namespace MillionsOfThings.Lib.Services
       //Perform validation before continuing
       Validations.IsValid(_validation, entity, nameof(entity));
 
-      var properties = entity.GetType().GetProperties();
-      var instructions = new List<UpdateInstruction>(patchDoc.Operations.Count);
-
-      foreach (var op in patchDoc.Operations)
+      var instructions = GetDifferences(db, entity, patchDoc, (lst, prop) =>
       {
-        //For each item in the operations list (which is what was explicitly provided)
-        //Match the incoming operation to the property of the entity in question
-        //Create an instruction set
-        var prop = properties.SingleOrDefault(x => string.Equals(x.Name, op.path.TrimStart('/'), StringComparison.OrdinalIgnoreCase));
-
-        //If there is no match then skip the property, but this would indicate that there is a problem with the patch document
-        //Maybe log this as a problem?
-        if (prop == null) continue;
-
-        //Get the value from the db entity
-        var incoming = prop.GetValue(entity);
-        var existing = prop.GetValue(db);
-
-        //If the incoming value is no different the db entity then skip making a change here
-        if (object.Equals(incoming, existing)) continue;
-
-        instructions.Add(new UpdateInstruction(prop.Name, incoming));
-
         if (prop.Name == nameof(TaskEntity.IsFinished))
         {
           //The user cannot set this value, it's dependent on the `IsFinished` property
-          object? finishedOn = (bool)incoming == true ? DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified) : null;
-
-          instructions.Add(new UpdateInstruction(nameof(TaskEntity.FinishedOn), finishedOn));
+          object? finishedOn = (bool)prop.GetValue(entity)! == true ? DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified) : null;
+          
+          lst.Add(new UpdateInstruction(nameof(TaskEntity.FinishedOn), finishedOn));
         }
-      }
+      });
 
       await _repository.Using(x => x.UpdatePartial(taskId, instructions));
     }

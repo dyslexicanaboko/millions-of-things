@@ -1,7 +1,9 @@
-﻿using System.Data;
-using Dapper;
-using Npgsql;
+﻿using Dapper;
+using MillionsOfThings.Lib.DataAccess.Utility;
 using MillionsOfThings.Lib.Services;
+using MillionsOfThings.Lib.Services.Utility;
+using Npgsql;
+using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
@@ -79,6 +81,34 @@ namespace MillionsOfThings.Lib.DataAccess
       }
 
       return dt.AsTableValuedParameter("dbo.IntegerList");
+    }
+
+    protected async Task UpdatePartial(
+      string updateTemplate,
+      List<ColumnSchema> updatePartialColumns,
+      DynamicParameters p, 
+      IList<UpdateInstruction> instructions)
+    {
+      if (!instructions.Any()) return;
+
+      var lst = new List<string>(instructions.Count);
+
+      foreach (var instr in instructions)
+      {
+        var col = updatePartialColumns.SingleOrDefault(x => x.Property == instr.Property);
+
+        if (col == null) throw new ArgumentException($"The property '{instr.Property}' is not valid for partial updates.", nameof(instructions));
+
+        lst.Add($"{col.Name} = @{col.Name}");
+
+        p.Add(name: col.Name, dbType: col.DbType, value: instr.Value, size: col.Size, scale: col.Scale);
+      }
+
+      await using var connection = new NpgsqlConnection(ConnectionString);
+
+      var sql = string.Format(updateTemplate, string.Join(", ", lst));
+
+      await connection.ExecuteAsync(sql, p);
     }
   }
 }
