@@ -58,6 +58,8 @@ namespace MillionsOfThings.Lib.Services
       if (await _repository.Using(x => x.Exists(entity.UserId, entity.Name)))
         throw new CategoryExistsAlreadyException(entity);
 
+      //Partial update not needed here because there's only one field
+      //that can be updated at the moment.
       await _repository.Using(x => x.Update(entity));
     }
 
