@@ -66,12 +66,13 @@ namespace MillionsOfThings.UnitTests.ValidationTests
     }
 
     [Test]
-    public void Validate_NullName_ReturnsFailure()
+    public void Validate_NameExceedsMaxLength_ReturnsFailure()
     {
+      var longName = new string('A', 21);
       var entity = new CategoryEntity
       {
         UserId = 1,
-        Name = null
+        Name = longName
       };
 
       var result = _validator.Validate(entity);

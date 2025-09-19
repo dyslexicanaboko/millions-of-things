@@ -29,6 +29,12 @@
       public const int OutOfBoundsEnumeration = 40011;
       
       public const int MappingDoesNotExist = 40012;
+     
+      public const int StringLength = 40013;
+
+      public const int EntityExistsAlready = 40014;
+
+      public const int MaxEntries = 40015;
     }
 
     //HTTP 401xx Unauthorized - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
@@ -64,11 +70,7 @@
     //HTTP 500xx Internal Server Error - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500
     public static class Errors
     {
-      public const int EntityExistsAlready = 50001;
-
-      public const int MaxEntries = 50002;
-
-      public const int CategoryExistsAlready = 50003;
+      //I don't have any of these yet
     }
   }
 }

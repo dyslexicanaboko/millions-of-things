@@ -20,6 +20,9 @@ namespace MillionsOfThings.Lib.Exceptions
     public static InvalidArgumentException Empty(string argument)
       => new(argument, "The provided argument cannot be empty.", BR.Empty);
 
+    public static InvalidArgumentException StringLength(string argument, int lower, int upper)
+      => new(argument, $"String length must be between {lower} and {upper}.", BR.StringLength);
+
     public static InvalidArgumentException OutOfBounds(string argument, int lower, int upper)
       => new(argument, $"The provided argument must be between {lower} and {upper} inclusive.", BR.OutOfBounds);
 

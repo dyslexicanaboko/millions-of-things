@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
+using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Exceptions;
+using static MillionsOfThings.Lib.Exceptions.InvalidArgument;
 
 namespace MillionsOfThings.Lib.Validation
 {
@@ -11,5 +13,16 @@ namespace MillionsOfThings.Lib.Validation
       =>
         rule.WithMessage(exception.Message)
           .WithErrorCode(exception.ErrorCode.ToString());
+
+    public static IRuleBuilderOptions<T, string> TestStringLength<T>(
+      this IRuleBuilderInitial<T, string> rule,
+      string argument,
+      int min,
+      int max)
+      =>
+        rule
+        .MinimumLength(min)
+        .MaximumLength(max)
+        .WithMessageAndErrorCode(StringLength(argument, min, max));
   }
 }

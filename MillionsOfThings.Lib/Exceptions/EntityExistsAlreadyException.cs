@@ -8,6 +8,6 @@
     {
     }
 
-    public override int ErrorCode { get; set; } = ErrorCodes.Errors.EntityExistsAlready;
+    public override int ErrorCode { get; set; } = ErrorCodes.BadRequest.EntityExistsAlready;
   }
 }

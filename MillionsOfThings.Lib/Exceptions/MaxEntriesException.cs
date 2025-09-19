@@ -8,7 +8,7 @@
     {
     }
 
-    public override int ErrorCode { get; set; } = ErrorCodes.Errors.MaxEntries;
+    public override int ErrorCode { get; set; } = ErrorCodes.BadRequest.MaxEntries;
 
     private static string GetMessage(string symbol, string subject, int max)
     {

@@ -21,6 +21,9 @@ namespace MillionsOfThings.Lib.Validation
       RuleFor(r => r.Name)
         .NotEmpty()
         .WithMessageAndErrorCode(Empty(nameof(CategoryEntity.Name)));
+
+      RuleFor(r => r.Name)
+        .TestStringLength(nameof(CategoryEntity.Name), 1, 20);
     }
   }
 }

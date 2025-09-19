@@ -51,7 +51,10 @@ namespace MillionsOfThings.Lib.Validation
 
       RuleFor(r => r.Description)
         .NotEmpty()
-        .WithMessageAndErrorCode(Empty(nameof(TaskEntity.TaskId)));
+        .WithMessageAndErrorCode(Empty(nameof(TaskEntity.Description)));
+
+      RuleFor(r => r.Description)
+        .TestStringLength(nameof(TaskEntity.Description), 1, 255);
     }
   }
 }

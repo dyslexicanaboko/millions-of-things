@@ -122,5 +122,19 @@ namespace MillionsOfThings.UnitTests.ValidationTests
 
       Assert.That(result.IsValid, Is.True);
     }
+
+    [Test]
+    public void Validate_DescriptionTooLong_ReturnsFailure()
+    {
+      var entity = new TaskEntity
+      {
+        UserId = 1,
+        CategoryId = 2,
+        Description = new string('a', 256) // 256 characters, exceeding the limit
+      };
+      var result = _validator.Validate(entity);
+      Assert.That(result.IsValid, Is.False);
+      Assert.That(result.Errors, Has.Some.Matches<ValidationFailure>(f => f.PropertyName == "Description"));
+    }
   }
 }
