@@ -1,7 +1,7 @@
 import { Client } from "pg";
 
 // Export a class
-export default class PgClient {
+export default class PostgresSqlClient {
   public constructor() {}
 
   private async getClient() {

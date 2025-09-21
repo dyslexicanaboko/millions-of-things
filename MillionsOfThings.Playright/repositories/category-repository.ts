@@ -1,6 +1,6 @@
-import PgClient from "./pg-client";
+import PostgresSqlClient from "./postgres-sql-client";
 
-export class CategoryRepository extends PgClient {
+export class CategoryRepository extends PostgresSqlClient {
   constructor() {
     super();
   }
