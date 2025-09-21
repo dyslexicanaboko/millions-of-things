@@ -10,8 +10,6 @@ namespace MillionsOfThings.Lib.Exceptions
     {
     }
 
-    public override int ErrorCode { get; set; } = ErrorCodes.BadRequest.EntityExistsAlready;
-
     private static string GetMessage(CategoryEntity category)
       => $"A category with name `{category.Name}` already exists for this user.";
   }

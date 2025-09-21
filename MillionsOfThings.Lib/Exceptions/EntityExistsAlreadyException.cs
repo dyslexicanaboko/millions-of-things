@@ -1,7 +1,7 @@
 ﻿namespace MillionsOfThings.Lib.Exceptions
 {
   public abstract class EntityExistsAlreadyException
-    : BaseException
+    : BadRequestException
   {
     protected EntityExistsAlreadyException(string message)
       : base(message)

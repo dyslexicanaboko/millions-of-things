@@ -5,10 +5,15 @@ namespace MillionsOfThings.Lib.Exceptions
   public class BadRequestException
     : BaseException
   {
-    private const string ErrorMessage = "One or more arguments are invalid.";
+    private const string DefaultErrorMessage = "One or more arguments are invalid.";
 
     public BadRequestException()
-      : base(ErrorMessage)
+      : base(DefaultErrorMessage)
+    {
+    }
+
+    public BadRequestException(string message)
+      : base(message)
     {
     }
 
