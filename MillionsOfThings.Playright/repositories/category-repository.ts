@@ -5,7 +5,7 @@ export class CategoryRepository extends PostgresSqlClient {
     super();
   }
 
-  public async deleteCategory(name: string, userId: number) {
+  public async delete(name: string, userId: number) {
     const query =
       "DELETE FROM public.category WHERE user_id = $1 AND name = $2";
     const params = [userId, name];

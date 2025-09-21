@@ -7,7 +7,7 @@ public interface ITaskRepository : IRepository
 {
   Task<IEnumerable<TaskEntity>> SelectAll(int userId);
 
-  Task<TaskEntity?> Select(int taskId);
+  Task<TaskEntity?> Select(int taskId, int userId);
 
   Task<IEnumerable<TaskEntity>> SelectAll();
 

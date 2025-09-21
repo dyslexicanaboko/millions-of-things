@@ -1,7 +1,7 @@
 import { ApiClient } from "./api-client";
 
 export class CategoryClient extends ApiClient {
-  private readonly Endpoint: string = "api/v1/category";
+  private readonly Endpoint: string = "api/v1/categories";
 
   constructor() {
     super();

@@ -46,24 +46,29 @@ namespace MillionsOfThings.Lib.DataAccess
 			return (await connection.QueryAsync<TaskEntity>(sql, new { UserId = userId })).ToList();
 		}
 
-    public async Task<TaskEntity?> Select(int taskId)
+    public async Task<TaskEntity?> Select(int taskId, int userId)
     {
-      const string sql = @"
-			SELECT
-	                task_id,
-                user_id,
-                category_id,
-                description,
-                is_finished,
-                finished_on,
-                created_on,
-                modified_on
-			FROM public.task
-			WHERE task_id = @task_id";
+      const string sql = """
+          SELECT
+            task_id,
+            user_id,
+            category_id,
+            description,
+            is_finished,
+            finished_on,
+            created_on,
+            modified_on
+          FROM public.task
+          WHERE task_id = @task_id 
+            AND user_id = @user_id
+        """;
 
       await using var connection = new NpgsqlConnection(ConnectionString);
 
-      var lst = (await connection.QueryAsync<TaskEntity>(sql, GetPrimaryKeyParameter(taskId))).ToList();
+      var p = GetPrimaryKeyParameter(taskId);
+      p.Add(name: "@user_id", dbType: DbType.Int32, value: userId);
+
+      var lst = (await connection.QueryAsync<TaskEntity>(sql, p)).ToList();
 
       return lst.SingleOrDefault();
     }
@@ -92,11 +97,13 @@ namespace MillionsOfThings.Lib.DataAccess
       const string sql = @"INSERT INTO public.task (
                 user_id,
                 category_id,
-                description
+                description,
+                created_on
 						) VALUES (
                 @user_id,
                 @category_id,
-                @description)	RETURNING task_id AS PK;";
+                @description,
+                @created_on)	RETURNING task_id AS PK;";
 
       await using var connection = new NpgsqlConnection(ConnectionString);
 
@@ -104,6 +111,7 @@ namespace MillionsOfThings.Lib.DataAccess
       p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
       p.Add(name: "@category_id", dbType: DbType.Int32, value: entity.CategoryId);
       p.Add(name: "@description", dbType: DbType.String, value: entity.Description, size: 255);
+      p.Add(name: "@created_on", dbType: DbType.DateTime2, value: entity.CreatedOn, scale: 0);
 
       return await connection.ExecuteScalarAsync<int>(sql, p);
     }

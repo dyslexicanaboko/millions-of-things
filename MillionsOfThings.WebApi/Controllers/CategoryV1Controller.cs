@@ -10,7 +10,7 @@ using E = MillionsOfThings.Lib.Exceptions;
 
 namespace MillionsOfThings.WebApi.Controllers
 {
-  [Route("api/v1/category")]
+  [Route("api/v1/categories")]
   [ApiController]
   public class CategoryV1Controller
     : AppBaseController
@@ -28,7 +28,7 @@ namespace MillionsOfThings.WebApi.Controllers
       _mapper = mapper;
     }
 
-    // GET api/v1/category/5
+    // GET api/v1/categories/5
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICategory))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -41,7 +41,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return Ok(_mapper.ToModel(entity));
     }
 
-    // GET api/v1/category
+    // GET api/v1/categories
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ICategory))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -52,7 +52,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return Ok(_mapper.ToModel(lst));
     }
 
-    // POST api/v1/category
+    // POST api/v1/categories
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ICategory))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -71,7 +71,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return CreatedAtAction(nameof(Get), new { id = m!.CategoryId }, m);
     }
 
-    // PATCH api/v1/category/5
+    // PATCH api/v1/categories/5
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -94,7 +94,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return NoContent();
     }
 
-    // DELETE api/v1/category/5
+    // DELETE api/v1/categories/5
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Delete(int id)

@@ -9,7 +9,7 @@ using MillionsOfThings.Lib.Validation;
 
 namespace MillionsOfThings.WebApi.Controllers
 {
-  [Route("api/v1/task")]
+  [Route("api/v1/tasks")]
   [ApiController]
   public class TaskV1Controller
       : AppBaseController
@@ -27,21 +27,21 @@ namespace MillionsOfThings.WebApi.Controllers
       _mapper = mapper;
     }
 
-    // GET api/v1/task/5
+    // GET api/v1/tasks/5
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<ITask>> Get(int id)
     {
       //TODO: Need to verify that the user has access to the requested resource
-      var entity = await _service.Get(id); //TODO: UserId needs to be passed
+      var entity = await _service.Get(id, UserId); //TODO: UserId needs to be passed
 
       if (entity == null) throw Lib.Exceptions.NotFound.Task(id);
 
       return Ok(_mapper.ToModel(entity));
     }
 
-    // GET api/v1/task
+    // GET api/v1/tasks
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -52,7 +52,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return Ok(_mapper.ToModel(entity));
     }
 
-    // POST api/v1/task
+    // POST api/v1/tasks
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -71,7 +71,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return CreatedAtAction(nameof(Get), new { id = m!.TaskId }, m);
     }
 
-    // PATCH api/v1/task/5
+    // PATCH api/v1/tasks/5
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -85,7 +85,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return NoContent();
     }
 
-    // DELETE api/v1/task/5
+    // DELETE api/v1/tasks/5
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Delete(int id)

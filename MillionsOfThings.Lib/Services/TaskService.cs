@@ -25,11 +25,11 @@ namespace MillionsOfThings.Lib.Services
       _mapper = mapper;
     }
 
-    public async Task<TaskEntity?> Get(int taskId)
+    public async Task<TaskEntity?> Get(int taskId, int userId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      var dbEntity = await _repository.Using(x => x.Select(taskId));
+      var dbEntity = await _repository.Using(x => x.Select(taskId, userId));
 
       return dbEntity;
     }
@@ -50,6 +50,8 @@ namespace MillionsOfThings.Lib.Services
     {
       Validations.IsValid(_validation, entity, nameof(entity));
 
+      entity.CreatedOn = StandardValues.GetUtcNow();
+
       entity.TaskId = await _repository.Using(x => x.Insert(entity));
 
       return entity;
@@ -58,7 +60,7 @@ namespace MillionsOfThings.Lib.Services
     public async Task EditPartial(int userId, int taskId, JsonPatchDocument<TaskV1PatchModel> patchDoc)
     {
       //Get the existing object from the DB
-      var db = await Get(taskId);
+      var db = await Get(taskId, userId);
 
       if (db == null) throw Exceptions.NotFound.Task(taskId);
 
@@ -82,7 +84,7 @@ namespace MillionsOfThings.Lib.Services
         if (prop.Name == nameof(TaskEntity.IsFinished))
         {
           //The user cannot set this value, it's dependent on the `IsFinished` property
-          object? finishedOn = (bool)prop.GetValue(entity)! == true ? DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Unspecified) : null;
+          object? finishedOn = (bool)prop.GetValue(entity)! == true ? StandardValues.GetUtcNow() : null;
           
           lst.Add(new UpdateInstruction(nameof(TaskEntity.FinishedOn), finishedOn));
         }

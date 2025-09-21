@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.Services;
 
 public interface ITaskService
 {
-  Task<TaskEntity?> Get(int taskId);
+  Task<TaskEntity?> Get(int taskId, int userId);
 
   Task<IList<TaskEntity>> GetAll(int userId);
 
