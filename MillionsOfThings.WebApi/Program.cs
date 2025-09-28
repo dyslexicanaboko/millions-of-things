@@ -1,4 +1,7 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace MillionsOfThings.WebApi;
 
@@ -14,7 +17,29 @@ public class Program
     // Add services to the container.
     ContainerConfig.Configure(builder.Host);
 
-    //JWT Authentication should go here
+    /* JWT Authentication should go here
+     * 
+     * NuGet: Microsoft.AspNetCore.Authentication.JwtBearer
+     * Add using clauses:
+     *  using Microsoft.AspNetCore.Authentication.JwtBearer;
+     *  using Microsoft.IdentityModel.Tokens;
+     *  using System.Text;
+     */
+    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+              Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+      };
+    });
 
     //https://stackoverflow.com/questions/70554844/asp-net-core-6-web-api-making-fields-required
     //The controller was making non-nullable properties required without my permission
@@ -34,7 +59,7 @@ public class Program
 
     var app = builder.Build();
 
-    app.Logger.LogInformation("InStock API is running");
+    app.Logger.LogInformation("Millions of things API is running");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

@@ -16,5 +16,7 @@ namespace MillionsOfThings.Lib.Services
 
       return connectionString!;
     }
+
+    public string JwtIssuerSigningKey => _configuration.GetValue<string>("JwtIssuerSigningKey");
   }
 }

@@ -5,7 +5,9 @@
 CREATE TABLE IF NOT EXISTS public.user
 (
     user_id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+    is_allowed boolean NOT NULL,
     username character varying(20) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(100) COLLATE pg_catalog."default" NOT NULL,
     created_on timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
     modified_on timestamp(0) without time zone,
     CONSTRAINT user_pkey PRIMARY KEY (user_id)

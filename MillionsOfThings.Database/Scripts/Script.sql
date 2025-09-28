@@ -1,5 +1,6 @@
 select * from public.category
 select * from public.task
+select * from public.user
 select * from "public"."category"
 select * from millions_of_things.public.category
 select * from "millions_of_things"."public"."category"
