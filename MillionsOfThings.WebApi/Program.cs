@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -28,6 +29,11 @@ public class Program
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+      // For development purposes only. In production this should be true.
+      options.RequireHttpsMetadata = false;
+
+      options.SaveToken = true;
+
       options.TokenValidationParameters = new TokenValidationParameters
       {
         ValidateIssuer = true,
@@ -39,6 +45,9 @@ public class Program
         IssuerSigningKey = new SymmetricSecurityKey(
               Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
       };
+
+      //Only for debugging purposes when the JWT authentication is not working
+      if (builder.Environment.IsDevelopment()) DebugJwt(options);
     });
 
     //https://stackoverflow.com/questions/70554844/asp-net-core-6-web-api-making-fields-required
@@ -56,6 +65,37 @@ public class Program
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
+    builder.Services.AddSwaggerGen(c =>
+    {
+      c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
+
+      // Add JWT Bearer definition
+      c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+      {
+        Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer"
+      });
+
+      // Apply to all operations
+      c.AddSecurityRequirement(new OpenApiSecurityRequirement
+      {
+        {
+          new OpenApiSecurityScheme
+          {
+              Reference = new OpenApiReference
+              {
+                  Type = ReferenceType.SecurityScheme,
+                  Id = "Bearer"
+              }
+          },
+          Array.Empty<string>()
+        }
+      });
+    });
 
     var app = builder.Build();
 
@@ -95,5 +135,21 @@ public class Program
         policy.AllowAnyHeader();
         policy.AllowAnyMethod();
       });
+  }
+
+  private static void DebugJwt(JwtBearerOptions options)
+  {
+    options.Events = new JwtBearerEvents
+    {
+      OnAuthenticationFailed = context =>
+      {
+        var logger = context.HttpContext.RequestServices
+                    .GetRequiredService<ILogger<JwtBearerEvents>>();
+
+        logger.LogError(context.Exception, "Authentication failed.");
+
+        return Task.CompletedTask;
+      }
+    };
   }
 }

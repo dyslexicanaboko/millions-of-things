@@ -10,9 +10,8 @@ using MillionsOfThings.Lib.Validation;
 namespace MillionsOfThings.WebApi.Controllers
 {
   [Route("api/v1/tasks")]
-  [ApiController]
   public class TaskV1Controller
-      : AppBaseController
+    : BaseApiSecureController
   {
     private readonly ITaskMapper _mapper;
 

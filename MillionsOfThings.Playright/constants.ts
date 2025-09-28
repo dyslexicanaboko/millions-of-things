@@ -1,0 +1,9 @@
+export const MaxRefreshAttempts = 5;
+export const KeyToken = "token";
+export const KeyTokenExpiration = "token-expiration";
+export const KeyRefreshToken = "refresh-token";
+export const KeyUserId = "user-id";
+export const EmptyToken = "";
+export const DefaultTestUsername = "Default-test-User";
+export const DefaultTestPassword = "emmC2YNvh%9LtNMHWo#T";
+export const BaseUrl = "https://localhost:44395";

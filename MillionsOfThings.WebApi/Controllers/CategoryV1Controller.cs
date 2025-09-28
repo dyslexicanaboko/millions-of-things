@@ -11,9 +11,8 @@ using E = MillionsOfThings.Lib.Exceptions;
 namespace MillionsOfThings.WebApi.Controllers
 {
   [Route("api/v1/categories")]
-  [ApiController]
   public class CategoryV1Controller
-    : AppBaseController
+    : BaseApiSecureController
   {
     private readonly ICategoryMapper _mapper;
 

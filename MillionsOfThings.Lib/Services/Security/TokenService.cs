@@ -43,14 +43,14 @@ namespace MillionsOfThings.Lib.Services.Security
       _authenticationService = authenticationService;
     }
 
-    public async Task<string> GetToken(AuthenticationV1PostModel model, string ipAddress)
+    public async Task<JwtTokenV1Model> GetToken(AuthenticationV1PostModel model, string ipAddress)
     {
       var user = await _authenticationService.Authenticate(model.Username, model.Password);
 
       return await GetToken(user, ipAddress);
     }
 
-    public async Task<string> GetToken(RefreshTokenV1PostModel model, string ipAddress)
+    public async Task<JwtTokenV1Model> GetToken(RefreshTokenV1PostModel model, string ipAddress)
     {
       //Hit the DB one time - lookup user by refresh-token
       var refreshToken = await _refreshTokenRepository.Select(model.Token);
@@ -81,9 +81,13 @@ namespace MillionsOfThings.Lib.Services.Security
       return token;
     }
 
-    private async Task<string> GetToken(UserEntity user, string ipAddress)
+    //NOTE: You have to make sure that every part of the JWT adheres to the standard
+    // Otherwise you can get an error like this: `IDX14101: Unable to decode the payload as Base64Url encoded string.`
+    // And authentication will fail. In my case `iat` was being sent as a date instead of a long integer.
+    private async Task<JwtTokenV1Model> GetToken(UserEntity user, string ipAddress)
     {
       var utcNow = _dateTimeService.UtcNow;
+      var offSet = new DateTimeOffset(utcNow);
 
       var refreshToken = await GenerateRefreshToken(user.UserId, utcNow, ipAddress);
 
@@ -94,7 +98,7 @@ namespace MillionsOfThings.Lib.Services.Security
       {
         new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(JwtRegisteredClaimNames.Iat, utcNow.ToString()),
+        new Claim(JwtRegisteredClaimNames.Iat, offSet.ToUnixTimeSeconds().ToString()),
         new Claim(Constants.RefreshToken, refreshToken.Token),
         new Claim(Constants.ClaimsUserId, user.UserId.ToString()),
         new Claim(Constants.Name, "TODO: Name is not implemented yet"),
@@ -116,7 +120,7 @@ namespace MillionsOfThings.Lib.Services.Security
       //Only record the new refresh token after we have a successful generation
       await _refreshTokenRepository.Insert(refreshToken);
 
-      return jwt;
+      return new JwtTokenV1Model(jwt, Convert.ToInt32((token.ValidTo - utcNow).TotalSeconds));
     }
 
     //https://github.com/cornflourblue/dotnet-6-jwt-refresh-tokens-api

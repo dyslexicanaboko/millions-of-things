@@ -5,7 +5,7 @@ using MillionsOfThings.Lib.Validation;
 
 namespace MillionsOfThings.WebApi.Controllers.Security
 {
-  [Route("token")]
+  [Route("api/token")]
   [ApiController]
   public class TokenController : Controller
   {

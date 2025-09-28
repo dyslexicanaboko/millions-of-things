@@ -1,5 +1,10 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
-
+import {
+  EmptyToken,
+  BaseUrl,
+  DefaultTestUsername,
+  DefaultTestPassword,
+} from "../constants";
 /**
  * Base API client with common functionality for all API clients.
  * Uses Playwright's APIRequestContext to manage requests.
@@ -8,8 +13,7 @@ import { APIRequestContext, request, APIResponse } from "@playwright/test";
  */
 export class ApiClient {
   //  /api/v1/category
-  private readonly Host: string = "https://localhost:44395";
-  private context: APIRequestContext;
+  private context: APIRequestContext | undefined;
 
   constructor() {}
 
@@ -23,13 +27,53 @@ export class ApiClient {
       return;
     }
 
+    const token = await this.fetchToken();
+
+    if (token === EmptyToken) {
+      throw new Error("Failed to get auth token!");
+    }
+
     this.context = await request.newContext({
       extraHTTPHeaders: {
-        // Add authentication headers if needed, e.g. Authorization: 'Bearer ...'
-        "x-user-id": "1", // Example: adjust to your API's auth scheme
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       ignoreHTTPSErrors: true, // Ignore HTTPS errors for localhost
     });
+  }
+
+  //To make the compiler shut up
+  private getContext(): APIRequestContext {
+    return this.context!;
+  }
+
+  //TODO: Need to be able to get tokens for different test users
+  private async fetchToken(): Promise<string> {
+    //This is a local context just for getting the token
+    const context = await request.newContext({
+      extraHTTPHeaders: {
+        "Content-Type": "application/json",
+      },
+      ignoreHTTPSErrors: true, // Ignore HTTPS errors for localhost
+    });
+
+    var raw = JSON.stringify({
+      username: DefaultTestUsername,
+      password: DefaultTestPassword,
+    });
+
+    const response = await context.post(this.buildUrl("api/token"), {
+      data: raw,
+    });
+
+    if (!response.ok()) {
+      console.log(response);
+
+      return EmptyToken;
+    }
+
+    //Just returning the JWT and nothing else.
+    return response.json().then((data) => data.access_token as string);
   }
 
   /**
@@ -42,7 +86,7 @@ export class ApiClient {
     if (endpoint.startsWith("/")) {
       throw new Error("Don't start your endpoint with a forward slash.");
     }
-    return `${this.Host}/${endpoint}`;
+    return `${BaseUrl}/${endpoint}`;
   }
 
   async get(
@@ -55,13 +99,13 @@ export class ApiClient {
 
     await this.initializeContext();
 
-    return await this.context.get(this.buildUrl(path));
+    return await this.getContext().get(this.buildUrl(path));
   }
 
   async post(endpoint: string, data?: any): Promise<APIResponse> {
     await this.initializeContext();
 
-    return await this.context.post(this.buildUrl(endpoint), {
+    return await this.getContext().post(this.buildUrl(endpoint), {
       data,
     });
   }
@@ -69,7 +113,7 @@ export class ApiClient {
   async put(endpoint: string, data?: any): Promise<APIResponse> {
     await this.initializeContext();
 
-    return await this.context.put(this.buildUrl(endpoint), {
+    return await this.getContext().put(this.buildUrl(endpoint), {
       data,
     });
   }
@@ -77,7 +121,7 @@ export class ApiClient {
   async delete(endpoint: string): Promise<APIResponse> {
     await this.initializeContext();
 
-    return await this.context.delete(this.buildUrl(endpoint));
+    return await this.getContext().delete(this.buildUrl(endpoint));
   }
 
   async dispose() {

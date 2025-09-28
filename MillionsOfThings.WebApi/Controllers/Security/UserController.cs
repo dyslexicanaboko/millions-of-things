@@ -8,7 +8,6 @@ using System.Collections.Generic;
 namespace MillionsOfThings.WebApi.Controllers.Security
 {
   [Route("api/v1/users")]
-  [ApiController]
   public class UserController
     : BaseApiSecureController
   {
