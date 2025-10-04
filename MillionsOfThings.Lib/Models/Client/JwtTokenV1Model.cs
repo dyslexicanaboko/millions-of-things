@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace MillionsOfThings.Lib.Models.Client
 {
@@ -15,13 +10,10 @@ namespace MillionsOfThings.Lib.Models.Client
       ExpiresIn = expiresIn;
     }
 
-    [JsonProperty("access_token")]
-    public string AccessToken { get; set; }
+    [JsonProperty("access_token")] public string AccessToken { get; set; }
 
-    [JsonProperty("expires_in")]
-    public int ExpiresIn { get; set; }
+    [JsonProperty("expires_in")] public int ExpiresIn { get; set; }
 
-    [JsonProperty("token_type")]
-    public string TokenType { get; set; } = "Bearer";
+    [JsonProperty("token_type")] public string TokenType { get; set; } = "Bearer";
   }
 }

@@ -13,4 +13,18 @@ export class TaskClient extends ApiClient {
       categoryId: categoryId,
     });
   }
+
+  //TODO: Need a patch doc
+  async update(
+    taskId: number,
+    categoryId?: number,
+    description?: string,
+    isFinished?: boolean
+  ) {
+    return this.patch(this.Endpoint + `/${taskId}`, {
+      description: description,
+      categoryId: categoryId,
+      isFinished: isFinished,
+    });
+  }
 }

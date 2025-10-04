@@ -11,15 +11,12 @@ namespace MillionsOfThings.WebApi.Controllers.Security
   {
     private readonly ITokenService _service;
 
-    public TokenController(ITokenService service)
-    {
-      _service = service;
-    }
+    public TokenController(ITokenService service) => _service = service;
 
     [HttpPost]
     public async Task<IActionResult> Post(AuthenticationV1PostModel? model)
     {
-      if (model is not { Username: { }, Password: { } }) throw Validations.IsMalformedModel();
+      if (model == null) throw Validations.IsMalformedModel();
 
       var token = await _service.GetToken(model, GetIpAddress());
 
@@ -29,7 +26,7 @@ namespace MillionsOfThings.WebApi.Controllers.Security
     [HttpPost("refresh")]
     public async Task<IActionResult> Post(RefreshTokenV1PostModel? model)
     {
-      if (model is not { Token: { } }) throw Validations.IsMalformedModel();
+      if (model == null) throw Validations.IsMalformedModel();
 
       var token = await _service.GetToken(model, GetIpAddress());
 
@@ -38,7 +35,7 @@ namespace MillionsOfThings.WebApi.Controllers.Security
 
     private string GetIpAddress()
     {
-      if (Request.Headers.ContainsKey("X-Forwarded-For")) 
+      if (Request.Headers.ContainsKey("X-Forwarded-For"))
         return Convert.ToString(Request.Headers["X-Forwarded-For"]);
 
       var ip = HttpContext.Connection.RemoteIpAddress;

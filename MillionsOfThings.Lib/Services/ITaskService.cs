@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.Services;
 
 public interface ITaskService
 {
-  Task<TaskEntity?> Get(int taskId, int userId);
+  Task<TaskEntity?> Get(int userId, int taskId);
 
   Task<IList<TaskEntity>> GetAll(int userId);
 
@@ -16,5 +16,5 @@ public interface ITaskService
 
   Task EditPartial(int userId, int taskId, JsonPatchDocument<TaskV1PatchModel> patchDoc);
 
-  Task Remove(int taskId);
+  Task Remove(int userId, int taskId);
 }

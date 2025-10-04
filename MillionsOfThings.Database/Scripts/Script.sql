@@ -6,7 +6,7 @@ select * from millions_of_things.public.category
 select * from "millions_of_things"."public"."category"
 select now()
 select * from public.task t 
-
+select * from public.refresh_token
 
 SELECT
     Task_id,

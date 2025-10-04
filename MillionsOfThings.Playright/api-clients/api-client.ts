@@ -118,6 +118,15 @@ export class ApiClient {
     });
   }
 
+  //TODO: Need to finish abstracting this with a standard model for patch data
+  async patch(endpoint: string, data?: any): Promise<APIResponse> {
+    await this.initializeContext();
+
+    return await this.getContext().patch(this.buildUrl(endpoint), {
+      data,
+    });
+  }
+
   async delete(endpoint: string): Promise<APIResponse> {
     await this.initializeContext();
 

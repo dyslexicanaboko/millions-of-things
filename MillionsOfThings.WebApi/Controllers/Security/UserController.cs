@@ -3,7 +3,6 @@ using MillionsOfThings.Lib.Mappers;
 using MillionsOfThings.Lib.Models;
 using MillionsOfThings.Lib.Models.Client;
 using MillionsOfThings.Lib.Services.Security;
-using System.Collections.Generic;
 
 namespace MillionsOfThings.WebApi.Controllers.Security
 {

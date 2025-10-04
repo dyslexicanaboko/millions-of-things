@@ -15,7 +15,7 @@ public interface ITaskRepository : IRepository
 
   Task Update(TaskEntity entity);
 
-  Task UpdatePartial(int taskId, IList<UpdateInstruction> instructions);
+  Task UpdatePartial(int userId, int taskId, IList<UpdateInstruction> instructions);
 
-  Task Delete(int taskId);
+  Task Delete(int userId, int taskId);
 }

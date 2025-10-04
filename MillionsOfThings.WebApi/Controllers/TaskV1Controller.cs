@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Mappers;
-using MillionsOfThings.Lib.Models;
 using MillionsOfThings.Lib.Models.Client;
 using MillionsOfThings.Lib.Services;
 using MillionsOfThings.Lib.Validation;
@@ -18,8 +17,8 @@ namespace MillionsOfThings.WebApi.Controllers
     private readonly ITaskService _service;
 
     public TaskV1Controller(
-        ITaskService service,
-        ITaskMapper mapper)
+      ITaskService service,
+      ITaskMapper mapper)
     {
       _service = service;
 
@@ -32,8 +31,8 @@ namespace MillionsOfThings.WebApi.Controllers
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<ITask>> Get(int id)
     {
-      //TODO: Need to verify that the user has access to the requested resource
-      var entity = await _service.Get(id, UserId); //TODO: UserId needs to be passed
+      //Null will be returned if the user does not have access to the resource
+      var entity = await _service.Get(UserId, id);
 
       if (entity == null) throw Lib.Exceptions.NotFound.Task(id);
 
@@ -41,7 +40,7 @@ namespace MillionsOfThings.WebApi.Controllers
     }
 
     // GET api/v1/tasks
-    [HttpGet()]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<List<ITask>>> GetAll()
@@ -67,7 +66,7 @@ namespace MillionsOfThings.WebApi.Controllers
 
       var m = _mapper.ToModel(result);
 
-      return CreatedAtAction(nameof(Get), new { id = m!.TaskId }, m);
+      return CreatedAtAction(nameof(Get), new { id = m.TaskId }, m);
     }
 
     // PATCH api/v1/tasks/5
@@ -89,7 +88,7 @@ namespace MillionsOfThings.WebApi.Controllers
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<ActionResult> Delete(int id)
     {
-      await _service.Remove(id);
+      await _service.Remove(UserId, id);
 
       return NoContent();
     }

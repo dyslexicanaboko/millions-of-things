@@ -25,13 +25,11 @@ namespace MillionsOfThings.Lib.Services
       _mapper = mapper;
     }
 
-    public async Task<TaskEntity?> Get(int taskId, int userId)
+    public async Task<TaskEntity?> Get(int userId, int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      var dbEntity = await _repository.Using(x => x.Select(taskId, userId));
-
-      return dbEntity;
+      return await _repository.Using(x => x.Select(taskId, userId));
     }
 
     public async Task<IList<TaskEntity>> GetAll(int userId)
@@ -60,8 +58,9 @@ namespace MillionsOfThings.Lib.Services
     public async Task EditPartial(int userId, int taskId, JsonPatchDocument<TaskV1PatchModel> patchDoc)
     {
       //Get the existing object from the DB
-      var db = await Get(taskId, userId);
+      var db = await Get(userId, taskId);
 
+      //Either it doesn't exist or the user does not have access
       if (db == null) throw Exceptions.NotFound.Task(taskId);
 
       //Can only edit this task if it belongs to the requesting user
@@ -90,7 +89,7 @@ namespace MillionsOfThings.Lib.Services
         }
       });
 
-      await _repository.Using(x => x.UpdatePartial(taskId, instructions));
+      await _repository.Using(x => x.UpdatePartial(userId, taskId, instructions));
     }
 
     public async Task Edit(TaskEntity entity)
@@ -100,11 +99,11 @@ namespace MillionsOfThings.Lib.Services
       await _repository.Using(x => x.Update(entity));
     }
 
-    public async Task Remove(int taskId)
+    public async Task Remove(int userId, int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      await _repository.Using(x => x.Delete(taskId));
+      await _repository.Using(x => x.Delete(userId, taskId));
     }
   }
 }
