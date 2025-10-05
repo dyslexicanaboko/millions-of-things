@@ -1,4 +1,5 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
+import { PatchDoc } from "./patch-doc";
 import {
   EmptyToken,
   BaseUrl,
@@ -89,7 +90,7 @@ export class ApiClient {
     return `${BaseUrl}/${endpoint}`;
   }
 
-  async get(
+  protected async get(
     endpoint: string,
     params?: Record<string, any>
   ): Promise<APIResponse> {
@@ -102,7 +103,7 @@ export class ApiClient {
     return await this.getContext().get(this.buildUrl(path));
   }
 
-  async post(endpoint: string, data?: any): Promise<APIResponse> {
+  protected async post(endpoint: string, data?: any): Promise<APIResponse> {
     await this.initializeContext();
 
     return await this.getContext().post(this.buildUrl(endpoint), {
@@ -110,7 +111,7 @@ export class ApiClient {
     });
   }
 
-  async put(endpoint: string, data?: any): Promise<APIResponse> {
+  protected async put(endpoint: string, data?: any): Promise<APIResponse> {
     await this.initializeContext();
 
     return await this.getContext().put(this.buildUrl(endpoint), {
@@ -118,16 +119,18 @@ export class ApiClient {
     });
   }
 
-  //TODO: Need to finish abstracting this with a standard model for patch data
-  async patch(endpoint: string, data?: any): Promise<APIResponse> {
+  protected async patch(
+    endpoint: string,
+    operations?: PatchDoc[]
+  ): Promise<APIResponse> {
     await this.initializeContext();
 
     return await this.getContext().patch(this.buildUrl(endpoint), {
-      data,
+      data: operations,
     });
   }
 
-  async delete(endpoint: string): Promise<APIResponse> {
+  protected async delete(endpoint: string): Promise<APIResponse> {
     await this.initializeContext();
 
     return await this.getContext().delete(this.buildUrl(endpoint));

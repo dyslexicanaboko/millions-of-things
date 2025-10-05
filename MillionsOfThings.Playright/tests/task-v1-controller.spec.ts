@@ -8,12 +8,14 @@ import {
   DefaultDateTime,
 } from "./common-test-values";
 
-test.describe("TaskV1Controller", () => {
-  test.afterAll(async () => {
-    const repo = new TaskRepository();
-    await repo.delete(SomeTask, SomeUserId);
-  });
+test.afterAll(async () => {
+  const repo = new TaskRepository();
+  await repo.delete(SomeTask, SomeUserId);
 
+  console.log("Tasks deleted");
+});
+
+test.describe("TaskV1Controller", () => {
   test("Creating a task should have expected default audit values.", async () => {
     const client = new TaskClient();
 
@@ -22,6 +24,8 @@ test.describe("TaskV1Controller", () => {
     expect(response.status()).toBe(201);
 
     const responseBody = await response.json();
+
+    console.log(responseBody.taskId);
 
     expect(responseBody).toHaveProperty("isFinished", false);
     expect(responseBody).toHaveProperty("finishedOn", null);
@@ -33,5 +37,39 @@ test.describe("TaskV1Controller", () => {
     expect(responseBody).toHaveProperty("userId", 1);
 
     await client.dispose();
+    console.log("Test completed");
+  });
+
+  test("Updating a task's isFinished property should populate finishedOn and modifiedOn.", async () => {
+    const client = new TaskClient();
+
+    // Create the task
+    const createResponse = await client.add(SomeTask, SomeCategoryId);
+    expect(createResponse.status()).toBe(201);
+    const createdTask = await createResponse.json();
+    const taskId = createdTask.taskId;
+
+    console.log(taskId);
+
+    // Perform partial patch: update isFinished to true
+    const updateResponse = await client.update(
+      taskId,
+      undefined,
+      undefined,
+      true
+    );
+    expect(updateResponse.status()).toBe(204);
+
+    // Retrieve the updated task
+    const getResponse = await client.read(taskId);
+    const updatedTask = await getResponse.json();
+
+    // Assert finishedOn and modifiedOn are populated (not null)
+    expect(updatedTask.isFinished).toBe(true);
+    expect(updatedTask.finishedOn).not.toBeNull();
+    expect(updatedTask.modifiedOn).not.toBeNull();
+
+    await client.dispose();
+    console.log("Test completed");
   });
 });
