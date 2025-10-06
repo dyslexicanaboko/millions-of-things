@@ -399,4 +399,4 @@ FodyWeavers.xsd
 
 # Custom adds
 *.bak
-*.json.bak
+/MillionsOfThings.Database/.dbeaver/.project-metadata.json.bak
