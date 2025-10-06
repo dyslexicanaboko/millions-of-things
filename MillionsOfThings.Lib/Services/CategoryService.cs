@@ -20,11 +20,11 @@ namespace MillionsOfThings.Lib.Services
       _validation = validation;
     }
 
-    public async Task<CategoryEntity?> Get(int categoryId)
+    public async Task<CategoryEntity?> Get(int userId, int categoryId)
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      var dbEntity = await _repository.Using(x => x.Select(categoryId));
+      var dbEntity = await _repository.Using(x => x.Select(userId, categoryId));
 
       return dbEntity;
     }
@@ -63,11 +63,11 @@ namespace MillionsOfThings.Lib.Services
       await _repository.Using(x => x.Update(entity));
     }
 
-    public async Task Remove(int categoryId)
+    public async Task Remove(int userId, int categoryId)
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      await _repository.Using(x => x.Delete(categoryId));
+      await _repository.Using(x => x.Delete(userId, categoryId));
     }
   }
 }

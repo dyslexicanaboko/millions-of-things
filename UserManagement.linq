@@ -17,12 +17,18 @@
 
 void Main()
 {
-	var pw = HashPassword("emmC2YNvh%9LtNMHWo#T");
-
-	$"update public.user set password = '{pw}' where user_id = 1".Dump();
+	//These are intended for testing, hence why they are in plain text
+	GetUpdatePasswordStatement(1, "emmC2YNvh%9LtNMHWo#T").Dump();
+	GetUpdatePasswordStatement(2, "6Uh@16n%jLZKOXZO").Dump();
 }
 
-// You can define other methods, fields, classes and namespaces here
+public static string GetUpdatePasswordStatement(int userId, string plainTextPassword)
+{
+	var pw = HashPassword(plainTextPassword);
+
+	return $"update public.user set password = '{pw}' where user_id = {userId}";
+}
+
 private static string HashPassword(string plainTextPassword)
 {
 	var salt = BCrypt.Net.BCrypt.GenerateSalt(12);

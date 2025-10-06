@@ -1,11 +1,10 @@
 using MillionsOfThings.Lib.Entities;
-using Npgsql;
 
 namespace MillionsOfThings.Lib.DataAccess;
 
-public interface ICategoryRepository : IRepository<CategoryEntity>
+public interface ICategoryRepository : IRepository
 {
-  Task<CategoryEntity?> Select(int categoryId);
+  Task<CategoryEntity?> Select(int userId, int categoryId);
 
   Task<IEnumerable<CategoryEntity>> SelectAll(int userId);
 
@@ -13,13 +12,9 @@ public interface ICategoryRepository : IRepository<CategoryEntity>
 
   Task Update(CategoryEntity entity);
 
-  Task Delete(int categoryId);
+  Task Delete(int userId, int categoryId);
 
   Task<bool> Exists(int userId, int categoryId);
   
   Task<bool> Exists(int userId, string name);
-
-  void Dispose();
-
-  void SetTransaction(NpgsqlTransaction transaction);
 }

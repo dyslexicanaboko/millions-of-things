@@ -4,13 +4,13 @@ import { TaskRepository } from "../repositories/task-repository";
 import {
   SomeTask,
   SomeCategoryId,
-  SomeUserId,
+  DefaultUserId1,
   DefaultDateTime,
 } from "./common-test-values";
 
 test.afterAll(async () => {
   const repo = new TaskRepository();
-  await repo.delete(SomeTask, SomeUserId);
+  await repo.delete(SomeTask, DefaultUserId1);
 
   console.log("Tasks deleted");
 });

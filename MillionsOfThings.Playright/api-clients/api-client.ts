@@ -1,11 +1,7 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
 import { PatchDoc } from "./patch-doc";
-import {
-  EmptyToken,
-  BaseUrl,
-  DefaultTestUsername,
-  DefaultTestPassword,
-} from "../constants";
+import { EmptyToken, BaseUrl, DefaultUser1, OtherUser2 } from "../constants";
+import { Credentials } from "../credentials";
 /**
  * Base API client with common functionality for all API clients.
  * Uses Playwright's APIRequestContext to manage requests.
@@ -15,8 +11,20 @@ import {
 export class ApiClient {
   //  /api/v1/category
   private context: APIRequestContext | undefined;
+  private currentUser: Credentials = DefaultUser1;
 
   constructor() {}
+
+  /**
+   * Switch the current user to the other set of credentials.
+   */
+  public changeToOtherUser() {
+    if (this.context !== undefined) {
+      throw new Error("You cannot change users after making a request.");
+    }
+
+    this.currentUser = OtherUser2;
+  }
 
   /**
    * Initialize the request context one time for the whole session.
@@ -28,7 +36,7 @@ export class ApiClient {
       return;
     }
 
-    const token = await this.fetchToken();
+    const token = await this.fetchToken(this.currentUser);
 
     if (token === EmptyToken) {
       throw new Error("Failed to get auth token!");
@@ -48,8 +56,7 @@ export class ApiClient {
     return this.context!;
   }
 
-  //TODO: Need to be able to get tokens for different test users
-  private async fetchToken(): Promise<string> {
+  private async fetchToken(credentials: Credentials): Promise<string> {
     //This is a local context just for getting the token
     const context = await request.newContext({
       extraHTTPHeaders: {
@@ -59,8 +66,8 @@ export class ApiClient {
     });
 
     var raw = JSON.stringify({
-      username: DefaultTestUsername,
-      password: DefaultTestPassword,
+      username: credentials.Username,
+      password: credentials.Password,
     });
 
     const response = await context.post(this.buildUrl("api/token"), {

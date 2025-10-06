@@ -19,7 +19,7 @@ export class TaskClient extends ApiClient {
     });
   }
 
-  async update(
+  async edit(
     taskId: number,
     categoryId?: number,
     description?: string,

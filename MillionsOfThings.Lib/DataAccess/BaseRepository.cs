@@ -110,5 +110,12 @@ namespace MillionsOfThings.Lib.DataAccess
 
       await connection.ExecuteAsync(sql, p);
     }
+
+    protected static DynamicParameters AddUserIdParameter(DynamicParameters p, int userId)
+    {
+      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+      
+      return p;
+    }
   }
 }
