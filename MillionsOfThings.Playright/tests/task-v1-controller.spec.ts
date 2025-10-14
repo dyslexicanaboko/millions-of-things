@@ -1,4 +1,4 @@
-import { test, expect, request } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import { TaskClient } from "../api-clients/task-client";
 import { TaskRepository } from "../repositories/task-repository";
 import {
@@ -8,14 +8,14 @@ import {
   DefaultDateTime,
 } from "./common-test-values";
 
-test.afterAll(async () => {
-  const repo = new TaskRepository();
-  await repo.delete(SomeTask, DefaultUserId1);
-
-  console.log("Tasks deleted");
-});
-
 test.describe("TaskV1Controller", () => {
+  test.afterAll(async () => {
+    const repo = new TaskRepository();
+    await repo.delete(SomeTask, DefaultUserId1);
+
+    console.log("Tasks deleted");
+  });
+
   test("Creating a task should have expected default audit values.", async () => {
     const client = new TaskClient();
 
@@ -52,7 +52,7 @@ test.describe("TaskV1Controller", () => {
     console.log(taskId);
 
     // Perform partial patch: update isFinished to true
-    const updateResponse = await client.update(
+    const updateResponse = await client.edit(
       taskId,
       undefined,
       undefined,
@@ -71,5 +71,28 @@ test.describe("TaskV1Controller", () => {
 
     await client.dispose();
     console.log("Test completed");
+  });
+
+  test("User 2 attempting to edit User 1's task should return 404.", async () => {
+    const clientUser1 = new TaskClient();
+    const clientUser2 = new TaskClient();
+    clientUser2.changeToOtherUser();
+
+    // User 1 creates the task
+    const createResponse = await clientUser1.add(SomeTask, SomeCategoryId);
+    const createdTask = await createResponse.json();
+    const taskId = createdTask.taskId;
+
+    // User 2 attempts to edit User 1's task
+    const editResponse = await clientUser2.edit(
+      taskId,
+      undefined,
+      "This should not work",
+      true
+    );
+    expect(editResponse.status()).toBe(404);
+
+    await clientUser1.dispose();
+    await clientUser2.dispose();
   });
 });
