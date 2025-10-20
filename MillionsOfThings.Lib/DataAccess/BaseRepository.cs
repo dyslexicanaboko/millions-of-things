@@ -4,6 +4,7 @@ using MillionsOfThings.Lib.Services;
 using MillionsOfThings.Lib.Services.Utility;
 using Npgsql;
 using System.Data;
+using System.Transactions;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
@@ -18,53 +19,81 @@ namespace MillionsOfThings.Lib.DataAccess
 
     protected BaseRepository()
     {
-      //NOTE: Do not instantiate the connection or transaction objects here. This is mostly for the purposes of DI.
+      //NOTE: Do not instantiate the connection or transaction objects here.
+      //This is here for the purposes of DI.
     }
 
     //Primary constructor
     protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
-    //Used with the Transaction Manager
-    protected BaseRepository(NpgsqlConnection connection)
-    {
-      Connection = connection;
-
-      ConnectionString = Connection.ConnectionString;
-    }
-
-    protected BaseRepository(NpgsqlTransaction transaction)
-      : this(transaction.Connection)
-      => Transaction = transaction;
-
     public void Dispose()
     {
       if (Connection == null) return;
 
+      //Setting variables to null to indicate they are no longer usable
+      //Doing this in-lieu of having a boolean flag to indicate disposed state
+
       //What happens if a transaction is not committed yet?
       Transaction?.Dispose();
+      Transaction = null;
 
-      //The close and/or dispose method more than likely handle the closing if the connection is open
+      //The close and/or dispose method more than likely handles closing the connection if it is open
       Connection.Close();
       Connection.Dispose();
+      Connection = null;
     }
 
-    protected NpgsqlConnection GetConnection()
+    public async Task BeginTransaction()
+      => await GetConnection(true);
+
+    public async Task CommitTransaction()
     {
+      if (Transaction == null)
+        throw new InvalidOperationException("There is no active transaction to commit. 0x202510181911");
+
+      await Transaction.CommitAsync();
+      
+      Dispose();
+    }
+
+    public async Task RollbackTransaction()
+    {
+      if (Transaction == null)
+        throw new InvalidOperationException("There is no active transaction to rollback. 0x202510181914");
+
+      await Transaction.RollbackAsync();
+
+      Dispose();
+    }
+
+    public void JoinExistingTransaction(IDbTransaction transaction)
+    {
+      if (Transaction != null)
+        throw new InvalidOperationException("There is already an active transaction for this repository. 0x202510192051");
+
+      if (Connection != null)
+        throw new InvalidOperationException("There is already an active connection for this repository. 0x202510192053");
+      
+      Transaction = transaction as NpgsqlTransaction;
+      Connection = Transaction.Connection;
+      ConnectionString = Connection.ConnectionString;
+    }
+
+    protected async Task<NpgsqlConnection> GetConnection(bool useTransaction = false)
+    {
+      //If the shared Connection has not been instantiated yet or the
+      //shared Connection's ConnectionString is empty, create a new one
       if (Connection == null || string.IsNullOrWhiteSpace(Connection.ConnectionString))
         Connection = new NpgsqlConnection(ConnectionString);
+      
+      if (Connection.State != ConnectionState.Open) await Connection.OpenAsync();
 
-      if (Connection.State != ConnectionState.Open) Connection.Open();
+      if (Transaction == null && useTransaction)
+      {
+        Transaction = await Connection.BeginTransactionAsync();
+      }
 
       return Connection;
-    }
-
-    //Not crazy about this
-    public void SetTransaction(NpgsqlTransaction transaction)
-    {
-      Transaction = transaction;
-      Connection = Transaction.Connection;
-
-      ConnectionString = Connection.ConnectionString;
     }
 
     protected SqlMapper.ICustomQueryParameter GetTvpIntegerList(IList<int> integerList)
@@ -108,7 +137,7 @@ namespace MillionsOfThings.Lib.DataAccess
 
       var sql = string.Format(updateTemplate, string.Join(", ", lst));
 
-      await connection.ExecuteAsync(sql, p);
+      await connection.ExecuteAsync(sql, p, Transaction);
     }
 
     protected static DynamicParameters AddUserIdParameter(DynamicParameters p, int userId)

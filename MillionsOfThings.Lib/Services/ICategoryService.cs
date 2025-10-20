@@ -1,4 +1,5 @@
 using MillionsOfThings.Lib.Entities;
+using MillionsOfThings.Lib.Results;
 
 namespace MillionsOfThings.Lib.Services;
 
@@ -12,5 +13,5 @@ public interface ICategoryService
 
   Task Edit(CategoryEntity entity);
 
-  Task Remove(int userId, int categoryId);
+  Task<CategoryRemovalResult> Remove(int userId, int categoryId);
 }

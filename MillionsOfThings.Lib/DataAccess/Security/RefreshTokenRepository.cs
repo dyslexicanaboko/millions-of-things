@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
-using Npgsql;
 using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess.Security
@@ -26,7 +25,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
 			FROM public.refresh_token
 			WHERE refresh_token_id = @refresh_token_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<RefreshTokenEntity>(sql, GetPrimaryKeyParameter(refreshTokenId))).ToList();
 
@@ -45,7 +44,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
 			FROM public.refresh_token
 			WHERE token = @token";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<RefreshTokenEntity>(sql, new { token } )).ToList();
 
@@ -63,7 +62,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 created_on
 			FROM public.refresh_token";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       return (await connection.QueryAsync<RefreshTokenEntity>(sql)).ToList();
     }
@@ -81,7 +80,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 @token,
                 @created_by_ip)	";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@refresh_token_id", dbType: DbType.Guid, value: entity.RefreshTokenId);
@@ -102,7 +101,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 modified_on = now()
 						WHERE refresh_token_id = @refresh_token_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@refresh_token_id", dbType: DbType.Guid, value: entity.RefreshTokenId);
@@ -119,7 +118,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
         WHERE refresh_token_id = @refresh_token_id and user_id = @user_id
         """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@refresh_token_id", dbType: DbType.String, value: token, size: 255);
@@ -135,7 +134,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
         WHERE user_id = @user_id
         """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@user_id", dbType: DbType.Int32, value: userId);

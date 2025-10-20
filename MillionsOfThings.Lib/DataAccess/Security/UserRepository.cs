@@ -26,7 +26,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
 			FROM public.user
 			WHERE user_id = @user_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<UserEntity>(sql, GetPrimaryKeyParameter(userId))).ToList();
 
@@ -47,7 +47,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
 			FROM public.user
 			WHERE username = @username";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<UserEntity>(sql, new { username } )).ToList();
 
@@ -64,7 +64,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 created_on
 			FROM public.user";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       return (await connection.QueryAsync<UserEntity>(sql)).ToList();
     }
@@ -80,7 +80,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 @username,
                 @password)	RETURNING user_id AS PK;";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: entity.IsAllowed);
@@ -100,7 +100,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 modified_on = now()
 						WHERE user_id = @user_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
@@ -115,7 +115,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
     {
       const string sql = "DELETE FROM public.user WHERE user_id = @user_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       await connection.ExecuteAsync(sql, GetPrimaryKeyParameter(userId));
     }

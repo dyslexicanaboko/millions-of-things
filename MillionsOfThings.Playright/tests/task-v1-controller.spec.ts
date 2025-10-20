@@ -1,18 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { TaskClient } from "../api-clients/task-client";
-import { TaskRepository } from "../repositories/task-repository";
 import {
   SomeTask,
   SomeCategoryId,
-  DefaultUserId1,
   DefaultDateTime,
+  DefaultUserId1,
 } from "./common-test-values";
+import { TaskRepository } from "../repositories/task-repository";
 
 test.describe("TaskV1Controller", () => {
   test.afterAll(async () => {
     const repo = new TaskRepository();
     await repo.delete(SomeTask, DefaultUserId1);
-
     console.log("Tasks deleted");
   });
 

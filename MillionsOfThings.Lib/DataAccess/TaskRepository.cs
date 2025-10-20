@@ -3,7 +3,6 @@ using MillionsOfThings.Lib.DataAccess.Utility;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
 using MillionsOfThings.Lib.Services.Utility;
-using Npgsql;
 using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
@@ -34,20 +33,22 @@ namespace MillionsOfThings.Lib.DataAccess
 
     public async Task<IEnumerable<TaskEntity>> SelectAll(int userId)
     {
-      const string sql = @"
-			SELECT
-	              task_id,
-                user_id,
-                category_id,
-                description,
-                is_finished,
-                finished_on,
-                created_on,
-                modified_on
-			FROM public.task
-			WHERE user_id = @user_id";
+      const string sql = """
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+                         			SELECT
+                         	              task_id,
+                                         user_id,
+                                         category_id,
+                                         description,
+                                         is_finished,
+                                         finished_on,
+                                         created_on,
+                                         modified_on
+                         			FROM public.task
+                         			WHERE user_id = @user_id
+                         """;
+
+      var connection = await GetConnection();
 
       return (await connection.QueryAsync<TaskEntity>(sql, new { UserId = userId })).ToList();
     }
@@ -69,7 +70,7 @@ namespace MillionsOfThings.Lib.DataAccess
                              AND user_id = @user_id
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(taskId);
       p.Add("@user_id", dbType: DbType.Int32, value: userId);
@@ -81,19 +82,21 @@ namespace MillionsOfThings.Lib.DataAccess
 
     public async Task<IEnumerable<TaskEntity>> SelectAll()
     {
-      const string sql = @"
-			SELECT
-	                task_id,
-                user_id,
-                category_id,
-                description,
-                is_finished,
-                finished_on,
-                created_on,
-                modified_on
-			FROM public.task";
+      const string sql = """
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+                         			SELECT
+                         	                task_id,
+                                         user_id,
+                                         category_id,
+                                         description,
+                                         is_finished,
+                                         finished_on,
+                                         created_on,
+                                         modified_on
+                         			FROM public.task
+                         """;
+
+      var connection = await GetConnection();
 
       return (await connection.QueryAsync<TaskEntity>(sql)).ToList();
     }
@@ -114,10 +117,11 @@ namespace MillionsOfThings.Lib.DataAccess
                          ) RETURNING task_id AS PK;
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
-      p.Add("@user_id", dbType: DbType.Int32, value: entity.UserId);
+      AddUserIdParameter(p, entity.UserId);
+
       p.Add("@category_id", dbType: DbType.Int32, value: entity.CategoryId);
 
       p.Add(
@@ -132,7 +136,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.CreatedOn,
         scale: 0);
 
-      return await connection.ExecuteScalarAsync<int>(sql, p);
+      return await connection.ExecuteScalarAsync<int>(sql, p, Transaction);
     }
 
     public async Task Update(TaskEntity entity)
@@ -147,7 +151,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          WHERE task_id = @task_id
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add("@task_id", dbType: DbType.Int32, value: entity.TaskId);
@@ -167,7 +171,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.FinishedOn,
         scale: 0);
 
-      await connection.ExecuteAsync(sql, p);
+      await connection.ExecuteAsync(sql, p, Transaction);
     }
 
     public async Task UpdatePartial(int userId, int taskId, IList<UpdateInstruction> instructions)
@@ -175,7 +179,7 @@ namespace MillionsOfThings.Lib.DataAccess
       const string template = "UPDATE public.task SET {0}, modified_on = now() WHERE user_id = @user_id and task_id = @task_id";
 
       var p = GetPrimaryKeyParameter(taskId);
-      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+      AddUserIdParameter(p, userId);
 
       await UpdatePartial(
         template,
@@ -188,15 +192,15 @@ namespace MillionsOfThings.Lib.DataAccess
     {
       const string sql = "DELETE FROM public.task WHERE user_id = @user_id and task_id = @task_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(taskId);
-      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+      AddUserIdParameter(p, userId);
 
-      await connection.ExecuteAsync(sql, p);
+      await connection.ExecuteAsync(sql, p, Transaction);
     }
 
-    private DynamicParameters GetPrimaryKeyParameter(int taskId)
+    private static DynamicParameters GetPrimaryKeyParameter(int taskId)
     {
       var p = new DynamicParameters();
       p.Add("@task_id", dbType: DbType.Int32, value: taskId);

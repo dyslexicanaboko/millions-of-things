@@ -1,7 +1,6 @@
 using Dapper;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
-using Npgsql;
 using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
@@ -29,12 +28,12 @@ namespace MillionsOfThings.Lib.DataAccess
                                AND category_id = @category_id 
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      var lst = (await connection.QueryAsync<CategoryEntity>(sql, p)).ToList();
+      var lst = (await connection.QueryAsync<CategoryEntity>(sql, p, Transaction)).ToList();
 
       return lst.SingleOrDefault();
     }
@@ -49,7 +48,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          FROM public.category
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       return await connection.QueryAsync<CategoryEntity>(sql);
     }
@@ -65,12 +64,49 @@ namespace MillionsOfThings.Lib.DataAccess
                          WHERE user_id = @user_id
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, userId);
 
       return await connection.QueryAsync<CategoryEntity>(sql, p);
+    }
+
+    public async Task<int> UsageCount(int userId, int categoryId)
+    {
+      const string sql = """
+                         SELECT COUNT(task_id)
+                         FROM public.task
+                         WHERE user_id = @user_id AND category_id = @category_id
+                         """;
+
+      var connection = await GetConnection();
+
+      var p = GetPrimaryKeyParameter(categoryId);
+      AddUserIdParameter(p, userId);
+
+      var count = (int)await connection.ExecuteScalarAsync(sql, p);
+
+      return count;
+    }
+
+    public async Task<int> DetachFromTasks(int userId, int categoryId)
+    {
+      const string sql = """
+                         UPDATE public.task SET
+                           category_id = NULL
+                          ,modified_on = now()
+                         WHERE user_id = @user_id AND category_id = @category_id
+                         """;
+
+      var connection = await GetConnection();
+
+      var p = GetPrimaryKeyParameter(categoryId);
+      AddUserIdParameter(p, userId);
+
+      var count = (int)await connection.ExecuteScalarAsync(sql, p, Transaction);
+
+      return count;
     }
 
     public async Task<bool> Exists(int userId, int categoryId)
@@ -83,12 +119,12 @@ namespace MillionsOfThings.Lib.DataAccess
                          );
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
       
-      var exists = (bool)(await connection.ExecuteScalarAsync(sql, p));
+      var exists = (bool)await connection.ExecuteScalarAsync(sql, p);
 
       return exists;
     }
@@ -103,7 +139,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          );
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, userId);
@@ -114,22 +150,24 @@ namespace MillionsOfThings.Lib.DataAccess
         value: name,
         size: 20);
 
-      var exists = (bool)(await connection.ExecuteScalarAsync(sql, p));
+      var exists = (bool)await connection.ExecuteScalarAsync(sql, p);
 
       return exists;
     }
 
     public async Task<int> Insert(CategoryEntity entity)
     {
-      const string sql = @"INSERT INTO public.category (
-                user_id,
-                name
-						) VALUES (
-                @user_id,
-                @name
-                )	RETURNING category_id AS PK;";
+      const string sql = """
+                         INSERT INTO public.category (
+                                         user_id,
+                                         name
+                         						) VALUES (
+                                         @user_id,
+                                         @name
+                                         )	RETURNING category_id AS PK;
+                         """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, entity.UserId);
@@ -140,7 +178,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.Name,
         size: 20);
 
-      return await connection.ExecuteScalarAsync<int>(sql, p);
+      return await connection.ExecuteScalarAsync<int>(sql, p, Transaction);
     }
 
     public async Task Update(CategoryEntity entity)
@@ -153,7 +191,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          		  AND category_id = @category_id
                          """;
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(entity.CategoryId);
       AddUserIdParameter(p, entity.UserId);
@@ -164,19 +202,21 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.Name,
         size: 20);
 
-      await connection.ExecuteAsync(sql, p);
+      await connection.ExecuteAsync(sql, p, Transaction);
     }
 
-    public async Task Delete(int userId, int categoryId)
+    public async Task<int> Delete(int userId, int categoryId)
     {
-      const string sql = "DELETE FROM public.category WHERE category_id = @category_id";
+      const string sql = "DELETE FROM public.category WHERE user_id = @user_id AND category_id = @category_id";
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      await connection.ExecuteAsync(sql, p);
+      var count = (int)await connection.ExecuteScalarAsync(sql, p, Transaction);
+
+      return count;
     }
 
     private DynamicParameters GetPrimaryKeyParameter(int categoryId)

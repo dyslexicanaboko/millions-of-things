@@ -1,6 +1,7 @@
 using MillionsOfThings.Lib.DataAccess;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Exceptions;
+using MillionsOfThings.Lib.Results;
 using MillionsOfThings.Lib.Validation;
 
 namespace MillionsOfThings.Lib.Services
@@ -63,11 +64,30 @@ namespace MillionsOfThings.Lib.Services
       await _repository.Using(x => x.Update(entity));
     }
 
-    public async Task Remove(int userId, int categoryId)
+    public async Task<CategoryRemovalResult> Remove(int userId, int categoryId)
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      await _repository.Using(x => x.Delete(userId, categoryId));
+      //A check will not be performed here to see if a category is in use by a task.
+      //It is up to the user to make this check ahead of time.
+      //All tasks will be disassociated from the category before deletion.
+
+      await _repository.BeginTransaction();
+
+      var count = await _repository.DetachFromTasks(userId, categoryId);
+
+      var isSuccess = await _repository.Delete(userId, categoryId) > 0;
+
+      if (!isSuccess)
+      {
+        await _repository.RollbackTransaction();
+
+        throw NotFound.Category(categoryId);
+      }
+
+      await _repository.CommitTransaction();
+
+      return new CategoryRemovalResult(isSuccess, count);
     }
   }
 }

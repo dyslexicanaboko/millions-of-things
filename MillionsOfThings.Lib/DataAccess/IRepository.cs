@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
@@ -18,7 +19,14 @@ namespace MillionsOfThings.Lib.DataAccess
   public interface IRepository
     : IDisposable
   {
-    //This exists just to unify all repositories as being "a type of" repository
-    void SetTransaction(NpgsqlTransaction transaction);
+    //This exists to unify all repositories as being "a type of" repository
+    //Exposes methods for working with transactions, so that repositories can work together in a single transaction
+    Task BeginTransaction();
+
+    Task CommitTransaction();
+
+    Task RollbackTransaction();
+
+    void JoinExistingTransaction(IDbTransaction transaction);
   }
 }

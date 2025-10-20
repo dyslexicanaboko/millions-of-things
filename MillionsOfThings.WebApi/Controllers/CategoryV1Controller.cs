@@ -95,12 +95,13 @@ namespace MillionsOfThings.WebApi.Controllers
 
     // DELETE api/v1/categories/5
     [HttpDelete("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult> Delete(int id)
     {
-      await _service.Remove(UserId, id);
+      var result = await _service.Remove(UserId, id);
 
-      return NoContent();
+      return Ok(new CategoryV1DeletedModel(result));
     }
   }
 }

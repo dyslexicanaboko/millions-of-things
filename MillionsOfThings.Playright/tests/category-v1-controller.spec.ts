@@ -1,26 +1,18 @@
 import { test, expect } from "@playwright/test";
-import { CategoryRepository } from "../repositories/category-repository";
 import { CategoryClient } from "../api-clients/category-client";
 import {
-  SomeCategory,
   DefaultUserId1,
   OtherUserId2,
+  SomeCategory,
 } from "./common-test-values";
-
-// Helper to delete Category A for user 1
-async function deleteCategoryA() {
-  const categoryRepo = new CategoryRepository();
-  await categoryRepo.delete(SomeCategory, DefaultUserId1);
-  await categoryRepo.delete(SomeCategory, OtherUserId2);
-}
+import { CategoryRepository } from "../repositories/category-repository";
 
 test.describe("CategoryV1Controller", () => {
-  test.beforeAll(async () => {
-    await deleteCategoryA();
-  });
-
   test.afterAll(async () => {
-    await deleteCategoryA();
+    const repo = new CategoryRepository();
+    await repo.delete(SomeCategory, DefaultUserId1);
+    await repo.delete(SomeCategory, OtherUserId2);
+    console.log("Categories deleted");
   });
 
   test("User 1 cannot create a duplicate category", async () => {

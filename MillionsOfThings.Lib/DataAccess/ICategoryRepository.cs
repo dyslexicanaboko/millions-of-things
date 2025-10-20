@@ -12,7 +12,11 @@ public interface ICategoryRepository : IRepository
 
   Task Update(CategoryEntity entity);
 
-  Task Delete(int userId, int categoryId);
+  Task<int> Delete(int userId, int categoryId);
+
+  Task<int> UsageCount(int userId, int categoryId);
+
+  Task<int> DetachFromTasks(int userId, int categoryId);
 
   Task<bool> Exists(int userId, int categoryId);
   
