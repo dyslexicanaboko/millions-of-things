@@ -1,5 +1,5 @@
 select * from public.category
-select * from public.task
+select * from public.task order by task_id
 select * from public.user
 select * from "public"."category"
 select * from millions_of_things.public.category
@@ -7,6 +7,8 @@ select * from "millions_of_things"."public"."category"
 select now()
 select * from public.task t 
 select * from public.refresh_token
+
+select * from public.task where task_id = 36
 
 SELECT
     Task_id,
@@ -20,7 +22,7 @@ SELECT
 FROM public.task
 -- delete stuff after id 4 to reset the testing
 
-delete from public.task where task_id > 4
+delete from public.task where task_id >= 67
 delete from public.category where category_id > 3
 
 SELECT EXISTS (
@@ -45,3 +47,7 @@ UPDATE public.category SET
 	name = 'string3',
 	modified_on = null
 WHERE category_id = 10
+
+SELECT COUNT(task_id)
+FROM public.task
+WHERE user_id = 1 AND category_id = 11
