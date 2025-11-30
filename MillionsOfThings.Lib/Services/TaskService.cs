@@ -29,7 +29,7 @@ namespace MillionsOfThings.Lib.Services
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      return await _repository.Using(x => x.Select(taskId, userId));
+      return _mapper.ToEntity(await _repository.Using(x => x.Select(taskId, userId)));
     }
 
     public async Task<IList<TaskEntity>> GetAll(int userId)
@@ -37,9 +37,8 @@ namespace MillionsOfThings.Lib.Services
       Validations.ThrowOnError(
         () => Validations.IsUserIdValid(userId, false));
 
-      var lst = (await _repository
-        .Using(x => x.SelectAll(userId)))
-        .ToList();
+      var lst = _mapper.ToEntity(await _repository
+        .Using(x => x.SelectAll(userId)));
 
       return lst;
     }
@@ -50,7 +49,7 @@ namespace MillionsOfThings.Lib.Services
 
       entity.CreatedOn = StandardValues.GetUtcNow();
 
-      entity.TaskId = await _repository.Using(x => x.Insert(entity));
+      entity.TaskId = await _repository.Using(x => x.Insert(_mapper.ToRecord(entity)));
 
       return entity;
     }
@@ -96,7 +95,7 @@ namespace MillionsOfThings.Lib.Services
     {
       Validations.IsValid(_validation, entity, nameof(entity));
 
-      await _repository.Using(x => x.Update(entity));
+      await _repository.Using(x => x.Update(_mapper.ToRecord(entity)));
     }
 
     public async Task Remove(int userId, int taskId)

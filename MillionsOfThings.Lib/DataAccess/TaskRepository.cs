@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using MillionsOfThings.Lib.DataAccess.Utility;
-using MillionsOfThings.Lib.Entities;
+using MillionsOfThings.Lib.Records;
 using MillionsOfThings.Lib.Services;
 using MillionsOfThings.Lib.Services.Utility;
 using System.Data;
@@ -12,15 +12,15 @@ namespace MillionsOfThings.Lib.DataAccess
   {
     private static readonly List<ColumnSchema> UpdatePartialColumns = new()
     {
-      new ColumnSchema(nameof(TaskEntity.CategoryId), "category_id", DbType.Int32),
+      new ColumnSchema(nameof(TaskRecord.CategoryId), "category_id", DbType.Int32),
       new ColumnSchema(
-        nameof(TaskEntity.Description),
+        nameof(TaskRecord.Description),
         "description",
         DbType.String,
         255),
-      new ColumnSchema(nameof(TaskEntity.IsFinished), "is_finished", DbType.Boolean),
+      new ColumnSchema(nameof(TaskRecord.IsFinished), "is_finished", DbType.Boolean),
       new ColumnSchema(
-        nameof(TaskEntity.FinishedOn),
+        nameof(TaskRecord.FinishedOn),
         "finished_on",
         DbType.DateTime2,
         scale: 0)
@@ -31,7 +31,7 @@ namespace MillionsOfThings.Lib.DataAccess
     {
     }
 
-    public async Task<IEnumerable<TaskEntity>> SelectAll(int userId)
+    public async Task<IList<TaskRecord>> SelectAll(int userId)
     {
       const string sql = """
 
@@ -50,10 +50,10 @@ namespace MillionsOfThings.Lib.DataAccess
 
       var connection = await GetConnection();
 
-      return (await connection.QueryAsync<TaskEntity>(sql, new { UserId = userId })).ToList();
+      return (await connection.QueryAsync<TaskRecord>(sql, new { UserId = userId })).ToList();
     }
 
-    public async Task<TaskEntity?> Select(int taskId, int userId)
+    public async Task<TaskRecord?> Select(int taskId, int userId)
     {
       const string sql = """
                            SELECT
@@ -75,12 +75,12 @@ namespace MillionsOfThings.Lib.DataAccess
       var p = GetPrimaryKeyParameter(taskId);
       p.Add("@user_id", dbType: DbType.Int32, value: userId);
 
-      var lst = (await connection.QueryAsync<TaskEntity>(sql, p)).ToList();
+      var lst = (await connection.QueryAsync<TaskRecord>(sql, p)).ToList();
 
       return lst.SingleOrDefault();
     }
 
-    public async Task<IEnumerable<TaskEntity>> SelectAll()
+    public async Task<IList<TaskRecord>> SelectAll()
     {
       const string sql = """
 
@@ -98,10 +98,10 @@ namespace MillionsOfThings.Lib.DataAccess
 
       var connection = await GetConnection();
 
-      return (await connection.QueryAsync<TaskEntity>(sql)).ToList();
+      return (await connection.QueryAsync<TaskRecord>(sql)).ToList();
     }
 
-    public async Task<int> Insert(TaskEntity entity)
+    public async Task<int> Insert(TaskRecord entity)
     {
       const string sql = """
                          INSERT INTO public.task (
@@ -139,7 +139,7 @@ namespace MillionsOfThings.Lib.DataAccess
       return await connection.ExecuteScalarAsync<int>(sql, p, Transaction);
     }
 
-    public async Task Update(TaskEntity entity)
+    public async Task Update(TaskRecord entity)
     {
       const string sql = """
                          UPDATE public.task SET 

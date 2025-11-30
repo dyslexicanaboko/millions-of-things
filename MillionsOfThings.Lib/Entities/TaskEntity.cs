@@ -1,4 +1,6 @@
-﻿using MillionsOfThings.Lib.Models.Client;
+﻿using MillionsOfThings.Lib.Models;
+using MillionsOfThings.Lib.Models.Client;
+using MillionsOfThings.Lib.Records;
 
 namespace MillionsOfThings.Lib.Entities
 {
@@ -25,6 +27,31 @@ namespace MillionsOfThings.Lib.Entities
       IsFinished = model.IsFinished;
     }
 
+    public TaskEntity(TaskV1Model model)
+    {
+      TaskId = model.TaskId;
+      UserId = model.UserId;
+      CategoryId = model.CategoryId;
+      Description = model.Description;
+      IsFinished = model.IsFinished;
+      FinishedOn = model.FinishedOn;
+      CreatedOn = model.CreatedOn;
+      ModifiedOn = model.ModifiedOn;
+    }
+
+    //TODO: Should there be an interface between Entity and Record?
+    public TaskEntity(TaskRecord record)
+    {
+      TaskId = record.TaskId;
+      UserId = record.UserId;
+      CategoryId = record.CategoryId;
+      Description = record.Description;
+      IsFinished = record.IsFinished;
+      FinishedOn = record.FinishedOn;
+      CreatedOn = record.CreatedOn;
+      ModifiedOn = record.ModifiedOn;
+    }
+
     public int TaskId { get; set; }
 
     public int UserId { get; set; }
@@ -47,9 +74,9 @@ namespace MillionsOfThings.Lib.Entities
     {
       if (other is null) return false;
 
-      if (object.ReferenceEquals(this, other)) return true;
+      if (ReferenceEquals(this, other)) return true;
 
-      if (this.GetType() != other.GetType()) return false;
+      if (GetType() != other.GetType()) return false;
 
       return
         TaskId == other.TaskId &&

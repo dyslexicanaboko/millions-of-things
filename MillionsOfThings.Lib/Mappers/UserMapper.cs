@@ -1,11 +1,6 @@
 ﻿using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Models;
 using MillionsOfThings.Lib.Models.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MillionsOfThings.Lib.Mappers
 {

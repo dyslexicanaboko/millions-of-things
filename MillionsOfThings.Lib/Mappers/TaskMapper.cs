@@ -1,6 +1,7 @@
 ﻿using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Models;
 using MillionsOfThings.Lib.Models.Client;
+using MillionsOfThings.Lib.Records;
 
 namespace MillionsOfThings.Lib.Mappers
 {
@@ -8,19 +9,7 @@ namespace MillionsOfThings.Lib.Mappers
     : BaseMapper, ITaskMapper
   {
     public TaskEntity ToEntity(TaskV1Model model)
-    {
-      var entity = new TaskEntity();
-      entity.TaskId = model.TaskId;
-      entity.UserId = model.UserId;
-      entity.CategoryId = model.CategoryId;
-      entity.Description = model.Description;
-      entity.IsFinished = model.IsFinished;
-      entity.FinishedOn = model.FinishedOn;
-      entity.CreatedOn = model.CreatedOn;
-      entity.ModifiedOn = model.ModifiedOn;
-
-      return entity;
-    }
+      => new (model);
 
     public TaskEntity? ToEntity(int userId, TaskV1CreateModel? model)
       => model == null ? null : new TaskEntity(userId, model);
@@ -31,52 +20,29 @@ namespace MillionsOfThings.Lib.Mappers
     public TaskEntity ToEntity(int userId, TaskV1PatchModel model)
       => new (userId, model);
 
-    public TaskV1Model ToModel(TaskEntity entity)
-    {
-      var model = new TaskV1Model();
-      model.TaskId = entity.TaskId;
-      model.UserId = entity.UserId;
-      model.CategoryId = entity.CategoryId;
-      model.Description = entity.Description;
-      model.IsFinished = entity.IsFinished;
-      model.FinishedOn = entity.FinishedOn;
-      model.CreatedOn = entity.CreatedOn;
-      model.ModifiedOn = entity.ModifiedOn;
-
-      return model;
-    }
+    public TaskV1Model? ToModel(TaskEntity? entity)
+      => entity == null ? null : new TaskV1Model(entity);
 
     public IList<TaskV1Model> ToModel(IList<TaskEntity> entities)
       => ToList(entities, ToModel);
 
-    public TaskEntity ToEntity(ITask target)
-    {
-      var entity = new TaskEntity();
-      entity.TaskId = target.TaskId;
-      entity.UserId = target.UserId;
-      entity.CategoryId = target.CategoryId;
-      entity.Description = target.Description;
-      entity.IsFinished = target.IsFinished;
-      entity.FinishedOn = target.FinishedOn;
-      entity.CreatedOn = target.CreatedOn;
-      entity.ModifiedOn = target.ModifiedOn;
+    public TaskEntity? ToEntity(TaskRecord? record)
+      => record == null ? null : new TaskEntity(record);
 
-      return entity;
-    }
+    public TaskRecord ToRecord(TaskEntity entity)
+      => new()
+      {
+        TaskId = entity.TaskId,
+        UserId = entity.UserId,
+        CategoryId = entity.CategoryId,
+        Description = entity.Description,
+        IsFinished = entity.IsFinished,
+        FinishedOn = entity.FinishedOn,
+        CreatedOn = entity.CreatedOn,
+        ModifiedOn = entity.ModifiedOn,
+      };
 
-    public TaskV1Model ToModel(ITask target)
-    {
-      var model = new TaskV1Model();
-      model.TaskId = target.TaskId;
-      model.UserId = target.UserId;
-      model.CategoryId = target.CategoryId;
-      model.Description = target.Description;
-      model.IsFinished = target.IsFinished;
-      model.FinishedOn = target.FinishedOn;
-      model.CreatedOn = target.CreatedOn;
-      model.ModifiedOn = target.ModifiedOn;
-
-      return model;
-    }
+    public IList<TaskEntity> ToEntity(IList<TaskRecord> records)
+      => ToListR(records, ToEntity);
   }
 }

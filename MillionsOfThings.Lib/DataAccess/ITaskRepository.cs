@@ -1,19 +1,19 @@
-﻿using MillionsOfThings.Lib.Entities;
+﻿using MillionsOfThings.Lib.Records;
 using MillionsOfThings.Lib.Services.Utility;
 
 namespace MillionsOfThings.Lib.DataAccess;
 
 public interface ITaskRepository : IRepository
 {
-  Task<IEnumerable<TaskEntity>> SelectAll(int userId);
+  Task<IList<TaskRecord>> SelectAll(int userId);
 
-  Task<TaskEntity?> Select(int taskId, int userId);
+  Task<TaskRecord?> Select(int taskId, int userId);
 
-  Task<IEnumerable<TaskEntity>> SelectAll();
+  Task<IList<TaskRecord>> SelectAll();
 
-  Task<int> Insert(TaskEntity entity);
+  Task<int> Insert(TaskRecord entity);
 
-  Task Update(TaskEntity entity);
+  Task Update(TaskRecord entity);
 
   Task UpdatePartial(int userId, int taskId, IList<UpdateInstruction> instructions);
 
