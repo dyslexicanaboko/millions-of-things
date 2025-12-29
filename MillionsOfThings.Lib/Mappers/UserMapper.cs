@@ -34,6 +34,6 @@ namespace MillionsOfThings.Lib.Mappers
       return model;
     }
 
-    public IList<UserV1Model> ToModel(IList<UserEntity> target) => ToList(target, ToModel);
+    public List<UserV1Model> ToModel(List<UserEntity> target) => ToList(target, ToModel)!;
   }
 }

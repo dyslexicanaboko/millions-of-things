@@ -21,7 +21,7 @@ public interface ITaskMapper
 
   TaskRecord ToRecord(TaskEntity entity);
 
-  IList<TaskV1Model> ToModel(IList<TaskEntity> entities);
+  List<TaskV1Model> ToModel(List<TaskEntity> entities);
 
-  IList<TaskEntity> ToEntity(IList<TaskRecord> records);
+  List<TaskEntity> ToEntity(List<TaskRecord> records);
 }

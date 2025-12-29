@@ -29,18 +29,16 @@ namespace MillionsOfThings.Lib.Services
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      return _mapper.ToEntity(await _repository.Using(x => x.Select(taskId, userId)));
+      return _mapper.ToEntity(await _repository.Select(taskId, userId));
     }
 
-    public async Task<IList<TaskEntity>> GetAll(int userId)
+    public async Task<List<TaskEntity>> GetAll(int userId)
     {
       Validations.ThrowOnError(
         () => Validations.IsUserIdValid(userId, false));
 
-      var lst = _mapper.ToEntity(await _repository
-        .Using(x => x.SelectAll(userId)));
-
-      return lst;
+      return _mapper.ToEntity(await _repository
+        .SelectAll(userId));
     }
 
     public async Task<TaskEntity> Add(TaskEntity? entity)
@@ -49,7 +47,7 @@ namespace MillionsOfThings.Lib.Services
 
       entity.CreatedOn = StandardValues.GetUtcNow();
 
-      entity.TaskId = await _repository.Using(x => x.Insert(_mapper.ToRecord(entity)));
+      entity.TaskId = await _repository.Insert(_mapper.ToRecord(entity));
 
       return entity;
     }
@@ -88,21 +86,21 @@ namespace MillionsOfThings.Lib.Services
         }
       });
 
-      await _repository.Using(x => x.UpdatePartial(userId, taskId, instructions));
+      await _repository.UpdatePartial(userId, taskId, instructions);
     }
 
     public async Task Edit(TaskEntity entity)
     {
       Validations.IsValid(_validation, entity, nameof(entity));
 
-      await _repository.Using(x => x.Update(_mapper.ToRecord(entity)));
+      await _repository.Update(_mapper.ToRecord(entity));
     }
 
     public async Task Remove(int userId, int taskId)
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      await _repository.Using(x => x.Delete(userId, taskId));
+      await _repository.Delete(userId, taskId);
     }
   }
 }

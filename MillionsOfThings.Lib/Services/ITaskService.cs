@@ -8,7 +8,7 @@ public interface ITaskService
 {
   Task<TaskEntity?> Get(int userId, int taskId);
 
-  Task<IList<TaskEntity>> GetAll(int userId);
+  Task<List<TaskEntity>> GetAll(int userId);
 
   Task<TaskEntity> Add(TaskEntity? entity);
 

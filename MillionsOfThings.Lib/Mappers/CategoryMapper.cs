@@ -10,8 +10,8 @@ namespace MillionsOfThings.Lib.Mappers
     public CategoryV1Model? ToModel(CategoryEntity? entity)
       => entity == null ? null : new CategoryV1Model(entity);
 
-    public IList<CategoryV1Model> ToModel(IList<CategoryEntity> entities)
-      => ToList(entities, ToModel);
+    public List<CategoryV1Model> ToModel(List<CategoryEntity> entities)
+      => ToList(entities, ToModel)!;
 
     public CategoryEntity? ToEntity(int userId, CategoryV1CreateModel? model)
       => model == null ? null : new CategoryEntity(userId, model);

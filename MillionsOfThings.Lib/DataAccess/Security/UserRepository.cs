@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Services;
-using Npgsql;
 using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess.Security
@@ -17,16 +16,17 @@ namespace MillionsOfThings.Lib.DataAccess.Security
     public async Task<UserEntity?> Select(int userId)
     {
       //Password is purposely not included here
-      const string sql = @"
-			SELECT
-	                user_id,
-                is_allowed,
-                username,
-                created_on
-			FROM public.user
-			WHERE user_id = @user_id";
+      const string sql = """
+        SELECT
+          user_id,
+          is_allowed,
+          username,
+          created_on
+        FROM public.user
+        WHERE user_id = @user_id
+        """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<UserEntity>(sql, GetPrimaryKeyParameter(userId))).ToList();
 
@@ -37,17 +37,18 @@ namespace MillionsOfThings.Lib.DataAccess.Security
     {
       //This is the only situation where password will be returned
       //so it can be used with authentication.
-      const string sql = @"
-			SELECT
-	                user_id,
-                is_allowed,
-                username,
-                password,
-                created_on
-			FROM public.user
-			WHERE username = @username";
+      const string sql = """
+        SELECT
+          user_id,
+          is_allowed,
+          username,
+          password,
+          created_on
+        FROM public.user
+        WHERE username = @username
+        """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var lst = (await connection.QueryAsync<UserEntity>(sql, new { username } )).ToList();
 
@@ -64,7 +65,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 created_on
 			FROM public.user";
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       return (await connection.QueryAsync<UserEntity>(sql)).ToList();
     }
@@ -80,7 +81,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 @username,
                 @password)	RETURNING user_id AS PK;";
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: entity.IsAllowed);
@@ -100,7 +101,7 @@ namespace MillionsOfThings.Lib.DataAccess.Security
                 modified_on = now()
 						WHERE user_id = @user_id";
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
@@ -115,12 +116,12 @@ namespace MillionsOfThings.Lib.DataAccess.Security
     {
       const string sql = "DELETE FROM public.user WHERE user_id = @user_id";
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       await connection.ExecuteAsync(sql, GetPrimaryKeyParameter(userId));
     }
 
-    private DynamicParameters GetPrimaryKeyParameter(int userId)
+    private static DynamicParameters GetPrimaryKeyParameter(int userId)
     {
       var p = new DynamicParameters();
       p.Add(name: "@user_id", dbType: DbType.Int32, value: userId);

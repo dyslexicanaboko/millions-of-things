@@ -31,7 +31,7 @@ namespace MillionsOfThings.Lib.DataAccess
     {
     }
 
-    public async Task<IList<TaskRecord>> SelectAll(int userId)
+    public async Task<List<TaskRecord>> SelectAll(int userId)
     {
       const string sql = """
 
@@ -48,7 +48,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          			WHERE user_id = @user_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       return (await connection.QueryAsync<TaskRecord>(sql, new { UserId = userId })).ToList();
     }
@@ -70,17 +70,15 @@ namespace MillionsOfThings.Lib.DataAccess
                              AND user_id = @user_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(taskId);
       p.Add("@user_id", dbType: DbType.Int32, value: userId);
 
-      var lst = (await connection.QueryAsync<TaskRecord>(sql, p)).ToList();
-
-      return lst.SingleOrDefault();
+      return (await connection.QueryAsync<TaskRecord>(sql, p)).SingleOrDefault();
     }
 
-    public async Task<IList<TaskRecord>> SelectAll()
+    public async Task<List<TaskRecord>> SelectAll()
     {
       const string sql = """
 
@@ -96,7 +94,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          			FROM public.task
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       return (await connection.QueryAsync<TaskRecord>(sql)).ToList();
     }
@@ -117,7 +115,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          ) RETURNING task_id AS PK;
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, entity.UserId);
@@ -136,7 +134,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.CreatedOn,
         scale: 0);
 
-      return await connection.ExecuteScalarAsync<int>(sql, p, Transaction);
+      return await connection.ExecuteScalarAsync<int>(sql, p);
     }
 
     public async Task Update(TaskRecord entity)
@@ -151,7 +149,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          WHERE task_id = @task_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       p.Add("@task_id", dbType: DbType.Int32, value: entity.TaskId);
@@ -171,7 +169,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.FinishedOn,
         scale: 0);
 
-      await connection.ExecuteAsync(sql, p, Transaction);
+      await connection.ExecuteAsync(sql, p);
     }
 
     public async Task UpdatePartial(int userId, int taskId, IList<UpdateInstruction> instructions)
@@ -192,12 +190,12 @@ namespace MillionsOfThings.Lib.DataAccess
     {
       const string sql = "DELETE FROM public.task WHERE user_id = @user_id and task_id = @task_id";
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(taskId);
       AddUserIdParameter(p, userId);
 
-      await connection.ExecuteAsync(sql, p, Transaction);
+      await connection.ExecuteAsync(sql, p);
     }
 
     private static DynamicParameters GetPrimaryKeyParameter(int taskId)

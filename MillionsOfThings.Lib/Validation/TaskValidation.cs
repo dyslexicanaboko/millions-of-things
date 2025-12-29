@@ -40,7 +40,7 @@ namespace MillionsOfThings.Lib.Validation
               if (!categoryId.HasValue) return true;
 
               var t = repository
-                .Using(x => x.Exists(entity.UserId, categoryId.Value));
+                .Exists(entity.UserId, categoryId.Value);
 
               t.Wait();
               

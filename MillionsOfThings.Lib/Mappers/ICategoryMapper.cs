@@ -8,7 +8,7 @@ public interface ICategoryMapper
 {
   CategoryV1Model? ToModel(CategoryEntity? entity);
 
-  IList<CategoryV1Model> ToModel(IList<CategoryEntity> entities);
+  List<CategoryV1Model> ToModel(List<CategoryEntity> entities);
 
   CategoryEntity? ToEntity(int userId, CategoryV1CreateModel? model);
 

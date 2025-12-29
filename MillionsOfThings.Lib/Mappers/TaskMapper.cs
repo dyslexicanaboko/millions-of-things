@@ -23,8 +23,8 @@ namespace MillionsOfThings.Lib.Mappers
     public TaskV1Model? ToModel(TaskEntity? entity)
       => entity == null ? null : new TaskV1Model(entity);
 
-    public IList<TaskV1Model> ToModel(IList<TaskEntity> entities)
-      => ToList(entities, ToModel);
+    public List<TaskV1Model> ToModel(List<TaskEntity> entities)
+      => ToList(entities, ToModel)!;
 
     public TaskEntity? ToEntity(TaskRecord? record)
       => record == null ? null : new TaskEntity(record);
@@ -42,7 +42,7 @@ namespace MillionsOfThings.Lib.Mappers
         ModifiedOn = entity.ModifiedOn,
       };
 
-    public IList<TaskEntity> ToEntity(IList<TaskRecord> records)
-      => ToListR(records, ToEntity);
+    public List<TaskEntity> ToEntity(List<TaskRecord> records)
+      => ToListR(records, ToEntity)!;
   }
 }

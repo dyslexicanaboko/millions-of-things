@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.Services.Security
   {
     Task<UserEntity> Add(UserEntity? user);
 
-    Task<IList<UserEntity>> GetAllUsers();
+    Task<List<UserEntity>> GetAllUsers();
 
     Task<UserEntity?> GetUser(int id);
   }

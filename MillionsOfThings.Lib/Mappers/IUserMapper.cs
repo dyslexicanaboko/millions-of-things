@@ -8,7 +8,7 @@ namespace MillionsOfThings.Lib.Mappers
   {
     UserV1CreatedModel? ToCreatedModel(UserEntity? target);
     UserEntity? ToEntity(UserV1CreateModel? target);
-    IList<UserV1Model> ToModel(IList<UserEntity> target);
+    List<UserV1Model> ToModel(List<UserEntity> target);
     UserV1Model? ToModel(UserEntity? entity);
   }
 }

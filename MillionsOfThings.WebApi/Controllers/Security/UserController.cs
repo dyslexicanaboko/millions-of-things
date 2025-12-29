@@ -39,7 +39,7 @@ namespace MillionsOfThings.WebApi.Controllers.Security
     // GET api/v1/users
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<UserV1Model>))]
-    public async Task<ActionResult<IList<UserV1Model>>> GetAll()
+    public async Task<ActionResult<List<UserV1Model>>> GetAll()
     {
       var lst = await _service.GetAllUsers();
 

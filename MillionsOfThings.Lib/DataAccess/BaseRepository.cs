@@ -4,96 +4,30 @@ using MillionsOfThings.Lib.Services;
 using MillionsOfThings.Lib.Services.Utility;
 using Npgsql;
 using System.Data;
-using System.Transactions;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
   public abstract class BaseRepository
-    : IDisposable
   {
-    protected NpgsqlConnection? Connection;
-
     protected string? ConnectionString;
-
-    protected NpgsqlTransaction? Transaction;
 
     protected BaseRepository()
     {
-      //NOTE: Do not instantiate the connection or transaction objects here.
-      //This is here for the purposes of DI.
+      //NOTE: Do not instantiate objects here. This is here for the purposes of DI only.
     }
 
     //Primary constructor
     protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
-    public void Dispose()
+    protected async Task<NpgsqlConnection> GetConnection()
     {
-      if (Connection == null) return;
+      if (string.IsNullOrWhiteSpace(ConnectionString)) throw new ApplicationException("Connection string cannot be blank, whitespace, or null.");
 
-      //Setting variables to null to indicate they are no longer usable
-      //Doing this in-lieu of having a boolean flag to indicate disposed state
-
-      //What happens if a transaction is not committed yet?
-      Transaction?.Dispose();
-      Transaction = null;
-
-      //The close and/or dispose method more than likely handles closing the connection if it is open
-      Connection.Close();
-      Connection.Dispose();
-      Connection = null;
-    }
-
-    public async Task BeginTransaction()
-      => await GetConnection(true);
-
-    public async Task CommitTransaction()
-    {
-      if (Transaction == null)
-        throw new InvalidOperationException("There is no active transaction to commit. 0x202510181911");
-
-      await Transaction.CommitAsync();
+      var conn = new NpgsqlConnection(ConnectionString);
       
-      Dispose();
-    }
+      await conn.OpenAsync();
 
-    public async Task RollbackTransaction()
-    {
-      if (Transaction == null)
-        throw new InvalidOperationException("There is no active transaction to rollback. 0x202510181914");
-
-      await Transaction.RollbackAsync();
-
-      Dispose();
-    }
-
-    public void JoinExistingTransaction(IDbTransaction transaction)
-    {
-      if (Transaction != null)
-        throw new InvalidOperationException("There is already an active transaction for this repository. 0x202510192051");
-
-      if (Connection != null)
-        throw new InvalidOperationException("There is already an active connection for this repository. 0x202510192053");
-      
-      Transaction = transaction as NpgsqlTransaction;
-      Connection = Transaction.Connection;
-      ConnectionString = Connection.ConnectionString;
-    }
-
-    protected async Task<NpgsqlConnection> GetConnection(bool useTransaction = false)
-    {
-      //If the shared Connection has not been instantiated yet or the
-      //shared Connection's ConnectionString is empty, create a new one
-      if (Connection == null || string.IsNullOrWhiteSpace(Connection.ConnectionString))
-        Connection = new NpgsqlConnection(ConnectionString);
-      
-      if (Connection.State != ConnectionState.Open) await Connection.OpenAsync();
-
-      if (Transaction == null && useTransaction)
-      {
-        Transaction = await Connection.BeginTransactionAsync();
-      }
-
-      return Connection;
+      return conn;
     }
 
     protected SqlMapper.ICustomQueryParameter GetTvpIntegerList(IList<int> integerList)
@@ -133,11 +67,11 @@ namespace MillionsOfThings.Lib.DataAccess
         p.Add(name: col.Name, dbType: col.DbType, value: instr.Value, size: col.Size, scale: col.Scale);
       }
 
-      await using var connection = new NpgsqlConnection(ConnectionString);
+      await using var connection = await GetConnection();
 
       var sql = string.Format(updateTemplate, string.Join(", ", lst));
 
-      await connection.ExecuteAsync(sql, p, Transaction);
+      await connection.ExecuteAsync(sql, p);
     }
 
     protected static DynamicParameters AddUserIdParameter(DynamicParameters p, int userId)

@@ -1,5 +1,4 @@
-﻿using MillionsOfThings.Lib.DataAccess;
-using MillionsOfThings.Lib.DataAccess.Security;
+﻿using MillionsOfThings.Lib.DataAccess.Security;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Validation;
 
@@ -16,15 +15,15 @@ namespace MillionsOfThings.Lib.Services.Security
     public async Task<UserEntity?> GetUser(int id)
     {
       //Password is purposely not returned
-      var dbEntity = await _repoUser.Using(x => x.Select(id));
+      var dbEntity = await _repoUser.Select(id);
 
       return dbEntity;
     }
 
-    public async Task<IList<UserEntity>> GetAllUsers()
+    public async Task<List<UserEntity>> GetAllUsers()
     {
       //Password is purposely not returned
-      var lst = (await _repoUser.Using(x => x.SelectAll())).ToList();
+      var lst = (await _repoUser.SelectAll()).ToList();
 
       return lst;
     }
@@ -33,7 +32,7 @@ namespace MillionsOfThings.Lib.Services.Security
     {
       Validations.IsNotNull(user, nameof(user));
 
-      user.UserId = await _repoUser.Using(x => x.Insert(user));
+      user.UserId = await _repoUser.Insert(user);
 
       return user;
     }

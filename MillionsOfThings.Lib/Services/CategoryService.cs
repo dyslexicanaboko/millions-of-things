@@ -25,28 +25,24 @@ namespace MillionsOfThings.Lib.Services
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      var dbEntity = await _repository.Using(x => x.Select(userId, categoryId));
-
-      return dbEntity;
+      return await _repository.Select(userId, categoryId);
     }
 
     public async Task<List<CategoryEntity>> GetAll(int userId)
     {
       Validations.IsGreaterThanZero(userId, nameof(userId));
 
-      var lst = (await _repository.Using(x => x.SelectAll(userId))).ToList();
-
-      return lst;
+      return await _repository.SelectAll(userId);
     }
 
     public async Task<CategoryEntity> Add(CategoryEntity? entity)
     {
       Validations.IsValid(_validation, entity, nameof(entity));
 
-      if (await _repository.Using(x => x.Exists(entity.UserId, entity.Name)))
+      if (await _repository.Exists(entity.UserId, entity.Name))
         throw new CategoryExistsAlreadyException(entity);
 
-      entity.CategoryId = await _repository.Using(x => x.Insert(entity));
+      entity.CategoryId = await _repository.Insert(entity);
 
       return entity;
     }
@@ -56,12 +52,12 @@ namespace MillionsOfThings.Lib.Services
       Validations.IsNotNull(entity, nameof(entity));
       Validations.IsGreaterThanZero(entity.CategoryId, nameof(entity.CategoryId));
 
-      if (await _repository.Using(x => x.Exists(entity.UserId, entity.Name)))
+      if (await _repository.Exists(entity.UserId, entity.Name))
         throw new CategoryExistsAlreadyException(entity);
 
       //Partial update not needed here because there's only one field
       //that can be updated at the moment.
-      await _repository.Using(x => x.Update(entity));
+      await _repository.Update(entity);
     }
 
     public async Task<CategoryRemovalResult> Remove(int userId, int categoryId)
@@ -71,23 +67,12 @@ namespace MillionsOfThings.Lib.Services
       //A check will not be performed here to see if a category is in use by a task.
       //It is up to the user to make this check ahead of time.
       //All tasks will be disassociated from the category before deletion.
+      
+      var (isSuccess, count) = await _repository.Delete(userId, categoryId);
 
-      await _repository.BeginTransaction();
-
-      var count = await _repository.DetachFromTasks(userId, categoryId);
-
-      var isSuccess = await _repository.Delete(userId, categoryId) > 0;
-
-      if (!isSuccess)
-      {
-        await _repository.RollbackTransaction();
-
-        throw NotFound.Category(categoryId);
-      }
-
-      await _repository.CommitTransaction();
-
-      return new CategoryRemovalResult(isSuccess, count);
+      return !isSuccess ? 
+        throw NotFound.Category(categoryId) 
+        : new CategoryRemovalResult(isSuccess, count);
     }
   }
 }

@@ -1,7 +1,4 @@
-﻿using Npgsql;
-using System.Data;
-
-namespace MillionsOfThings.Lib.DataAccess
+﻿namespace MillionsOfThings.Lib.DataAccess
 {
   public interface IRepository<T>
     : IRepository
@@ -16,17 +13,23 @@ namespace MillionsOfThings.Lib.DataAccess
     Task Update(T entity);
   }
 
+  /// <summary>
+  /// This interface exists to unify all repositories as being "a type of" repository
+  /// </summary>
   public interface IRepository
-    : IDisposable
+    //: IDisposable
   {
-    //This exists to unify all repositories as being "a type of" repository
+    //NOTE: 2025-12-28 I keep teetering back and forth on how to handle transactions in the data layer.
+    //I have been on and off again. Right now I am off again.
+
     //Exposes methods for working with transactions, so that repositories can work together in a single transaction
-    Task BeginTransaction();
 
-    Task CommitTransaction();
+    //Task BeginTransaction();
 
-    Task RollbackTransaction();
+    //Task CommitTransaction();
 
-    void JoinExistingTransaction(IDbTransaction transaction);
+    //Task RollbackTransaction();
+
+    //void JoinExistingTransaction(IDbTransaction transaction);
   }
 }

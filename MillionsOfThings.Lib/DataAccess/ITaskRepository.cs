@@ -5,11 +5,11 @@ namespace MillionsOfThings.Lib.DataAccess;
 
 public interface ITaskRepository : IRepository
 {
-  Task<IList<TaskRecord>> SelectAll(int userId);
+  Task<List<TaskRecord>> SelectAll(int userId);
 
   Task<TaskRecord?> Select(int taskId, int userId);
 
-  Task<IList<TaskRecord>> SelectAll();
+  Task<List<TaskRecord>> SelectAll();
 
   Task<int> Insert(TaskRecord entity);
 

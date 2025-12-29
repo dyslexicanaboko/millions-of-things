@@ -5,14 +5,9 @@ using System.Data;
 
 namespace MillionsOfThings.Lib.DataAccess
 {
-  public class CategoryRepository
-    : BaseRepository, ICategoryRepository
+  public class CategoryRepository(IAppConfiguration configuration) 
+    : BaseRepository(configuration), ICategoryRepository
   {
-    public CategoryRepository(IAppConfiguration configuration)
-      : base(configuration)
-    {
-    }
-
     public async Task<CategoryEntity?> Select(int userId, int categoryId)
     {
       const string sql = """
@@ -28,17 +23,15 @@ namespace MillionsOfThings.Lib.DataAccess
                                AND category_id = @category_id 
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      var lst = (await connection.QueryAsync<CategoryEntity>(sql, p, Transaction)).ToList();
-
-      return lst.SingleOrDefault();
+      return (await connection.QueryAsync<CategoryEntity>(sql, p)).SingleOrDefault();
     }
 
-    public async Task<IEnumerable<CategoryEntity>> SelectAll()
+    public async Task<List<CategoryEntity>> SelectAll()
     {
       const string sql = """
                          SELECT
@@ -48,12 +41,12 @@ namespace MillionsOfThings.Lib.DataAccess
                          FROM public.category
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
-      return await connection.QueryAsync<CategoryEntity>(sql);
+      return (await connection.QueryAsync<CategoryEntity>(sql)).ToList();
     }
 
-    public async Task<IEnumerable<CategoryEntity>> SelectAll(int userId)
+    public async Task<List<CategoryEntity>> SelectAll(int userId)
     {
       const string sql = """
                          SELECT
@@ -64,12 +57,12 @@ namespace MillionsOfThings.Lib.DataAccess
                          WHERE user_id = @user_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, userId);
 
-      return await connection.QueryAsync<CategoryEntity>(sql, p);
+      return (await connection.QueryAsync<CategoryEntity>(sql, p)).ToList();
     }
 
     public async Task<int> UsageCount(int userId, int categoryId)
@@ -80,31 +73,13 @@ namespace MillionsOfThings.Lib.DataAccess
                          WHERE user_id = @user_id AND category_id = @category_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      var count = (int)await connection.ExecuteScalarAsync(sql, p);
-
-      return count;
-    }
-
-    public async Task<int> DetachFromTasks(int userId, int categoryId)
-    {
-      const string sql = """
-                         UPDATE public.task SET
-                           category_id = NULL
-                          ,modified_on = now()
-                         WHERE user_id = @user_id AND category_id = @category_id
-                         """;
-
-      var connection = await GetConnection();
-
-      var p = GetPrimaryKeyParameter(categoryId);
-      AddUserIdParameter(p, userId);
-
-      var count = (int)await connection.ExecuteScalarAsync(sql, p, Transaction);
+      var result = await connection.ExecuteScalarAsync(sql, p);
+      var count = result is null ? 0 : Convert.ToInt32(result);
 
       return count;
     }
@@ -119,7 +94,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          );
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
@@ -139,7 +114,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          );
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, userId);
@@ -167,7 +142,7 @@ namespace MillionsOfThings.Lib.DataAccess
                                          )	RETURNING category_id AS PK;
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = new DynamicParameters();
       AddUserIdParameter(p, entity.UserId);
@@ -178,7 +153,7 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.Name,
         size: 20);
 
-      return await connection.ExecuteScalarAsync<int>(sql, p, Transaction);
+      return await connection.ExecuteScalarAsync<int>(sql, p);
     }
 
     public async Task Update(CategoryEntity entity)
@@ -191,7 +166,7 @@ namespace MillionsOfThings.Lib.DataAccess
                          		  AND category_id = @category_id
                          """;
 
-      var connection = await GetConnection();
+      await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(entity.CategoryId);
       AddUserIdParameter(p, entity.UserId);
@@ -202,24 +177,73 @@ namespace MillionsOfThings.Lib.DataAccess
         value: entity.Name,
         size: 20);
 
-      await connection.ExecuteAsync(sql, p, Transaction);
+      await connection.ExecuteAsync(sql, p);
     }
 
-    public async Task<int> Delete(int userId, int categoryId)
+    //Until this is needed again later, I am going to keep it commented out.
+    //I can't remember right now, but I think I needed this separately,
+    //I just don't remember why.
+    //public async Task<int> DetachFromTasks(int userId, int categoryId)
+    //{
+    //  const string sql = """
+    //                     UPDATE public.task SET
+    //                       category_id = NULL
+    //                      ,modified_on = now()
+    //                     WHERE user_id = @user_id AND category_id = @category_id
+    //                     """;
+
+    //  await using var connection = await GetConnection();
+
+    //  var p = GetPrimaryKeyParameter(categoryId);
+    //  AddUserIdParameter(p, userId);
+
+    //  var result = await connection.ExecuteScalarAsync(sql, p);
+    //  var count = result is null ? 0 : Convert.ToInt32(result);
+
+    //  return count;
+    //}
+
+    /// <summary>
+    /// Deletes the category with the specified identifier for the given user.
+    /// </summary>
+    /// <param name="userId">The identifier of the user who owns the category to be deleted.</param>
+    /// <param name="categoryId">The identifier of the category to delete.</param>
+    /// <returns>The number of categories deleted. Returns 0 if no matching category was found.</returns>
+    public async Task<(bool, int)> Delete(int userId, int categoryId)
     {
-      const string sql = "DELETE FROM public.category WHERE user_id = @user_id AND category_id = @category_id";
-
-      var connection = await GetConnection();
-
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      var count = (int)await connection.ExecuteScalarAsync(sql, p, Transaction);
+      await using var connection = await GetConnection();
 
-      return count;
+      var tran = await connection.BeginTransactionAsync();
+
+      //Detach the category from any tasks that are using it
+      const string sqlDetach = """
+                               UPDATE public.task SET
+                                 category_id = NULL
+                                ,modified_on = now()
+                               WHERE user_id = @user_id AND category_id = @category_id
+                               """;
+
+      var resultDetach = await connection.ExecuteScalarAsync(sqlDetach, p, tran);
+      var countDetached = resultDetach is null ? 0 : Convert.ToInt32(resultDetach);
+
+      //Now delete the category itself
+      const string sqlDelete = "DELETE FROM public.category WHERE user_id = @user_id AND category_id = @category_id";
+      
+      var result = await connection.ExecuteScalarAsync(sqlDelete, p, tran);
+      var isSuccess = (result is null ? 0 : Convert.ToInt32(result)) > 0;
+
+      if (isSuccess)
+        await tran.CommitAsync();
+      else
+        await tran.RollbackAsync();
+
+      return (isSuccess, countDetached);
     }
 
-    private DynamicParameters GetPrimaryKeyParameter(int categoryId)
+    private static DynamicParameters GetPrimaryKeyParameter(int categoryId)
     {
       var p = new DynamicParameters();
       p.Add("@category_id", dbType: DbType.Int32, value: categoryId);

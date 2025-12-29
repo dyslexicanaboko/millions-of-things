@@ -1,5 +1,4 @@
-﻿using MillionsOfThings.Lib.DataAccess;
-using MillionsOfThings.Lib.DataAccess.Security;
+﻿using MillionsOfThings.Lib.DataAccess.Security;
 using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Exceptions;
 using Crypto = BCrypt.Net.BCrypt; //Naming it so it's clear a 3rd party is being used
@@ -19,7 +18,7 @@ namespace MillionsOfThings.Lib.Services.Security
     {
       //Direct Repo access on purpose to have a separation of concerns between the UserService and Authentication
       //The password is needed only in this situation.
-      var entity = await _repoUser.Using(x => x.Select(username));
+      var entity = await _repoUser.Select(username);
 
       //If user isn't found
       if (entity == null)
