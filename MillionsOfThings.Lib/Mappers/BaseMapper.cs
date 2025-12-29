@@ -1,33 +1,32 @@
-﻿namespace MillionsOfThings.Lib.Mappers
+﻿namespace MillionsOfThings.Lib.Mappers;
+
+public abstract class BaseMapper
 {
-  public abstract class BaseMapper
+  protected static List<TOutput?> ToList<TInput, TOutput>(List<TInput>? target, Func<TInput?, TOutput?> mapper)
+    where TInput : class, new()
+    where TOutput : class //The new() constraint does not matter for outputs since the mapper handles it.
   {
-    protected static List<TOutput?> ToList<TInput, TOutput>(List<TInput>? target, Func<TInput?, TOutput?> mapper)
-      where TInput : class, new()
-      where TOutput : class //The new() constraint does not matter for outputs since the mapper handles it.
-    {
-      if (target == null || target.Count == 0) return [];
+    if (target == null || target.Count == 0) return [];
 
-      return target.Select(mapper).ToList();
-    }
+    return target.Select(mapper).ToList();
+  }
 
-    protected static List<TOutput?> ToList<TInput, TOutput>(int userId, List<TInput>? target, Func<int, TInput?, TOutput?> mapper)
-      where TInput : class, new()
-      where TOutput : class, new() //The new() constraint does not matter for outputs since the mapper handles it.
-    {
-      if (target == null || target.Count == 0) return [];
+  protected static List<TOutput?> ToList<TInput, TOutput>(int userId, List<TInput>? target, Func<int, TInput?, TOutput?> mapper)
+    where TInput : class, new()
+    where TOutput : class, new() //The new() constraint does not matter for outputs since the mapper handles it.
+  {
+    if (target == null || target.Count == 0) return [];
 
-      return target.Select(x => mapper(userId, x)).ToList();
-    }
+    return target.Select(x => mapper(userId, x)).ToList();
+  }
 
-    //NOTE: There isn't a simple way to enforce that TRecordInput is a record class, but this method is only intended for record classes for now.
-    protected static List<TOutput?> ToListR<TRecordInput, TOutput>(List<TRecordInput>? target, Func<TRecordInput?, TOutput?> mapper)
-      where TRecordInput : class //Record classes cannot use the new() constraint.
-      where TOutput : class //The new() constraint does not matter for outputs since the mapper handles it.
-    {
-      if (target == null || target.Count == 0) return [];
+  //NOTE: There isn't a simple way to enforce that TRecordInput is a record class, but this method is only intended for record classes for now.
+  protected static List<TOutput?> ToListR<TRecordInput, TOutput>(List<TRecordInput>? target, Func<TRecordInput?, TOutput?> mapper)
+    where TRecordInput : class //Record classes cannot use the new() constraint.
+    where TOutput : class //The new() constraint does not matter for outputs since the mapper handles it.
+  {
+    if (target == null || target.Count == 0) return [];
 
-      return target.Select(mapper).ToList();
-    }
+    return target.Select(mapper).ToList();
   }
 }

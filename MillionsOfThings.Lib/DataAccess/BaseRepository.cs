@@ -5,80 +5,80 @@ using MillionsOfThings.Lib.Services.Utility;
 using Npgsql;
 using System.Data;
 
-namespace MillionsOfThings.Lib.DataAccess
+namespace MillionsOfThings.Lib.DataAccess;
+
+public abstract class BaseRepository
 {
-  public abstract class BaseRepository
+  protected string? ConnectionString;
+
+  protected BaseRepository()
   {
-    protected string? ConnectionString;
+    //NOTE: Do not instantiate objects here. This is here for the purposes of DI only.
+  }
 
-    protected BaseRepository()
-    {
-      //NOTE: Do not instantiate objects here. This is here for the purposes of DI only.
-    }
+  //TODO: Refactor to introduce a provider for getting the connection
+  //Primary constructor
+  protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
-    //Primary constructor
-    protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
+  protected async Task<NpgsqlConnection> GetConnection()
+  {
+    if (string.IsNullOrWhiteSpace(ConnectionString)) throw new ApplicationException("Connection string cannot be blank, whitespace, or null.");
 
-    protected async Task<NpgsqlConnection> GetConnection()
-    {
-      if (string.IsNullOrWhiteSpace(ConnectionString)) throw new ApplicationException("Connection string cannot be blank, whitespace, or null.");
-
-      var conn = new NpgsqlConnection(ConnectionString);
+    var conn = new NpgsqlConnection(ConnectionString);
       
-      await conn.OpenAsync();
+    await conn.OpenAsync();
 
-      return conn;
+    return conn;
+  }
+
+  protected static SqlMapper.ICustomQueryParameter GetTvpIntegerList(IList<int> integerList)
+  {
+    var dt = new DataTable("IntegerList");
+    dt.Columns.Add("IntValue", typeof(int));
+
+    foreach (var i in integerList)
+    {
+      var dr = dt.NewRow();
+      dr["IntValue"] = i;
+
+      dt.Rows.Add(dr);
     }
 
-    protected SqlMapper.ICustomQueryParameter GetTvpIntegerList(IList<int> integerList)
+    return dt.AsTableValuedParameter("dbo.IntegerList");
+  }
+
+  protected async Task UpdatePartial(
+    string updateTemplate,
+    List<ColumnSchema> updatePartialColumns,
+    DynamicParameters p, 
+    IList<UpdateInstruction> instructions)
+  {
+    if (!instructions.Any()) return;
+
+    var lst = new List<string>(instructions.Count);
+
+    foreach (var instr in instructions)
     {
-      var dt = new DataTable("IntegerList");
-      dt.Columns.Add("IntValue", typeof(int));
+      var col = updatePartialColumns.SingleOrDefault(x => x.Property == instr.Property);
 
-      foreach (var i in integerList)
-      {
-        var dr = dt.NewRow();
-        dr["IntValue"] = i;
+      if (col == null) throw new ArgumentException($"The property '{instr.Property}' is not valid for partial updates.", nameof(instructions));
 
-        dt.Rows.Add(dr);
-      }
+      lst.Add($"{col.Name} = @{col.Name}");
 
-      return dt.AsTableValuedParameter("dbo.IntegerList");
+      p.Add(name: col.Name, dbType: col.DbType, value: instr.Value, size: col.Size, scale: col.Scale);
     }
 
-    protected async Task UpdatePartial(
-      string updateTemplate,
-      List<ColumnSchema> updatePartialColumns,
-      DynamicParameters p, 
-      IList<UpdateInstruction> instructions)
-    {
-      if (!instructions.Any()) return;
+    await using var connection = await GetConnection();
 
-      var lst = new List<string>(instructions.Count);
+    var sql = string.Format(updateTemplate, string.Join(", ", lst));
 
-      foreach (var instr in instructions)
-      {
-        var col = updatePartialColumns.SingleOrDefault(x => x.Property == instr.Property);
+    await connection.ExecuteAsync(sql, p);
+  }
 
-        if (col == null) throw new ArgumentException($"The property '{instr.Property}' is not valid for partial updates.", nameof(instructions));
-
-        lst.Add($"{col.Name} = @{col.Name}");
-
-        p.Add(name: col.Name, dbType: col.DbType, value: instr.Value, size: col.Size, scale: col.Scale);
-      }
-
-      await using var connection = await GetConnection();
-
-      var sql = string.Format(updateTemplate, string.Join(", ", lst));
-
-      await connection.ExecuteAsync(sql, p);
-    }
-
-    protected static DynamicParameters AddUserIdParameter(DynamicParameters p, int userId)
-    {
-      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+  protected static DynamicParameters AddUserIdParameter(DynamicParameters p, int userId)
+  {
+    p.Add("@user_id", dbType: DbType.Int32, value: userId);
       
-      return p;
-    }
+    return p;
   }
 }

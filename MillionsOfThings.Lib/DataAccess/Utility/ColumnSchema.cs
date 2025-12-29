@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 
-namespace MillionsOfThings.Lib.DataAccess.Utility
+namespace MillionsOfThings.Lib.DataAccess.Utility;
+
+public class ColumnSchema(
+  string property,
+  string name,
+  DbType dbType,
+  int? size = null,
+  byte? scale = null)
 {
-  public class ColumnSchema
-  {
-    public ColumnSchema(string property, string name, DbType dbType, int? size = null, byte? scale = null)
-    {
-      Property = property;
-      Name = name;
-      DbType = dbType;
-      Size = size;
-      Scale = scale;
-    }
+  public string Property { get; set; } = property;
 
-    public string Property { get; set; }
-    public string Name { get; set; }
-    public DbType DbType { get; set; }
-    public int? Size { get; set; }
-    public byte? Scale { get; set; }
-  }
+  public string Name { get; set; } = name;
+
+  public DbType DbType { get; set; } = dbType;
+
+  public int? Size { get; set; } = size;
+
+  public byte? Scale { get; set; } = scale;
 }
