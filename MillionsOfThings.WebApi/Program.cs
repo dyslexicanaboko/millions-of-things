@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
+
+//using Microsoft.OpenApi.Interfaces; // Changed from Models
 using Newtonsoft.Json;
 using System.Text;
 
@@ -81,18 +83,10 @@ public class Program
       });
 
       // Apply to all operations
-      c.AddSecurityRequirement(new OpenApiSecurityRequirement
+      c.AddSecurityRequirement(x => new OpenApiSecurityRequirement
       {
         {
-          new OpenApiSecurityScheme
-          {
-              Reference = new OpenApiReference
-              {
-                  Type = ReferenceType.SecurityScheme,
-                  Id = "Bearer"
-              }
-          },
-          Array.Empty<string>()
+          new OpenApiSecuritySchemeReference("Bearer", null, null), []
         }
       });
     });
