@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Exceptions;
 using static MillionsOfThings.Lib.Exceptions.InvalidArgument;
 
