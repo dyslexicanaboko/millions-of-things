@@ -1,5 +1,5 @@
 ﻿using MillionsOfThings.Lib.Exceptions;
-using MillionsOfThings.Lib.Models.Client;
+using MillionsOfThings.Lib.Models;
 using Newtonsoft.Json;
 using System.Net;
 

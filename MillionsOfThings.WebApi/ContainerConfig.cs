@@ -1,7 +1,7 @@
 ﻿using MillionsOfThings.Lib;
-using MillionsOfThings.Lib.Services;
 using System.Reflection;
 using Serilog;
+using MillionsOfThings.Lib.Features;
 
 namespace MillionsOfThings.WebApi
 {
@@ -20,9 +20,7 @@ namespace MillionsOfThings.WebApi
             //Namespaces that must be excluded from the DI scan
             var excludeNamespaces = asm.GetTypes()
               .Where(t => 
-                t.Namespace != null && 
-                (t.Namespace.Contains("MillionsOfThings.Lib.Entities") ||
-                  t.Namespace.Contains("MillionsOfThings.Lib.Models")))
+                t.Namespace != null && t.Namespace.EndsWith(".Models"))
               .Select(t => t.Namespace)
               .Distinct()
               .ToArray();

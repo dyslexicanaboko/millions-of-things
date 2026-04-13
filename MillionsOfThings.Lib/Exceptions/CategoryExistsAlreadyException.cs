@@ -1,4 +1,4 @@
-﻿using MillionsOfThings.Lib.Entities;
+﻿using MillionsOfThings.Lib.Features.Category;
 
 namespace MillionsOfThings.Lib.Exceptions
 {

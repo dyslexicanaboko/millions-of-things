@@ -1,12 +1,6 @@
 ﻿using FluentValidation.Results;
-using MillionsOfThings.Lib.Entities;
-using MillionsOfThings.Lib.Validation;
+using MillionsOfThings.Lib.Features.Category;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MillionsOfThings.UnitTests.ValidationTests
 {

@@ -1,7 +1,0 @@
-﻿namespace MillionsOfThings.Lib.Services.Utility;
-
-public class UpdateInstruction(string property, object? value)
-{
-    public string Property { get; set; } = property;
-    public object? Value { get; set; } = value;
-}

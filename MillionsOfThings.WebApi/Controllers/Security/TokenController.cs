@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MillionsOfThings.Lib.Models.Client;
-using MillionsOfThings.Lib.Services.Security;
-using MillionsOfThings.Lib.Validation;
+using MillionsOfThings.Lib.Features;
+using MillionsOfThings.Lib.Features.Security;
+using MillionsOfThings.Lib.Features.Security.Models;
 
 namespace MillionsOfThings.WebApi.Controllers.Security
 {

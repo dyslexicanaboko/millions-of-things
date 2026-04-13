@@ -1,10 +1,9 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using MillionsOfThings.Lib.Entities;
-using MillionsOfThings.Lib.Mappers;
-using MillionsOfThings.Lib.Models.Client;
-using MillionsOfThings.Lib.Services;
-using MillionsOfThings.Lib.Validation;
+using MillionsOfThings.Lib.Features;
+using MillionsOfThings.Lib.Features.TaskF;
+using MillionsOfThings.Lib.Features.TaskF.Models;
+using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers
 {

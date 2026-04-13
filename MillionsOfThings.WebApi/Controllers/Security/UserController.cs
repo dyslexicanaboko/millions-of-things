@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MillionsOfThings.Lib.Mappers;
+using MillionsOfThings.Lib.Features.Security;
+using MillionsOfThings.Lib.Features.Security.Models;
 using MillionsOfThings.Lib.Models;
-using MillionsOfThings.Lib.Models.Client;
-using MillionsOfThings.Lib.Services.Security;
 
 namespace MillionsOfThings.WebApi.Controllers.Security
 {
@@ -12,10 +11,10 @@ namespace MillionsOfThings.WebApi.Controllers.Security
   {
     private readonly IUserMapper _mapper;
 
-    private readonly IUserService _service;
+    private readonly IUserManager _service;
 
     public UserController(
-      IUserService service,
+      IUserManager service,
       IUserMapper mapper)
     {
       _service = service;

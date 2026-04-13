@@ -1,16 +1,8 @@
 ﻿using FakeItEasy;
 using FluentValidation.Results;
-using MillionsOfThings.Lib.DataAccess;
-using MillionsOfThings.Lib.Entities;
 using MillionsOfThings.Lib.Exceptions;
-using MillionsOfThings.Lib.Services;
-using MillionsOfThings.Lib.Validation;
+using MillionsOfThings.Lib.Features.Category;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MillionsOfThings.UnitTests.ServicesTests
 {
@@ -19,14 +11,14 @@ namespace MillionsOfThings.UnitTests.ServicesTests
   {
     private ICategoryRepository _repository;
     private ICategoryValidation _validation;
-    private CategoryService _service;
+    private CategoryManager _service;
 
     [SetUp]
     public void SetUp()
     {
       _repository = A.Fake<ICategoryRepository>();
       _validation = A.Fake<ICategoryValidation>();
-      _service = new CategoryService(_repository, _validation);
+      _service = new CategoryManager(_repository, _validation);
     }
 
     [Test]
