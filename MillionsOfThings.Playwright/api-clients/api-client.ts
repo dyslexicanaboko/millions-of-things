@@ -12,6 +12,7 @@ export class ApiClient {
   //  /api/v1/category
   private context: APIRequestContext | undefined;
   private currentUser: Credentials = DefaultUser1;
+  private currentToken: string = EmptyToken;
 
   constructor() {}
 
@@ -42,10 +43,13 @@ export class ApiClient {
       throw new Error("Failed to get auth token!");
     }
 
+    // Storing the token for cases where a different context is needed
+    this.currentToken = token;
+
     this.context = await request.newContext({
       extraHTTPHeaders: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${this.currentToken}`,
       },
       ignoreHTTPSErrors: true, // Ignore HTTPS errors for localhost
     });
@@ -130,9 +134,20 @@ export class ApiClient {
     endpoint: string,
     operations?: PatchDoc[]
   ): Promise<APIResponse> {
+    // This is for the general context which also sets the token which is needed below.
     await this.initializeContext();
 
-    return await this.getContext().patch(this.buildUrl(endpoint), {
+    //The Content-Type is different here from the other methods, 
+    //so a separate context is needed for PATCH.
+    const patchContext = await request.newContext({
+      extraHTTPHeaders: {
+        "Content-Type": "application/json-patch+json",
+        Authorization: `Bearer ${this.currentToken}`,
+      },
+      ignoreHTTPSErrors: true, // Ignore HTTPS errors for localhost
+    });
+
+    return await patchContext.patch(this.buildUrl(endpoint), {
       data: operations,
     });
   }

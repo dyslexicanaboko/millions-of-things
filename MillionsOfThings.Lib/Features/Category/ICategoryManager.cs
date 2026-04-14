@@ -1,6 +1,6 @@
 namespace MillionsOfThings.Lib.Features.Category;
 
-public interface ICategoryService
+public interface ICategoryManager
 {
   Task<CategoryEntity?> Get(int userId, int categoryId);
 

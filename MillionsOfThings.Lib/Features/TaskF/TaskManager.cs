@@ -5,7 +5,7 @@ using MillionsOfThings.Lib.Utility;
 namespace MillionsOfThings.Lib.Features.TaskF
 {
   public class TaskManager
-    : BaseService, ITaskService
+    : BaseService, ITaskManager
   {
     private readonly ITaskRepository _repository;
     private readonly ITaskValidation _validation;

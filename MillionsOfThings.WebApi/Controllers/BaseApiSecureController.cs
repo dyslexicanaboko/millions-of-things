@@ -35,7 +35,7 @@ namespace MillionsOfThings.WebApi.Controllers
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
       var token = headerAuth
         .First()
-        .Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)[1];
+        .Split([' '], StringSplitOptions.RemoveEmptyEntries)[1];
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
       var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);

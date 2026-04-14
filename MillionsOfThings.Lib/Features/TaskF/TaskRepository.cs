@@ -70,7 +70,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
       await using var connection = await GetConnection();
 
       var p = GetPrimaryKeyParameter(taskId);
-      p.Add("@user_id", dbType: DbType.Int32, value: userId);
+      AddUserIdParameter(p, userId);
 
       return (await connection.QueryAsync<TaskRecord>(sql, p)).SingleOrDefault();
     }

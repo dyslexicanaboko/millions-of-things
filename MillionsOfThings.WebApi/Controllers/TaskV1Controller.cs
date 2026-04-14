@@ -13,10 +13,10 @@ namespace MillionsOfThings.WebApi.Controllers
   {
     private readonly ITaskMapper _mapper;
 
-    private readonly ITaskService _service;
+    private readonly ITaskManager _service;
 
     public TaskV1Controller(
-      ITaskService service,
+      ITaskManager service,
       ITaskMapper mapper)
     {
       _service = service;

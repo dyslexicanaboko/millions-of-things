@@ -14,10 +14,10 @@ namespace MillionsOfThings.WebApi.Controllers
   {
     private readonly ICategoryMapper _mapper;
 
-    private readonly ICategoryService _service;
+    private readonly ICategoryManager _service;
 
     public CategoryV1Controller(
-      ICategoryService service,
+      ICategoryManager service,
       ICategoryMapper mapper)
     {
       _service = service;

@@ -6,18 +6,18 @@ namespace MillionsOfThings.Lib.Features.Category
   public class CategoryRepository(IAppConfiguration configuration) 
     : BaseRepository(configuration), ICategoryRepository
   {
-    public async Task<CategoryEntity?> Select(int userId, int categoryId)
+    public async Task<CategoryRecord?> Select(int userId, int categoryId)
     {
       const string sql = """
 
-                         			SELECT
-                         	      category_id,
+                              SELECT
+                                category_id,
                                 user_id,
                                 name,
                                 created_on,
                                 modified_on
-                         			FROM public.category
-                         			WHERE user_id = @user_id
+                              FROM public.category
+                              WHERE user_id = @user_id
                                AND category_id = @category_id 
                          """;
 
@@ -26,10 +26,10 @@ namespace MillionsOfThings.Lib.Features.Category
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
 
-      return (await connection.QueryAsync<CategoryEntity>(sql, p)).SingleOrDefault();
+      return (await connection.QueryAsync<CategoryRecord>(sql, p)).SingleOrDefault();
     }
 
-    public async Task<List<CategoryEntity>> SelectAll()
+    public async Task<List<CategoryRecord>> SelectAll()
     {
       const string sql = """
                          SELECT
@@ -41,10 +41,10 @@ namespace MillionsOfThings.Lib.Features.Category
 
       await using var connection = await GetConnection();
 
-      return (await connection.QueryAsync<CategoryEntity>(sql)).ToList();
+      return (await connection.QueryAsync<CategoryRecord>(sql)).ToList();
     }
 
-    public async Task<List<CategoryEntity>> SelectAll(int userId)
+    public async Task<List<CategoryRecord>> SelectAll(int userId)
     {
       const string sql = """
                          SELECT
@@ -60,7 +60,7 @@ namespace MillionsOfThings.Lib.Features.Category
       var p = new DynamicParameters();
       AddUserIdParameter(p, userId);
 
-      return (await connection.QueryAsync<CategoryEntity>(sql, p)).ToList();
+      return (await connection.QueryAsync<CategoryRecord>(sql, p)).ToList();
     }
 
     public async Task<int> UsageCount(int userId, int categoryId)
@@ -97,7 +97,7 @@ namespace MillionsOfThings.Lib.Features.Category
       var p = GetPrimaryKeyParameter(categoryId);
       AddUserIdParameter(p, userId);
       
-      var exists = (bool)await connection.ExecuteScalarAsync(sql, p);
+      var exists = await connection.ExecuteScalarAsync<bool>(sql, p);
 
       return exists;
     }
@@ -123,18 +123,18 @@ namespace MillionsOfThings.Lib.Features.Category
         value: name,
         size: 20);
 
-      var exists = (bool)await connection.ExecuteScalarAsync(sql, p);
+      var exists = await connection.ExecuteScalarAsync<bool>(sql, p);
 
       return exists;
     }
 
-    public async Task<int> Insert(CategoryEntity entity)
+    public async Task<int> Insert(CategoryRecord entity)
     {
       const string sql = """
                          INSERT INTO public.category (
                                          user_id,
                                          name
-                         						) VALUES (
+                                    ) VALUES (
                                          @user_id,
                                          @name
                                          )	RETURNING category_id AS PK;
@@ -154,14 +154,14 @@ namespace MillionsOfThings.Lib.Features.Category
       return await connection.ExecuteScalarAsync<int>(sql, p);
     }
 
-    public async Task Update(CategoryEntity entity)
+    public async Task Update(CategoryRecord entity)
     {
       const string sql = """
                             UPDATE public.category SET 
                               name = @name,
                               modified_on = now()
-                         		WHERE user_id = @user_id 
-                         		  AND category_id = @category_id
+                            WHERE user_id = @user_id 
+                              AND category_id = @category_id
                          """;
 
       await using var connection = await GetConnection();

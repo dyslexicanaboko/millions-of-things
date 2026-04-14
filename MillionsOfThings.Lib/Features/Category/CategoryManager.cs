@@ -3,32 +3,36 @@ using MillionsOfThings.Lib.Exceptions;
 namespace MillionsOfThings.Lib.Features.Category
 {
   public class CategoryManager
-    : ICategoryService
+    : ICategoryManager
   {
     private readonly ICategoryRepository _repository;
 
     private readonly ICategoryValidation _validation;
-
+    
+    private readonly ICategoryMapper _mapper;
+    
     public CategoryManager(
       ICategoryRepository repository,
-      ICategoryValidation validation)
+      ICategoryValidation validation,
+      ICategoryMapper mapper)
     {
       _repository = repository;
       _validation = validation;
+      _mapper = mapper;
     }
 
     public async Task<CategoryEntity?> Get(int userId, int categoryId)
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      return await _repository.Select(userId, categoryId);
+      return _mapper.ToEntity(await _repository.Select(userId, categoryId));
     }
 
     public async Task<List<CategoryEntity>> GetAll(int userId)
     {
       Validations.IsGreaterThanZero(userId, nameof(userId));
 
-      return await _repository.SelectAll(userId);
+      return _mapper.ToEntity(await _repository.SelectAll(userId));
     }
 
     public async Task<CategoryEntity> Add(CategoryEntity? entity)
@@ -38,7 +42,7 @@ namespace MillionsOfThings.Lib.Features.Category
       if (await _repository.Exists(entity.UserId, entity.Name))
         throw new CategoryExistsAlreadyException(entity);
 
-      entity.CategoryId = await _repository.Insert(entity);
+      entity.CategoryId = await _repository.Insert(_mapper.ToRecord(entity));
 
       return entity;
     }
@@ -53,7 +57,7 @@ namespace MillionsOfThings.Lib.Features.Category
 
       //Partial update not needed here because there's only one field
       //that can be updated at the moment.
-      await _repository.Update(entity);
+      await _repository.Update(_mapper.ToRecord(entity));
     }
 
     public async Task<CategoryRemovalResult> Remove(int userId, int categoryId)

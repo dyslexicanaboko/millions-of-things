@@ -3,7 +3,7 @@ using MillionsOfThings.Lib.Features.TaskF.Models;
 
 namespace MillionsOfThings.Lib.Features.TaskF;
 
-public interface ITaskService
+public interface ITaskManager
 {
   Task<TaskEntity?> Get(int userId, int taskId);
 

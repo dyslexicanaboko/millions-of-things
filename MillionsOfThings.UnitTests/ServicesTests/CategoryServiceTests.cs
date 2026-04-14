@@ -18,7 +18,7 @@ namespace MillionsOfThings.UnitTests.ServicesTests
     {
       _repository = A.Fake<ICategoryRepository>();
       _validation = A.Fake<ICategoryValidation>();
-      _service = new CategoryManager(_repository, _validation);
+      _service = new CategoryManager(_repository, _validation, TODO);
     }
 
     [Test]

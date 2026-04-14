@@ -18,6 +18,15 @@ namespace MillionsOfThings.Lib.Features.Category
       ModifiedOn = target.ModifiedOn;
     }
 
+    public CategoryEntity(CategoryRecord record)
+    {
+      CategoryId = record.CategoryId;
+      UserId = record.UserId;
+      Name = record.Name;
+      CreatedOn = record.CreatedOn;
+      ModifiedOn = record.ModifiedOn;
+    }
+
     public CategoryEntity(int userId, CategoryV1CreateModel model)
     {
       UserId = userId;
