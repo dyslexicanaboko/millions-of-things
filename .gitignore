@@ -397,6 +397,11 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
+# DBeaver
+/MillionsOfThings.Database/.dbeaver
+/MillionsOfThings.Database/.metadata
+/drivers/*
+
 # Custom adds
 *.bak
-/MillionsOfThings.Database/.dbeaver/.project-metadata.json.bak
+

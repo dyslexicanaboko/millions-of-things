@@ -1,10 +1,10 @@
 {
 	"folders": {},
 	"connections": {
-		"postgres-jdbc-192214fe5bd-3ee9a709bede3c5e": {
+		"postgres-jdbc-19d8d6f2ef9-58b59b44de1db5ad": {
 			"provider": "postgresql",
 			"driver": "postgres-jdbc",
-			"name": "millions-of-things",
+			"name": "millions_of_things",
 			"save-password": true,
 			"configuration": {
 				"host": "localhost",
@@ -12,12 +12,10 @@
 				"database": "millions_of_things",
 				"url": "jdbc:postgresql://localhost:5432/millions_of_things",
 				"configurationType": "MANUAL",
-				"home": "postgresql_client",
 				"type": "dev",
 				"closeIdleConnection": true,
 				"provider-properties": {
-					"@dbeaver-show-non-default-db@": "false",
-					"@dbeaver-chosen-role@": ""
+					"@dbeaver-show-non-default-db@": "true"
 				},
 				"auth-model": "native"
 			}

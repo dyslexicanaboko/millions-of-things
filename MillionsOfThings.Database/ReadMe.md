@@ -62,3 +62,28 @@ It's important to notice the difference of the host used here. It's not `127.0.0
 ```
 
 This is an excerpt from `C:\Windows\System32\drivers\etc\hosts`.
+
+## Accessing Postgres via DBeaver
+
+2026-04-14
+
+DBeaver has a completely different approach to how you work with your database, it's not intuitive at all, and borderline infuriating. That being said it's not browser based which is why I started using it instead of pgAdmin. It's so unclear how it's used I have to write these instructions here so I can remember how to work with my own SQL files after enough time has passed.
+
+1. Open up the workspace which in my case is the `MillionsOfThings.Database` folder.
+2. I setup the workspace to link back to folders I established already with my scripts.
+3. Even after opening those files, they won't have a connection to the database immediately. You have to click on the "Active Datasource" dropdown which is unamed to the right of the padlock.
+   1. The padlock is to make the datasource readonly, so you can hover over the icons until you find that.
+   2. Do not be tempted to click on the green "Connect" powerplug icon because it won't do anything and provides zero feedback.
+4. Once you select the "Active Datasource", then and only then can you run queries.
+   1. You can highlight your line and press `CTRL` + `Enter` to run queries because apparently `F5` or `F9` was too logical a choice.
+
+### Changing execution keyboard shortcut
+
+The default execution keyboard shortcut is `CTRL` + `Enter`. It can be changed to `F5` by following these steps:
+
+1. Open "Window > Preferences"
+2. Navigate to "User Interface > Keys"
+3. In the search bar type "execute"
+4. Change the "Execute SQL query" to `F5`
+
+The only caution is that `F5` is refresh in most parts of the application.

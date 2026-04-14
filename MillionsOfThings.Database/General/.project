@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>General</name>
+	<comment>General DBeaver project</comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>org.jkiss.dbeaver.DBeaverNature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>Schemas</name>
+			<type>2</type>
+			<location>//C:/Dev/millions-of-things/MillionsOfThings.Database/Schemas/</location>
+		</link>
+		<link>
+			<name>Scripts</name>
+			<type>2</type>
+			<location>//C:/Dev/millions-of-things/MillionsOfThings.Database/Scripts/</location>
+		</link>
+		<link>
+			<name>TestData</name>
+			<type>2</type>
+			<location>//C:/Dev/millions-of-things/MillionsOfThings.Database/TestData/</location>
+		</link>
+	</linkedResources>
+</projectDescription>
