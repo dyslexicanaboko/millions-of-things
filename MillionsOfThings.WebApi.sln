@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.10.35004.147
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11527.330 d18.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MillionsOfThings.WebApi", "MillionsOfThings.WebApi\MillionsOfThings.WebApi.csproj", "{5A0D12E3-179F-47D7-9CFF-CA4A8749EF9A}"
 EndProject
@@ -10,6 +10,11 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{F425887F-550B-463B-822D-2B9A5C533C50}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MillionsOfThings.UnitTests", "MillionsOfThings.UnitTests\MillionsOfThings.UnitTests.csproj", "{7D9C59F4-122C-4752-9E73-94373262CABF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{9FFECE4B-E267-4A40-A5CD-53C8350067F4}"
+	ProjectSection(SolutionItems) = preProject
+		OAS-export.json = OAS-export.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

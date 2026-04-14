@@ -1,0 +1,16 @@
+apis:
+  millions-of-things@v1:
+    root: OAS-export.json
+
+rules:
+  no-empty-servers: error
+  operation-operationId: error
+  operation-summary: error
+  tag-description: error
+  operation-4xx-response: error
+  no-server-example.com: warn
+  nullable-type-sibling: error
+  info-license: error
+
+docs:
+  showConsole: true
