@@ -398,10 +398,10 @@ FodyWeavers.xsd
 *.sln.iml
 
 # DBeaver
-/MillionsOfThings.Database/.dbeaver
+**/*.dbeaver
 /MillionsOfThings.Database/.metadata
+/MillionsOfThings.Database/General/*
 /drivers/*
 
 # Custom adds
 *.bak
-

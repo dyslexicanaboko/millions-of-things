@@ -13,7 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MillionsOfThings.UnitTests"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{9FFECE4B-E267-4A40-A5CD-53C8350067F4}"
 	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		LICENSE = LICENSE
 		OAS-export.json = OAS-export.json
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global
