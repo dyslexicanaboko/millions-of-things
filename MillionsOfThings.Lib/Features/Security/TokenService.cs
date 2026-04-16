@@ -52,10 +52,12 @@ namespace MillionsOfThings.Lib.Features.Security
     public async Task<JwtTokenV1Model> GetToken(RefreshTokenV1PostModel model, string ipAddress)
     {
       //Hit the DB one time - lookup user by refresh-token
-      var refreshToken = await _refreshTokenRepository.Select(model.Token);
+      var record = await _refreshTokenRepository.Select(model.Token);
 
       //If the token is not found, an error must be thrown
-      if (refreshToken == null) throw Unauthorized.FailedAuthentication();
+      if (record == null) throw Unauthorized.FailedAuthentication();
+
+      var refreshToken = new RefreshTokenEntity(record);
 
       //On the off chance the refresh token has expired
       if (refreshToken.IsExpired()) throw Unauthorized.NotAuthenticated();
@@ -116,8 +118,18 @@ namespace MillionsOfThings.Lib.Features.Security
 
       var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
+      var record = new RefreshTokenRecord
+      {
+        RefreshTokenId = refreshToken.RefreshTokenId,
+        UserId = refreshToken.UserId,
+        Token = refreshToken.Token,
+        CreatedOn = refreshToken.CreatedOn,
+        ExpiresOn = refreshToken.ExpiresOn,
+        CreatedByIp = refreshToken.CreatedByIp
+      };
+
       //Only record the new refresh token after we have a successful generation
-      await _refreshTokenRepository.Insert(refreshToken);
+      await _refreshTokenRepository.Insert(record);
 
       return new JwtTokenV1Model(jwt, Convert.ToInt32((token.ValidTo - utcNow).TotalSeconds));
     }

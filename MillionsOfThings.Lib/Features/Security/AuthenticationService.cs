@@ -9,22 +9,29 @@ namespace MillionsOfThings.Lib.Features.Security
   {
     private readonly IUserRepository _repoUser;
 
+    private readonly IUserMapper _mapper;
+
     public AuthenticationService(
-      IUserRepository repoUser)
-      => _repoUser = repoUser;
+      IUserRepository repoUser, IUserMapper mapper)
+    {
+      _repoUser = repoUser;
+      _mapper = mapper;
+    }
 
     public async Task<UserEntity> Authenticate(string username, string password)
     {
       //Direct Repo access on purpose to have a separation of concerns between the UserService and Authentication
       //The password is needed only in this situation.
-      var entity = await _repoUser.Select(username);
+      var record = await _repoUser.Select(username);
 
       //If user isn't found
-      if (entity == null)
+      if (record == null)
       {
         //throw exception about user not being found
         throw NotFound.UserCredentials();
       }
+
+      var entity = _mapper.ToEntity(record)!;
 
       //Explicitly denied access
       if (!entity.IsAllowed) throw Unauthorized.FailedAuthentication();

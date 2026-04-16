@@ -9,10 +9,18 @@ public class UserEntity
 
   }
 
-  public UserEntity(UserV1CreateModel target)
+  public UserEntity(UserRecord target)
   {
-    //TODO: Later I have to introduce the other properties.
-    //Name = target.Name;
+    UserId = target.UserId;
+    IsAllowed = target.IsAllowed;
+    Username = target.Username;
+    Password = target.Password;
+    CreateOnUtc = target.CreateOnUtc;
+  }
+
+  public UserEntity(UserV1CreateModel model)
+  {
+    //TODO: I will be doing this soon
   }
 
   public int UserId { get; set; }

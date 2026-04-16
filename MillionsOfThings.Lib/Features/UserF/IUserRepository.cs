@@ -3,10 +3,10 @@
   public interface IUserRepository : IRepository
   {
     Task Delete(int userId);
-    Task<int> Insert(UserEntity entity);
-    Task<UserEntity?> Select(int userId);
-    Task<UserEntity?> Select(string username);
-    Task<IEnumerable<UserEntity>> SelectAll();
-    Task Update(UserEntity entity);
+    Task<int> Insert(UserRecord entity);
+    Task<UserRecord?> Select(int userId);
+    Task<UserRecord?> Select(string username);
+    Task<List<UserRecord>> SelectAll();
+    Task Update(UserRecord entity);
   }
 }

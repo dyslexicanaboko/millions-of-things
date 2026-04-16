@@ -11,7 +11,7 @@ public class UserRepository
   {
   }
 
-  public async Task<UserEntity?> Select(int userId)
+  public async Task<UserRecord?> Select(int userId)
   {
     //Password is purposely not included here
     const string sql = """
@@ -26,12 +26,10 @@ public class UserRepository
 
     await using var connection = await GetConnection();
 
-    var lst = (await connection.QueryAsync<UserEntity>(sql, GetPrimaryKeyParameter(userId))).ToList();
-
-    return lst.SingleOrDefault();
+    return await connection.QuerySingleOrDefaultAsync<UserRecord>(sql, GetPrimaryKeyParameter(userId));
   }
 
-  public async Task<UserEntity?> Select(string username)
+  public async Task<UserRecord?> Select(string username)
   {
     //This is the only situation where password will be returned
     //so it can be used with authentication.
@@ -48,36 +46,38 @@ public class UserRepository
 
     await using var connection = await GetConnection();
 
-    var lst = (await connection.QueryAsync<UserEntity>(sql, new { username } )).ToList();
-
-    return lst.SingleOrDefault();
+    return await connection.QuerySingleOrDefaultAsync<UserRecord>(sql, new { username });
   }
 
-  public async Task<IEnumerable<UserEntity>> SelectAll()
+  public async Task<List<UserRecord>> SelectAll()
   {
-    const string sql = @"
-			SELECT
-	                user_id,
-                is_allowed,
-                username,
-                created_on
-			FROM public.user";
+    const string sql = """
+                       SELECT
+                         user_id,
+                         is_allowed,
+                         username,
+                         created_on
+                       FROM public.user
+                       """;
 
     await using var connection = await GetConnection();
 
-    return (await connection.QueryAsync<UserEntity>(sql)).ToList();
+    return (await connection.QueryAsync<UserRecord>(sql)).AsList();
   }
 
-  public async Task<int> Insert(UserEntity entity)
+  public async Task<int> Insert(UserRecord entity)
   {
-    const string sql = @"INSERT INTO public.user (
-                is_allowed,
-                username,
-                password
-						) VALUES (
-                @is_allowed,
-                @username,
-                @password)	RETURNING user_id AS PK;";
+    const string sql = """
+                       INSERT INTO public.user (
+                         is_allowed,
+                         username,
+                         password
+                       ) VALUES (
+                         @is_allowed,
+                         @username,
+                         @password
+                       ) RETURNING user_id AS PK;
+                       """;
 
     await using var connection = await GetConnection();
 
@@ -90,14 +90,16 @@ public class UserRepository
   }
 
   //Not sure if what is being updated here is correct yet
-  public async Task Update(UserEntity entity)
+  public async Task Update(UserRecord entity)
   {
-    const string sql = @"UPDATE public.user SET 
-	                is_allowed = @is_allowed,
-                username = @username,
-                password = @password,
-                modified_on = now()
-						WHERE user_id = @user_id";
+    const string sql = """
+                       UPDATE public.user SET
+                         is_allowed = @is_allowed,
+                         username = @username,
+                         password = @password,
+                         modified_on = now()
+                       WHERE user_id = @user_id
+                       """;
 
     await using var connection = await GetConnection();
 

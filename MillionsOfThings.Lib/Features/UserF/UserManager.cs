@@ -4,31 +4,28 @@
   {
     private readonly IUserRepository _repoUser;
 
+    private readonly IUserMapper _mapper;
+
     public UserManager(
-      IUserRepository repoUser)
-      => _repoUser = repoUser;
+      IUserRepository repoUser, IUserMapper mapper)
+    {
+      _repoUser = repoUser;
+      _mapper = mapper;
+    }
 
+    //Password is purposely not returned
     public async Task<UserEntity?> GetUser(int id)
-    {
-      //Password is purposely not returned
-      var dbEntity = await _repoUser.Select(id);
+      => _mapper.ToEntity(await _repoUser.Select(id));
 
-      return dbEntity;
-    }
-
+    //Password is purposely not returned
     public async Task<List<UserEntity>> GetAllUsers()
-    {
-      //Password is purposely not returned
-      var lst = (await _repoUser.SelectAll()).ToList();
-
-      return lst;
-    }
+      => _mapper.ToList(await _repoUser.SelectAll());
 
     public async Task<UserEntity> Add(UserEntity? user)
     {
       Validations.IsNotNull(user, nameof(user));
 
-      user.UserId = await _repoUser.Insert(user);
+      user.UserId = await _repoUser.Insert(_mapper.ToRecord(user));
 
       return user;
     }

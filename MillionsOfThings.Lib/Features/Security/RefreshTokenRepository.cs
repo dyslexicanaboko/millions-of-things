@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using MillionsOfThings.Lib.Features;
 using System.Data;
 
 namespace MillionsOfThings.Lib.Features.Security
@@ -12,93 +11,96 @@ namespace MillionsOfThings.Lib.Features.Security
     {
     }
 
-    public async Task<RefreshTokenEntity?> Select(Guid refreshTokenId)
+    public async Task<RefreshTokenRecord?> Select(Guid refreshTokenId)
     {
-      const string sql = @"
-			SELECT
-	                refresh_token_id,
-                user_id,
-                token,
-                created_by_ip,
-                created_on
-			FROM public.refresh_token
-			WHERE refresh_token_id = @refresh_token_id";
+      const string sql = """
+                           SELECT
+                             refresh_token_id,
+                             user_id,
+                             token,
+                             created_by_ip,
+                             created_on
+                           FROM public.refresh_token
+                           WHERE refresh_token_id = @refresh_token_id
+                           """;
 
       var connection = await GetConnection();
 
-      var lst = (await connection.QueryAsync<RefreshTokenEntity>(sql, GetPrimaryKeyParameter(refreshTokenId))).ToList();
-
-      return lst.SingleOrDefault();
+      return await connection.QuerySingleOrDefaultAsync<RefreshTokenRecord>(sql, GetPrimaryKeyParameter(refreshTokenId));
     }
 
-    public async Task<RefreshTokenEntity?> Select(string token)
+    public async Task<RefreshTokenRecord?> Select(string token)
     {
-      const string sql = @"
-			SELECT
-	              refresh_token_id,
-                user_id,
-                token,
-                created_by_ip,
-                created_on
-			FROM public.refresh_token
-			WHERE token = @token";
+      const string sql = """
+                           SELECT
+                             refresh_token_id,
+                             user_id,
+                             token,
+                             created_by_ip,
+                             created_on
+                           FROM public.refresh_token
+                           WHERE token = @token
+                           """;
 
       var connection = await GetConnection();
 
-      var lst = (await connection.QueryAsync<RefreshTokenEntity>(sql, new { token } )).ToList();
-
-      return lst.SingleOrDefault();
+      return await connection.QuerySingleOrDefaultAsync<RefreshTokenRecord>(sql, new { token });
     }
 
-    public async Task<IEnumerable<RefreshTokenEntity>> SelectAll()
+    public async Task<List<RefreshTokenRecord>> SelectAll()
     {
-      const string sql = @"
-			SELECT
-	                refresh_token_id,
-                user_id,
-                token,
-                created_by_ip,
-                created_on
-			FROM public.refresh_token";
+      const string sql = """
+                           SELECT
+                             refresh_token_id,
+                             user_id,
+                             token,
+                             created_by_ip,
+                             created_on
+                           FROM public.refresh_token
+                           """;
 
       var connection = await GetConnection();
 
-      return (await connection.QueryAsync<RefreshTokenEntity>(sql)).ToList();
+      return (await connection.QueryAsync<RefreshTokenRecord>(sql)).AsList();
     }
 
-    public async Task<Guid> Insert(RefreshTokenEntity entity)
+    public async Task<Guid> Insert(RefreshTokenRecord record)
     {
-      const string sql = @"INSERT INTO public.refresh_token (
-                refresh_token_id,
-                user_id,
-                token,
-                created_by_ip
-						) VALUES (
-                @refresh_token_id,
-                @user_id,
-                @token,
-                @created_by_ip)	";
+      const string sql = """
+                           INSERT INTO public.refresh_token (
+                             refresh_token_id,
+                             user_id,
+                             token,
+                             created_by_ip
+                           ) VALUES (
+                             @refresh_token_id,
+                             @user_id,
+                             @token,
+                             @created_by_ip)
+                           """;
 
       var connection = await GetConnection();
 
       var p = new DynamicParameters();
-      p.Add(name: "@refresh_token_id", dbType: DbType.Guid, value: entity.RefreshTokenId);
-      p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
-      p.Add(name: "@token", dbType: DbType.String, value: entity.Token, size: 255);
-      p.Add(name: "@created_by_ip", dbType: DbType.String, value: entity.CreatedByIp, size: 39);
+      p.Add(name: "@refresh_token_id", dbType: DbType.Guid, value: record.RefreshTokenId);
+      p.Add(name: "@user_id", dbType: DbType.Int32, value: record.UserId);
+      p.Add(name: "@token", dbType: DbType.String, value: record.Token, size: 255);
+      p.Add(name: "@created_by_ip", dbType: DbType.String, value: record.CreatedByIp, size: 39);
 
       await connection.ExecuteAsync(sql, p);
 
-      return entity.RefreshTokenId;
+      return record.RefreshTokenId;
     }
 
-    public async Task Update(RefreshTokenEntity entity)
+    public async Task Update(RefreshTokenRecord entity)
     {
-      const string sql = @"UPDATE public.refresh_token SET 
-                token = @token,
-                created_by_ip = @created_by_ip,
-                modified_on = now()
-						WHERE refresh_token_id = @refresh_token_id";
+      const string sql = """
+                           UPDATE public.refresh_token SET
+                             token = @token,
+                             created_by_ip = @created_by_ip,
+                             modified_on = now()
+                           WHERE refresh_token_id = @refresh_token_id
+                           """;
 
       var connection = await GetConnection();
 
