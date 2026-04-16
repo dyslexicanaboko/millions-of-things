@@ -1,4 +1,4 @@
-﻿namespace MillionsOfThings.Lib.Features.Security
+﻿namespace MillionsOfThings.Lib.Features.UserF
 {
   public interface IUserManager
   {

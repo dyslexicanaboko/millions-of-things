@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MillionsOfThings.Lib.Features.Security;
-using MillionsOfThings.Lib.Features.Security.Models;
+using MillionsOfThings.Lib.Features.UserF;
+using MillionsOfThings.Lib.Features.UserF.Models;
 using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers.Security

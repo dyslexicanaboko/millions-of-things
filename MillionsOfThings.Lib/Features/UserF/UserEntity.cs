@@ -1,6 +1,6 @@
-using MillionsOfThings.Lib.Features.Security.Models;
+using MillionsOfThings.Lib.Features.UserF.Models;
 
-namespace MillionsOfThings.Lib.Features.Security;
+namespace MillionsOfThings.Lib.Features.UserF;
 
 public class UserEntity
 {

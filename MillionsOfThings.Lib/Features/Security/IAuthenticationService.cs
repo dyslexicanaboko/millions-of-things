@@ -1,4 +1,6 @@
-﻿namespace MillionsOfThings.Lib.Features.Security;
+﻿using MillionsOfThings.Lib.Features.UserF;
+
+namespace MillionsOfThings.Lib.Features.Security;
 
 public interface IAuthenticationService
 {

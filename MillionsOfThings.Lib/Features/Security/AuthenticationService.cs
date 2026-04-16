@@ -1,4 +1,5 @@
 ﻿using MillionsOfThings.Lib.Exceptions;
+using MillionsOfThings.Lib.Features.UserF;
 using Crypto = BCrypt.Net.BCrypt; //Naming it so it's clear a 3rd party is being used
 
 namespace MillionsOfThings.Lib.Features.Security

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MillionsOfThings.Lib.Features.Security.Models
+﻿namespace MillionsOfThings.Lib.Features.UserF.Models
 {
   public class UserV1CreatedModel
   {

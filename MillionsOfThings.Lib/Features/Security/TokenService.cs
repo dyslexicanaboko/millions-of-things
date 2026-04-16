@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MillionsOfThings.Lib.Exceptions;
 using MillionsOfThings.Lib.Features.Security.Models;
+using MillionsOfThings.Lib.Features.UserF;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;

@@ -1,7 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 
-namespace MillionsOfThings.Lib.Features.Security;
+namespace MillionsOfThings.Lib.Features.UserF;
 
 public class UserRepository
   : BaseRepository, IUserRepository

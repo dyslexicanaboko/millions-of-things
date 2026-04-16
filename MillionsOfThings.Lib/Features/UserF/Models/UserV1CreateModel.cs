@@ -1,4 +1,4 @@
-﻿namespace MillionsOfThings.Lib.Features.Security.Models
+﻿namespace MillionsOfThings.Lib.Features.UserF.Models
 {
   public class UserV1CreateModel
   {

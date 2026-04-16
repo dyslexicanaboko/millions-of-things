@@ -1,6 +1,4 @@
-﻿using MillionsOfThings.Lib.Features;
-
-namespace MillionsOfThings.Lib.Features.Security
+﻿namespace MillionsOfThings.Lib.Features.UserF
 {
   public interface IUserRepository : IRepository
   {
