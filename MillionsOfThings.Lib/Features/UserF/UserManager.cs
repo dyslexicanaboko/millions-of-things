@@ -14,11 +14,11 @@
     }
 
     //Password is purposely not returned
-    public async Task<UserEntity?> GetUser(int id)
+    public async Task<UserEntity?> Get(int id)
       => _mapper.ToEntity(await _repoUser.Select(id));
 
     //Password is purposely not returned
-    public async Task<List<UserEntity>> GetAllUsers()
+    public async Task<List<UserEntity>> GetAll()
       => _mapper.ToList(await _repoUser.SelectAll());
 
     public async Task<UserEntity> Add(UserEntity? user)

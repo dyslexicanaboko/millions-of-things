@@ -15,7 +15,10 @@ public class UserEntity
     IsAllowed = target.IsAllowed;
     Username = target.Username;
     Password = target.Password;
-    CreateOnUtc = target.CreateOnUtc;
+    FirstName = target.FirstName;
+    LastName = target.LastName;
+    EmailAddress = target.EmailAddress;
+    CreatedOn = target.CreatedOn;
   }
 
   public UserEntity(UserV1CreateModel model)
@@ -32,5 +35,11 @@ public class UserEntity
   //This is only populated for create and for authorization
   public string Password { get; set; }
 
-  public DateTime CreateOnUtc { get; set; }
+  public string FirstName { get; set; }
+  
+  public string LastName { get; set; }
+  
+  public string EmailAddress { get; set; }
+  
+  public DateTime CreatedOn { get; set; }
 }

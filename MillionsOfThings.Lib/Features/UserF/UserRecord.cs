@@ -11,5 +11,11 @@ public record UserRecord
   //This is only populated for create and for authorization
   public required string Password { get; init; }
 
-  public DateTime CreateOnUtc { get; init; }
+  public required string FirstName { get; init; }
+
+  public required string LastName { get; init; }
+
+  public required string EmailAddress { get; init; }
+
+  public DateTime CreatedOn { get; init; }
 }

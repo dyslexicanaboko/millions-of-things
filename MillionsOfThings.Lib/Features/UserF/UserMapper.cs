@@ -42,7 +42,7 @@ namespace MillionsOfThings.Lib.Features.UserF
         IsAllowed = entity.IsAllowed,
         Username = entity.Username,
         Password = entity.Password,
-        CreateOnUtc = entity.CreateOnUtc
+        CreatedOn = entity.CreatedOn
       };
 
     public List<UserV1Model> ToModel(List<UserEntity> target) => ToList(target, ToModel)!;

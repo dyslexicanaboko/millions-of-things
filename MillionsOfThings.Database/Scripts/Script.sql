@@ -51,3 +51,5 @@ WHERE category_id = 10
 SELECT COUNT(task_id)
 FROM public.task
 WHERE user_id = 1 AND category_id = 11
+
+

@@ -62,7 +62,7 @@ namespace MillionsOfThings.Lib.Features.Security
       //On the off chance the refresh token has expired
       if (refreshToken.IsExpired()) throw Unauthorized.NotAuthenticated();
 
-      var user = await _userService.GetUser(refreshToken.UserId);
+      var user = await _userService.Get(refreshToken.UserId);
 
       //TODO: Re-authenticate the user - as in, are they still allowed to login? #26
 

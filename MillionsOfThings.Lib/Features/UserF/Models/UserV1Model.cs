@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.Features.UserF.Models
     {
       UserId = entity.UserId;
       Username = entity.Username;
-      CreateOnUtc = entity.CreateOnUtc;
+      CreateOnUtc = entity.CreatedOn;
     }
 
     public int UserId { get; }

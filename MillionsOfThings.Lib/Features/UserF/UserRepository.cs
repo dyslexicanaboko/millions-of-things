@@ -29,6 +29,8 @@ public class UserRepository
     return await connection.QuerySingleOrDefaultAsync<UserRecord>(sql, GetPrimaryKeyParameter(userId));
   }
 
+  //NOTE: Security related call
+  // Search by exact username, this is where the CITEXT type may be required later
   public async Task<UserRecord?> Select(string username)
   {
     //This is the only situation where password will be returned

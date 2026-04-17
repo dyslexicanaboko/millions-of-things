@@ -4,8 +4,8 @@
   {
     Task<UserEntity> Add(UserEntity? user);
 
-    Task<List<UserEntity>> GetAllUsers();
+    Task<List<UserEntity>> GetAll();
 
-    Task<UserEntity?> GetUser(int id);
+    Task<UserEntity?> Get(int id);
   }
 }

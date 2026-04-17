@@ -28,7 +28,7 @@ namespace MillionsOfThings.WebApi.Controllers.Security
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
     public async Task<ActionResult<UserV1Model>> Get(int id)
     {
-      var entity = await _service.GetUser(id);
+      var entity = await _service.Get(id);
 
       if (entity == null) throw Lib.Exceptions.NotFound.User(id);
 
@@ -40,7 +40,7 @@ namespace MillionsOfThings.WebApi.Controllers.Security
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IList<UserV1Model>))]
     public async Task<ActionResult<List<UserV1Model>>> GetAll()
     {
-      var lst = await _service.GetAllUsers();
+      var lst = await _service.GetAll();
 
       return Ok(_mapper.ToModel(lst));
     }

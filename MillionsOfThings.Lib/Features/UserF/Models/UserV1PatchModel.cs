@@ -1,0 +1,28 @@
+namespace MillionsOfThings.Lib.Features.UserF.Models;
+
+public class UserV1PatchModel
+{
+  public UserV1PatchModel()
+  {
+
+  }
+
+  public UserV1PatchModel(UserEntity target)
+  {
+    UserId = target.UserId;
+    IsAllowed = target.IsAllowed;
+    FirstName = target.FirstName;
+    LastName = target.LastName;
+    EmailAddress = target.EmailAddress;
+  }
+
+  public int UserId { get; set; }
+
+  public bool IsAllowed { get; set; }
+
+  public string FirstName { get; set; }
+
+  public string LastName { get; set; }
+
+  public string EmailAddress { get; set; }
+}
