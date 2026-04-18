@@ -28,7 +28,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
     {
     }
 
-    public async Task<List<TaskRecord>> SelectAll(int userId)
+    public async Task<List<TaskRecord>> ReadAll(int userId)
     {
       const string sql = """
 
@@ -50,7 +50,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
       return (await connection.QueryAsync<TaskRecord>(sql, new { UserId = userId })).ToList();
     }
 
-    public async Task<TaskRecord?> Select(int taskId, int userId)
+    public async Task<TaskRecord?> Read(int taskId, int userId)
     {
       const string sql = """
                            SELECT
@@ -75,7 +75,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
       return (await connection.QueryAsync<TaskRecord>(sql, p)).SingleOrDefault();
     }
 
-    public async Task<List<TaskRecord>> SelectAll()
+    public async Task<List<TaskRecord>> ReadAll()
     {
       const string sql = """
 
@@ -96,7 +96,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
       return (await connection.QueryAsync<TaskRecord>(sql)).ToList();
     }
 
-    public async Task<int> Insert(TaskRecord entity)
+    public async Task<int> Create(TaskRecord entity)
     {
       const string sql = """
                          INSERT INTO public.task (
@@ -169,7 +169,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
       await connection.ExecuteAsync(sql, p);
     }
 
-    public async Task UpdatePartial(int userId, int taskId, IList<UpdateInstruction> instructions)
+    public async Task UpdatePartial(int userId, int taskId, List<UpdateInstruction> instructions)
     {
       const string template = "UPDATE public.task SET {0}, modified_on = now() WHERE user_id = @user_id and task_id = @task_id";
 

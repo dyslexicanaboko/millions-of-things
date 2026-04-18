@@ -1,4 +1,6 @@
-﻿namespace MillionsOfThings.Lib.Features.UserF
+﻿using MillionsOfThings.Lib.Utility;
+
+namespace MillionsOfThings.Lib.Features.UserF
 {
   public interface IUserManager
   {
@@ -7,5 +9,9 @@
     Task<List<UserEntity>> GetAll();
 
     Task<UserEntity?> Get(int id);
+
+    Task PartialEdit(int userId, List<UpdateInstruction> instructions);
+
+    Task Remove(int id);
   }
 }

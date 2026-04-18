@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using MillionsOfThings.Lib.Utility;
 using System.Data;
 
 namespace MillionsOfThings.Lib.Features.UserF;
@@ -11,7 +12,7 @@ public class UserRepository
   {
   }
 
-  public async Task<UserRecord?> Select(int userId)
+  public async Task<UserRecord?> Read(int userId)
   {
     //Password is purposely not included here
     const string sql = """
@@ -19,6 +20,9 @@ public class UserRepository
                          user_id,
                          is_allowed,
                          username,
+                         firstname,
+                         lastname,
+                         emailaddress,
                          created_on
                        FROM public.user
                        WHERE user_id = @user_id
@@ -31,7 +35,7 @@ public class UserRepository
 
   //NOTE: Security related call
   // Search by exact username, this is where the CITEXT type may be required later
-  public async Task<UserRecord?> Select(string username)
+  public async Task<UserRecord?> Read(string username)
   {
     //This is the only situation where password will be returned
     //so it can be used with authentication.
@@ -51,13 +55,17 @@ public class UserRepository
     return await connection.QuerySingleOrDefaultAsync<UserRecord>(sql, new { username });
   }
 
-  public async Task<List<UserRecord>> SelectAll()
+  //TODO: Needs to be pageable. Only accessible by administrators.
+  public async Task<List<UserRecord>> ReadAll()
   {
     const string sql = """
                        SELECT
                          user_id,
                          is_allowed,
                          username,
+                         firstname,
+                         lastname,
+                         emailaddress,
                          created_on
                        FROM public.user
                        """;
@@ -67,17 +75,23 @@ public class UserRepository
     return (await connection.QueryAsync<UserRecord>(sql)).AsList();
   }
 
-  public async Task<int> Insert(UserRecord entity)
+  public async Task<int> Create(UserRecord entity)
   {
     const string sql = """
                        INSERT INTO public.user (
                          is_allowed,
                          username,
-                         password
+                         password,
+                         firstname,
+                         lastname,
+                         emailaddress
                        ) VALUES (
                          @is_allowed,
                          @username,
-                         @password
+                         @password,
+                         @firstname,
+                         @lastname,
+                         @emailaddress,
                        ) RETURNING user_id AS PK;
                        """;
 
@@ -87,31 +101,37 @@ public class UserRepository
     p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: entity.IsAllowed);
     p.Add(name: "@username", dbType: DbType.String, value: entity.Username, size: 20);
     p.Add(name: "@password", dbType: DbType.String, value: entity.Password, size: 100);
+    p.Add(name: "@firstname", dbType: DbType.String, value: entity.FirstName, size: 50);
+    p.Add(name: "@lastname", dbType: DbType.String, value: entity.LastName, size: 50);
+    p.Add(name: "@emailaddress", dbType: DbType.String, value: entity.EmailAddress, size: 100);
 
     return await connection.ExecuteScalarAsync<int>(sql, p);
   }
 
-  //Not sure if what is being updated here is correct yet
-  public async Task Update(UserRecord entity)
+  private static readonly List<ColumnSchema> UpdateableColumns = [
+    new ("IsAllowed", "is_allowed", DbType.Boolean),
+    new ("Password", "password", DbType.String, 100),
+    new ("FirstName", "firstname", DbType.String, 50),
+    new ("LastName", "lastname", DbType.String, 50),
+    new ("EmailAddress", "emailaddress", DbType.String, 100),
+  ];
+
+  public async Task UpdatePartial(int userId, List<UpdateInstruction> updateInstructions)
   {
     const string sql = """
                        UPDATE public.user SET
-                         is_allowed = @is_allowed,
-                         username = @username,
-                         password = @password,
+                         {0}
                          modified_on = now()
                        WHERE user_id = @user_id
                        """;
 
-    await using var connection = await GetConnection();
+    var p = GetPrimaryKeyParameter(userId);
 
-    var p = new DynamicParameters();
-    p.Add(name: "@user_id", dbType: DbType.Int32, value: entity.UserId);
-    p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: entity.IsAllowed);
-    p.Add(name: "@username", dbType: DbType.String, value: entity.Username, size: 20);
-    p.Add(name: "@password", dbType: DbType.String, value: entity.Password, size: 100);
-
-    await connection.ExecuteAsync(sql, p);
+    await UpdatePartial(
+      sql,
+      UpdateableColumns,
+      p,
+      updateInstructions);
   }
 
   public async Task Delete(int userId)

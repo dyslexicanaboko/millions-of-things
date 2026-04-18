@@ -6,7 +6,7 @@ namespace MillionsOfThings.Lib.Features.Category
   public class CategoryRepository(IAppConfiguration configuration) 
     : BaseRepository(configuration), ICategoryRepository
   {
-    public async Task<CategoryRecord?> Select(int userId, int categoryId)
+    public async Task<CategoryRecord?> Read(int userId, int categoryId)
     {
       const string sql = """
 
@@ -29,7 +29,7 @@ namespace MillionsOfThings.Lib.Features.Category
       return (await connection.QueryAsync<CategoryRecord>(sql, p)).SingleOrDefault();
     }
 
-    public async Task<List<CategoryRecord>> SelectAll()
+    public async Task<List<CategoryRecord>> ReadAll()
     {
       const string sql = """
                          SELECT
@@ -44,7 +44,7 @@ namespace MillionsOfThings.Lib.Features.Category
       return (await connection.QueryAsync<CategoryRecord>(sql)).ToList();
     }
 
-    public async Task<List<CategoryRecord>> SelectAll(int userId)
+    public async Task<List<CategoryRecord>> ReadAll(int userId)
     {
       const string sql = """
                          SELECT
@@ -128,7 +128,7 @@ namespace MillionsOfThings.Lib.Features.Category
       return exists;
     }
 
-    public async Task<int> Insert(CategoryRecord entity)
+    public async Task<int> Create(CategoryRecord entity)
     {
       const string sql = """
                          INSERT INTO public.category (

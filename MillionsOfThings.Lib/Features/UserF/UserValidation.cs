@@ -12,10 +12,10 @@ public class UserValidation
 {
   public UserValidation()
   {
-    RuleFor(r => r.Firstname);
+    RuleFor(r => r.FirstName);
 
-    RuleFor(r => r.Lastname);
+    RuleFor(r => r.LastName);
 
-    RuleFor(r => r.Emailaddress);
+    RuleFor(r => r.EmailAddress);
   }
 }

@@ -1,12 +1,15 @@
-﻿namespace MillionsOfThings.Lib.Features.UserF
+﻿using MillionsOfThings.Lib.Utility;
+
+namespace MillionsOfThings.Lib.Features.UserF
 {
   public interface IUserRepository : IRepository
   {
     Task Delete(int userId);
-    Task<int> Insert(UserRecord entity);
-    Task<UserRecord?> Select(int userId);
-    Task<UserRecord?> Select(string username);
-    Task<List<UserRecord>> SelectAll();
-    Task Update(UserRecord entity);
+    Task<int> Create(UserRecord entity);
+    Task<UserRecord?> Read(int userId);
+    Task<UserRecord?> Read(string username);
+    Task<List<UserRecord>> ReadAll();
+
+    Task UpdatePartial(int userId, List<UpdateInstruction> updateInstructions);
   }
 }

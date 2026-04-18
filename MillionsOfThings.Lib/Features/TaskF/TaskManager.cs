@@ -5,7 +5,7 @@ using MillionsOfThings.Lib.Utility;
 namespace MillionsOfThings.Lib.Features.TaskF
 {
   public class TaskManager
-    : BaseService, ITaskManager
+    : BaseManager, ITaskManager
   {
     private readonly ITaskRepository _repository;
     private readonly ITaskValidation _validation;
@@ -25,7 +25,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
     {
       Validations.IsGreaterThanZero(taskId, nameof(taskId));
 
-      return _mapper.ToEntity(await _repository.Select(taskId, userId));
+      return _mapper.ToEntity(await _repository.Read(taskId, userId));
     }
 
     public async Task<List<TaskEntity>> GetAll(int userId)
@@ -34,7 +34,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
         () => Validations.IsUserIdValid(userId, false));
 
       return _mapper.ToEntity(await _repository
-        .SelectAll(userId));
+        .ReadAll(userId));
     }
 
     public async Task<TaskEntity> Add(TaskEntity? entity)
@@ -43,7 +43,7 @@ namespace MillionsOfThings.Lib.Features.TaskF
 
       entity.CreatedOn = StandardValues.GetUtcNow();
 
-      entity.TaskId = await _repository.Insert(_mapper.ToRecord(entity));
+      entity.TaskId = await _repository.Create(_mapper.ToRecord(entity));
 
       return entity;
     }

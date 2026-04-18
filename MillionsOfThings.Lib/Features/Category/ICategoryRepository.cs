@@ -2,11 +2,11 @@ namespace MillionsOfThings.Lib.Features.Category;
 
 public interface ICategoryRepository : IRepository
 {
-  Task<CategoryRecord?> Select(int userId, int categoryId);
+  Task<CategoryRecord?> Read(int userId, int categoryId);
 
-  Task<List<CategoryRecord>> SelectAll(int userId);
+  Task<List<CategoryRecord>> ReadAll(int userId);
 
-  Task<int> Insert(CategoryRecord entity);
+  Task<int> Create(CategoryRecord entity);
 
   Task Update(CategoryRecord entity);
 

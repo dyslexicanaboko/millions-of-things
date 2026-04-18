@@ -45,13 +45,23 @@ public abstract class BaseRepository
     return dt.AsTableValuedParameter("dbo.IntegerList");
   }
 
+  /// <summary>
+  /// Automatically construct a partial update statement based on the provided instructions.
+  /// This is useful for PATCH endpoints where you want to allow partial updates.
+  /// </summary>
+  /// <param name="updateTemplate"></param>
+  /// <param name="updatePartialColumns"></param>
+  /// <param name="p"></param>
+  /// <param name="instructions"></param>
+  /// <returns></returns>
+  /// <exception cref="ArgumentException"></exception>
   protected async Task UpdatePartial(
     string updateTemplate,
     List<ColumnSchema> updatePartialColumns,
     DynamicParameters p, 
-    IList<UpdateInstruction> instructions)
+    List<UpdateInstruction> instructions)
   {
-    if (!instructions.Any()) return;
+    if (instructions.Count == 0) return;
 
     var lst = new List<string>(instructions.Count);
 

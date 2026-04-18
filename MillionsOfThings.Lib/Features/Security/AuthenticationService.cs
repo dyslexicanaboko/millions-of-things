@@ -22,7 +22,7 @@ namespace MillionsOfThings.Lib.Features.Security
     {
       //Direct Repo access on purpose to have a separation of concerns between the UserService and Authentication
       //The password is needed only in this situation.
-      var record = await _repoUser.Select(username);
+      var record = await _repoUser.Read(username);
 
       //If user isn't found
       if (record == null)

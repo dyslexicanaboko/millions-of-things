@@ -11,7 +11,7 @@ namespace MillionsOfThings.Lib.Features.Security
     {
     }
 
-    public async Task<RefreshTokenRecord?> Select(Guid refreshTokenId)
+    public async Task<RefreshTokenRecord?> Read(Guid refreshTokenId)
     {
       const string sql = """
                            SELECT
@@ -29,7 +29,7 @@ namespace MillionsOfThings.Lib.Features.Security
       return await connection.QuerySingleOrDefaultAsync<RefreshTokenRecord>(sql, GetPrimaryKeyParameter(refreshTokenId));
     }
 
-    public async Task<RefreshTokenRecord?> Select(string token)
+    public async Task<RefreshTokenRecord?> Read(string token)
     {
       const string sql = """
                            SELECT
@@ -47,7 +47,7 @@ namespace MillionsOfThings.Lib.Features.Security
       return await connection.QuerySingleOrDefaultAsync<RefreshTokenRecord>(sql, new { token });
     }
 
-    public async Task<List<RefreshTokenRecord>> SelectAll()
+    public async Task<List<RefreshTokenRecord>> ReadAll()
     {
       const string sql = """
                            SELECT
@@ -64,7 +64,7 @@ namespace MillionsOfThings.Lib.Features.Security
       return (await connection.QueryAsync<RefreshTokenRecord>(sql)).AsList();
     }
 
-    public async Task<Guid> Insert(RefreshTokenRecord record)
+    public async Task<Guid> Create(RefreshTokenRecord record)
     {
       const string sql = """
                            INSERT INTO public.refresh_token (

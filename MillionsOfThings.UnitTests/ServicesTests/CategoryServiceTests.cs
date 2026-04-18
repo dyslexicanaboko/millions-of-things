@@ -37,14 +37,14 @@ namespace MillionsOfThings.UnitTests.ServicesTests
       // First call: category does not exist
       A.CallTo(() => _repository.Exists(userId, categoryName)).Returns(false);
       A.CallTo(() => _validation.Validate(category)).Returns(new ValidationResult());
-      A.CallTo(() => _repository.Insert(category)).Returns(1);
+      A.CallTo(() => _repository.Create(category)).Returns(1);
 
       // Act
       var result = await _service.Add(category);
 
       // Assert
       Assert.That(result, Is.Not.Null);
-      A.CallTo(() => _repository.Insert(category)).MustHaveHappenedOnceExactly();
+      A.CallTo(() => _repository.Create(category)).MustHaveHappenedOnceExactly();
 
       // Second call: category already exists
       A.CallTo(() => _repository.Exists(userId, categoryName)).Returns(true);

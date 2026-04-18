@@ -11,14 +11,17 @@ public class UserV1PatchModel
   {
     UserId = target.UserId;
     IsAllowed = target.IsAllowed;
+    Password = target.Password;
     FirstName = target.FirstName;
     LastName = target.LastName;
     EmailAddress = target.EmailAddress;
   }
 
   public int UserId { get; set; }
-
+  
   public bool IsAllowed { get; set; }
+
+  public string Password { get; set; }
 
   public string FirstName { get; set; }
 

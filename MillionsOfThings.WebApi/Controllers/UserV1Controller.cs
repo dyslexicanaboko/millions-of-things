@@ -3,9 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib.Features.UserF;
 using MillionsOfThings.Lib.Features.UserF.Models;
 using MillionsOfThings.Lib.Models;
-using MillionsOfThings.WebApi.Controllers;
 
-namespace MillionsOfThings.Lib.Controllers;
+namespace MillionsOfThings.WebApi.Controllers;
 
 [Route("api/v1/users")]
 [ApiController]
@@ -33,7 +32,7 @@ public class UserController
   {
     var entity = await _manager.Get(id);
 
-    if (entity == null) throw new Exception($"User:{id} not found.");
+    if (entity == null) throw Lib.Exceptions.NotFound.User(id);
 
     return Ok(_mapper.ToModel(entity));
   }
@@ -58,7 +57,7 @@ public class UserController
   {
     var entity = _mapper.ToEntity(model);
 
-    if (entity == null) throw new Exception("Model cannot be null.");
+    if (entity == null) throw Lib.Exceptions.InvalidArgument.Null(nameof(model));
 
     var result = await _manager.Add(entity);
 
@@ -73,19 +72,14 @@ public class UserController
   [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
   [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
   [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorModel))]
-  public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<UserV1PatchModel> patchDoc)
+  public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument patchDoc)
   {
-    var db = await _manager.Get(id);
-
-    var model = _mapper.ToPatchModel(db);
-
-    if (model == null) throw new Exception($"User:{id} not found.");
-
-    patchDoc.ApplyTo(model);
-
-    var entity = _mapper.ToEntity(model);
-
-    await _manager.Edit(entity);
+    var instructions = GetInstructions(patchDoc, [
+      "IsAllowed", 
+      "Password", 
+      "FirstName", 
+      "LastName", 
+      "EmailAddress"]);
 
     return NoContent();
   }

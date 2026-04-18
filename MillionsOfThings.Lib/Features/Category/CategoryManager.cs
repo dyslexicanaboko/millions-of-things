@@ -25,14 +25,14 @@ namespace MillionsOfThings.Lib.Features.Category
     {
       Validations.IsGreaterThanZero(categoryId, nameof(categoryId));
 
-      return _mapper.ToEntity(await _repository.Select(userId, categoryId));
+      return _mapper.ToEntity(await _repository.Read(userId, categoryId));
     }
 
     public async Task<List<CategoryEntity>> GetAll(int userId)
     {
       Validations.IsGreaterThanZero(userId, nameof(userId));
 
-      return _mapper.ToEntity(await _repository.SelectAll(userId));
+      return _mapper.ToEntity(await _repository.ReadAll(userId));
     }
 
     public async Task<CategoryEntity> Add(CategoryEntity? entity)
@@ -42,7 +42,7 @@ namespace MillionsOfThings.Lib.Features.Category
       if (await _repository.Exists(entity.UserId, entity.Name))
         throw new CategoryExistsAlreadyException(entity);
 
-      entity.CategoryId = await _repository.Insert(_mapper.ToRecord(entity));
+      entity.CategoryId = await _repository.Create(_mapper.ToRecord(entity));
 
       return entity;
     }
