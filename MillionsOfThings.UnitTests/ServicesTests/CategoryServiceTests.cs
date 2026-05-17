@@ -11,6 +11,7 @@ namespace MillionsOfThings.UnitTests.ServicesTests
   {
     private ICategoryRepository _repository;
     private ICategoryValidation _validation;
+    private ICategoryMapper _mapper;
     private CategoryManager _service;
 
     [SetUp]
@@ -18,7 +19,9 @@ namespace MillionsOfThings.UnitTests.ServicesTests
     {
       _repository = A.Fake<ICategoryRepository>();
       _validation = A.Fake<ICategoryValidation>();
-      _service = new CategoryManager(_repository, _validation, TODO);
+      _mapper = new CategoryMapper();
+
+      _service = new CategoryManager(_repository, _validation, _mapper);
     }
 
     [Test]
@@ -27,8 +30,9 @@ namespace MillionsOfThings.UnitTests.ServicesTests
       // Arrange
       var userId = 1;
       var categoryName = "Category A";
-      var category = new CategoryEntity
+      var categoryRecord = new CategoryRecord
       {
+        CategoryId = 0,
         UserId = userId,
         Name = categoryName,
         CreatedOn = DateTime.UtcNow
@@ -36,15 +40,18 @@ namespace MillionsOfThings.UnitTests.ServicesTests
 
       // First call: category does not exist
       A.CallTo(() => _repository.Exists(userId, categoryName)).Returns(false);
+      
+      var category = _mapper.ToEntity(categoryRecord);
+
       A.CallTo(() => _validation.Validate(category)).Returns(new ValidationResult());
-      A.CallTo(() => _repository.Create(category)).Returns(1);
+      A.CallTo(() => _repository.Create(categoryRecord)).Returns(1);
 
       // Act
       var result = await _service.Add(category);
 
       // Assert
       Assert.That(result, Is.Not.Null);
-      A.CallTo(() => _repository.Create(category)).MustHaveHappenedOnceExactly();
+      A.CallTo(() => _repository.Create(categoryRecord)).MustHaveHappenedOnceExactly();
 
       // Second call: category already exists
       A.CallTo(() => _repository.Exists(userId, categoryName)).Returns(true);

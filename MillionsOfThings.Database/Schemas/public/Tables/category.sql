@@ -16,9 +16,7 @@ CREATE TABLE IF NOT EXISTS public.category
         ON DELETE NO ACTION
         NOT VALID,
     CONSTRAINT category_user_id_name_unique UNIQUE (user_id, name)
-)
-
-TABLESPACE pg_default;
+) TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.category
     OWNER to postgres;

@@ -28,3 +28,5 @@ WHERE
     AND tc.table_schema = 'public';
 
 -- public.types_table
+
+SELECT * FROM public.user LIMIT 0

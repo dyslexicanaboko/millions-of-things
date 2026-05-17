@@ -43,6 +43,8 @@ ADD CONSTRAINT category_user_id_name_unique UNIQUE (user_id, name);
 
 select * from public.category
 
+select * from public.user
+
 UPDATE public.category SET 
 	name = 'string3',
 	modified_on = null
@@ -51,5 +53,6 @@ WHERE category_id = 10
 SELECT COUNT(task_id)
 FROM public.task
 WHERE user_id = 1 AND category_id = 11
+
 
 

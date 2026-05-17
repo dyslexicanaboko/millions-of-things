@@ -1,6 +1,4 @@
-INSERT INTO public.user(
-	username)
-	VALUES ('Default-test-User');
+-- Run `Default-test-users.sql` first
 
 INSERT INTO public.category(user_id, name)
 	VALUES 
@@ -42,3 +40,44 @@ FROM public.task
 WHERE user_id = 1;
 
 SELECT * FROM public.list_task_link;
+
+SELECT gen_random_uuid();
+
+-- 2026-05-17 This is future seed data, going to leave it here for now
+MERGE INTO public.security_role AS t
+USING (VALUES 
+    ('8cf369f9-2da9-44eb-8c27-959ef824406c'::uuid, 'Standard', 'Standard user who would just be concerned with their own account.'),
+    ('8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid, 'Administrator', 'User that can manage everything, including other user accounts.')
+) AS s(security_role_id, role, description)
+ON t.security_role_id = s.security_role_id
+WHEN matched 
+	and s.description <> t.description THEN
+    UPDATE SET 
+        description = s.description,
+        modified_on = now()
+WHEN NOT MATCHED THEN
+    INSERT (security_role_id, role, description)
+    VALUES (s.security_role_id, s.role, s.description);
+
+select * from public.security_role
+
+MERGE INTO public.security_permission AS t
+USING (VALUES 
+    ('6e880f03-bbcf-4dd4-b529-312074159e00'::uuid, 'user.manage.full', 'User can manage all users including self.'),
+    ('6e880f03-bbcf-4dd4-b529-312074159e01'::uuid, 'user.manage.self', 'User can only manage their own account.')
+) AS s(security_permission_id, permission, description)
+ON t.security_permission_id = s.security_permission_id
+WHEN matched 
+	and s.description <> t.description THEN
+    UPDATE SET 
+        description = s.description,
+        modified_on = now()
+WHEN NOT MATCHED THEN
+    INSERT (security_permission_id, permission, description)
+    VALUES (s.security_permission_id, s.permission, s.description);
+
+select * from public.security_permission
+
+-- 2026-05-17 I did not create the links yet
+
+

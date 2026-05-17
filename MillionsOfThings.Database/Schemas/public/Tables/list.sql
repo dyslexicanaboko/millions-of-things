@@ -15,9 +15,7 @@ CREATE TABLE IF NOT EXISTS public.list
         ON UPDATE NO ACTION
         ON DELETE NO ACTION
         NOT VALID
-)
-
-TABLESPACE pg_default;
+) TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.list
     OWNER to postgres;
