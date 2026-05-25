@@ -2,6 +2,7 @@ using MillionsOfThings.Lib.Features.UserF.Models;
 
 namespace MillionsOfThings.Lib.Features.UserF;
 
+//NOTE: Password is purposely not exposed in this object
 public class UserEntity
 {
   public UserEntity()
@@ -14,7 +15,6 @@ public class UserEntity
     UserId = target.UserId;
     IsAllowed = target.IsAllowed;
     Username = target.Username;
-    Password = target.Password;
     FirstName = target.FirstName;
     LastName = target.LastName;
     EmailAddress = target.EmailAddress;
@@ -31,10 +31,7 @@ public class UserEntity
   public bool IsAllowed { get; set; }
 
   public string Username { get; set; }
-
-  //This is only populated for create and for authorization
-  public string Password { get; set; }
-
+  
   public string FirstName { get; set; }
   
   public string LastName { get; set; }

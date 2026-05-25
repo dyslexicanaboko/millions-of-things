@@ -7,11 +7,12 @@ public class UserV1PatchModel
 
   }
 
+  //TODO: I am not sure how I am going to handle password updates yet.
   public UserV1PatchModel(UserEntity target)
   {
     UserId = target.UserId;
     IsAllowed = target.IsAllowed;
-    Password = target.Password;
+    //Password = target.Password;
     FirstName = target.FirstName;
     LastName = target.LastName;
     EmailAddress = target.EmailAddress;
@@ -21,7 +22,7 @@ public class UserV1PatchModel
   
   public bool IsAllowed { get; set; }
 
-  public string Password { get; set; }
+  //public string Password { get; set; }
 
   public string FirstName { get; set; }
 

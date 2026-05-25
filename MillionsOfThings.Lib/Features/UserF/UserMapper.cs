@@ -41,7 +41,6 @@ namespace MillionsOfThings.Lib.Features.UserF
         UserId = entity.UserId,
         IsAllowed = entity.IsAllowed,
         Username = entity.Username,
-        Password = entity.Password,
         FirstName = entity.FirstName,
         LastName = entity.LastName,
         EmailAddress = entity.EmailAddress,

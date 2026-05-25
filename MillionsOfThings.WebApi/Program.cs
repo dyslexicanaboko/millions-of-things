@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using MillionsOfThings.Lib.Models;
 
 //using Microsoft.OpenApi.Interfaces; // Changed from Models
 using Newtonsoft.Json;
@@ -20,6 +21,9 @@ public class Program
     // Add services to the container.
     ContainerConfig.Configure(builder.Host);
 
+    // Bind JWT settings from configuration
+    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+
     /* JWT Authentication should go here
      * 
      * NuGet: Microsoft.AspNetCore.Authentication.JwtBearer
@@ -28,6 +32,8 @@ public class Program
      *  using Microsoft.IdentityModel.Tokens;
      *  using System.Text;
      */
+    var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
+
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -42,10 +48,10 @@ public class Program
         ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = jwtSettings.Audience,
+        ValidIssuer = jwtSettings.Issuer,
         IssuerSigningKey = new SymmetricSecurityKey(
-              Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+              Encoding.UTF8.GetBytes(jwtSettings.Key))
       };
 
       //Only for debugging purposes when the JWT authentication is not working

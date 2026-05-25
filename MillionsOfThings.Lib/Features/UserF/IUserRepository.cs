@@ -7,7 +7,6 @@ namespace MillionsOfThings.Lib.Features.UserF
     Task Delete(int userId);
     Task<int> Create(UserRecord entity);
     Task<UserRecord?> Read(int userId);
-    Task<UserRecord?> Read(string username);
     Task<List<UserRecord>> ReadAll();
 
     Task UpdatePartial(int userId, List<UpdateInstruction> updateInstructions);

@@ -1,9 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MillionsOfThings.Lib.Exceptions;
 using MillionsOfThings.Lib.Features.Security.Models;
-using MillionsOfThings.Lib.Features.UserF;
+using MillionsOfThings.Lib.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -11,42 +11,66 @@ using System.Text;
 
 namespace MillionsOfThings.Lib.Features.Security
 {
-  public class TokenService
-    : ITokenService
+  public class TokenManager
+    : ITokenManager
   {
-    private readonly IAuthenticationService _authenticationService;
+    private readonly ICryptographyService _authenticationService;
 
-    private readonly IConfiguration _configuration;
+    private readonly IOptions<JwtSettings> _configuration;
 
     private readonly IDateTimeService _dateTimeService;
 
-    private readonly ILogger<TokenService> _logger;
+    private readonly ILogger<TokenManager> _logger;
+
+    private readonly ISecurityUserRepository _securityUserRepository;
 
     private readonly IRefreshTokenRepository _refreshTokenRepository;
 
-    private readonly IUserManager _userService;
-
-    public TokenService(
-      ILogger<TokenService> logger,
-      IConfiguration config,
+    public TokenManager(
+      ILogger<TokenManager> logger,
+      IOptions<JwtSettings> config,
       IDateTimeService dateTimeService,
-      IUserManager userService,
+      ISecurityUserRepository securityUserRepository,
       IRefreshTokenRepository refreshTokenRepository,
-      IAuthenticationService authenticationService)
+      ICryptographyService authenticationService)
     {
       _logger = logger;
       _configuration = config;
       _dateTimeService = dateTimeService;
-      _userService = userService;
+      _securityUserRepository = securityUserRepository;
       _refreshTokenRepository = refreshTokenRepository;
       _authenticationService = authenticationService;
     }
 
     public async Task<JwtTokenV1Model> GetToken(AuthenticationV1PostModel model, string ipAddress)
     {
-      var user = await _authenticationService.Authenticate(model.Username, model.Password);
+      var user = await Authenticate(model.Username, model.Password);
 
       return await GetToken(user, ipAddress);
+    }
+
+    private async Task<SecurityUserRecord> Authenticate(string username, string password)
+    {
+      //Direct Repo access on purpose to have a separation of concerns between the UserService and Authentication
+      //The password is needed only in this situation.
+      var record = await _securityUserRepository.Read(username);
+
+      //If user isn't found
+      if (record == null)
+      {
+        //throw exception about user not being found
+        throw NotFound.UserCredentials();
+      }
+
+      //Explicitly denied access
+      if (!record.IsAllowed) throw Unauthorized.FailedAuthentication();
+
+      if (!_authenticationService.IsPasswordValid(password, record.Password)) throw Unauthorized.InvalidPassword();
+
+      //There is no conceivable scenario where the encrypted password is needed after this method call, just blank it out
+      record.Password = string.Empty;
+
+      return record;
     }
 
     public async Task<JwtTokenV1Model> GetToken(RefreshTokenV1PostModel model, string ipAddress)
@@ -62,14 +86,14 @@ namespace MillionsOfThings.Lib.Features.Security
       //On the off chance the refresh token has expired
       if (refreshToken.IsExpired()) throw Unauthorized.NotAuthenticated();
 
-      var user = await _userService.Get(refreshToken.UserId);
+      var user = await _securityUserRepository.Read(refreshToken.UserId);
 
       //TODO: Re-authenticate the user - as in, are they still allowed to login? #26
 
       //If the user is not found, an error must be thrown
       if (user == null)
       {
-        _logger.LogCritical($"User not found during token refresh. {refreshToken.UserId}");
+        _logger.LogCritical("User not found during token refresh. {RefreshTokenUserId}", refreshToken.UserId);
 
         throw Unauthorized.FailedAuthentication();
       }
@@ -85,7 +109,7 @@ namespace MillionsOfThings.Lib.Features.Security
     //NOTE: You have to make sure that every part of the JWT adheres to the standard
     // Otherwise you can get an error like this: `IDX14101: Unable to decode the payload as Base64Url encoded string.`
     // And authentication will fail. In my case `iat` was being sent as a date instead of a long integer.
-    private async Task<JwtTokenV1Model> GetToken(UserEntity user, string ipAddress)
+    private async Task<JwtTokenV1Model> GetToken(SecurityUserRecord user, string ipAddress)
     {
       var utcNow = _dateTimeService.UtcNow;
       var offSet = new DateTimeOffset(utcNow);
@@ -97,23 +121,24 @@ namespace MillionsOfThings.Lib.Features.Security
       //create claims details based on the user information
       var claims = new[]
       {
-        new Claim(JwtRegisteredClaimNames.Sub, _configuration["Jwt:Subject"]),
+        new Claim(JwtRegisteredClaimNames.Sub, _configuration.Value.Subject),
         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
         new Claim(JwtRegisteredClaimNames.Iat, offSet.ToUnixTimeSeconds().ToString()),
         new Claim(Constants.RefreshToken, refreshToken.Token),
         new Claim(Constants.ClaimsUserId, user.UserId.ToString()),
-        new Claim(Constants.Name, "TODO: Name is not implemented yet"),
+        new Claim(Constants.Name, $"{user.FirstName} {user.LastName}"),
         new Claim(Constants.Username, user.Username),
+        new Claim(Constants.Role, user.Role),
       };
 
-      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+      var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.Key));
       var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
       var token = new JwtSecurityToken(
-        _configuration["Jwt:Issuer"],
-        _configuration["Jwt:Audience"],
+        _configuration.Value.Issuer,
+        _configuration.Value.Audience,
         claims,
-        expires: utcNow.AddMinutes(10),
+        expires: utcNow.AddMinutes(_configuration.Value.ExpirationMinutes),
         signingCredentials: signIn);
 
       var jwt = new JwtSecurityTokenHandler().WriteToken(token);
@@ -144,7 +169,7 @@ namespace MillionsOfThings.Lib.Features.Security
         var token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64));
 
         // ensure token is unique by checking against db
-        if ((await _refreshTokenRepository.Read(token)) != null) continue;
+        if (await _refreshTokenRepository.Read(token) != null) continue;
 
         return token;
       }
@@ -158,7 +183,7 @@ namespace MillionsOfThings.Lib.Features.Security
         UserId = userId,
         Token = await GetUniqueToken(),
         CreatedOn = utcNow,
-        ExpiresOn = utcNow.AddDays(7),
+        ExpiresOn = utcNow.AddDays(_configuration.Value.RefreshTokenExpirationDays),
         CreatedByIp = ipAddress
       };
 

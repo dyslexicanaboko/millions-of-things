@@ -9,9 +9,9 @@ namespace MillionsOfThings.WebApi.Controllers.Security
   [ApiController]
   public class TokenController : Controller
   {
-    private readonly ITokenService _service;
+    private readonly ITokenManager _service;
 
-    public TokenController(ITokenService service) => _service = service;
+    public TokenController(ITokenManager service) => _service = service;
 
     [HttpPost]
     public async Task<IActionResult> Post(AuthenticationV1PostModel? model)

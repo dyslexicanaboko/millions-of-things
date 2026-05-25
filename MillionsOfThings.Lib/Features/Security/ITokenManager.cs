@@ -2,7 +2,7 @@
 
 namespace MillionsOfThings.Lib.Features.Security;
 
-public interface ITokenService
+public interface ITokenManager
 {
   Task<JwtTokenV1Model> GetToken(AuthenticationV1PostModel model, string ipAddress);
 
