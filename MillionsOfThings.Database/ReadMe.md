@@ -24,7 +24,7 @@ docker pull dpage/pgadmin4
 I am using the default username and password because this is just for local development purposes. That is `postgres`, but obviously don't use this in a production environment. Additionally, I have my containers setup to not start automatically because I don't intend on using Postgres full time. This way I am guaranteed they are shut down on a restart of docker or of my computer.
 
 ```bash
-docker run -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=postgres -d postgres
+docker run -d -p 5432:5432 --name postgres -e POSTGRES_PASSWORD=postgres --restart unless-stopped postgres
 docker run -p 88:80 --name pgadmin4 -e PGADMIN_DEFAULT_EMAIL=p@p.com -e PGADMIN_DEFAULT_PASSWORD=postgres -d dpage/pgadmin4
 ```
 

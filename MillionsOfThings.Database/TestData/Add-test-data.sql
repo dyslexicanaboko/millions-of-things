@@ -78,6 +78,36 @@ WHEN NOT MATCHED THEN
 
 select * from public.security_permission
 
--- 2026-05-17 I did not create the links yet
+MERGE INTO public.security_role_permission_link AS t
+USING (VALUES 
+    ('58c2688c-a6bc-4cff-9681-f4d37d10494f'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406c'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e00'::uuid),
+    ('1dda98fa-4688-4371-9e63-21f20882c930'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e01'::uuid)
+) AS s(security_role_permission_link_id, security_role_id, security_permission_id)
+ON t.security_role_permission_link_id = s.security_role_permission_link_id
+WHEN matched 
+	and (s.security_role_id <> t.security_role_id 
+	or s.security_permission_id <> t.security_permission_id) 
+	THEN
+    UPDATE SET 
+        security_role_id = s.security_role_id,
+        security_permission_id = s.security_permission_id,
+        modified_on = now()
+WHEN NOT MATCHED THEN
+    INSERT (security_role_permission_link_id, security_role_id, security_permission_id)
+    VALUES (s.security_role_permission_link_id, s.security_role_id, s.security_permission_id);
+
+select * from public.security_role_permission_link
+
+select
+ 	 lnk.security_role_permission_link_id 
+	,sr.role
+	,sp.permission
+from public.security_role_permission_link lnk
+	inner join security_role sr 
+			on lnk.security_role_id = sr.security_role_id	
+	inner join security_permission sp 
+			on lnk.security_permission_id = sp.security_permission_id
+
+
 
 

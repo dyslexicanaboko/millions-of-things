@@ -54,5 +54,17 @@ SELECT COUNT(task_id)
 FROM public.task
 WHERE user_id = 1 AND category_id = 11
 
+SELECT gen_random_uuid();
 
-
+select
+	 u.user_id
+	,u.is_allowed
+	,u.username 
+	,u.firstname 
+	,u.lastname 
+	,u.modified_on 
+	,sr."role"
+from public.user u
+	inner join public.security_role sr 
+		on u.security_role_id = sr.security_role_id 
+		

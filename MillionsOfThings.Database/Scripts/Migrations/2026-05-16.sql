@@ -5,12 +5,14 @@ update public.user set
 	 firstname='Default test user'
 	,lastname='Default test user'
 	,emailaddress='Default@testuser.com'
+	,modified_on=now()
 where user_id = 1
 
 update public.user set 
 	 firstname='Other test user'
 	,lastname='Other test user'
 	,emailaddress='Other@testuser.com'
+	,modified_on=now()
 where user_id = 2
 
 -- Adding unique constraints on username and emailaddress individually
