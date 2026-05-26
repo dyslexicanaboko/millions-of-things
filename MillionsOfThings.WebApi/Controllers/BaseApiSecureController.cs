@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib;
+using MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
 using MillionsOfThings.Lib.Utility;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -12,26 +13,27 @@ namespace MillionsOfThings.WebApi.Controllers
   public abstract class BaseApiSecureController
     : ControllerBase
   {
+    private static readonly JwtSecurityTokenHandler JwtHandler = new();
+
     //REMINDER: You cannot access the HttpContext in the constructor so don't try it will be null.
 
-    private int _userId;
-
-    //TODO: Going to switch over to an object next chance so that the more sophisticated the
-    // security becomes the easier I can adapt the code.
+    //This is only here for convenience
     protected int UserId
     {
       get
       {
-        if (_userId == 0)
+        if (field == 0)
         {
-          _userId = GetUserId();
+          field = CurrentUser.Value.UserId;
         }
 
-        return _userId;
+        return field;
       }
     }
 
-    protected int GetUserId()
+    protected Lazy<ClaimsUserModel> CurrentUser => new (GetClaimsUserModel);
+    
+    protected ClaimsUserModel GetClaimsUserModel()
     {
       if (!Request.Headers.TryGetValue("Authorization", out var headerAuth))
         throw Lib.Exceptions.Unauthorized.NotAuthenticated();
@@ -42,11 +44,11 @@ namespace MillionsOfThings.WebApi.Controllers
         .Split([' '], StringSplitOptions.RemoveEmptyEntries)[1];
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
 
-      var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
+      var jwt = JwtHandler.ReadJwtToken(token);
 
-      var claim = jwt.Claims.Single(x => x.Type == JwtClaims.UserId);
+      var claims = jwt.Claims.ToLookup(c => c.Type, c => c.Value);
 
-      return Convert.ToInt32(claim.Value);
+      return new ClaimsUserModel(claims);
     }
 
     /// <summary>

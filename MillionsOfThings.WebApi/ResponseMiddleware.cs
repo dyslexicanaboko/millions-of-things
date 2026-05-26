@@ -39,6 +39,10 @@ namespace MillionsOfThings.WebApi
       {
         await Respond(context, HttpStatusCode.Unauthorized, ex);
       }
+      catch (ForbiddenException ex)
+      {
+        await Respond(context, HttpStatusCode.Forbidden, ex);
+      }
       catch (BaseException ex)
       {
         await Respond(context, HttpStatusCode.InternalServerError, ex);

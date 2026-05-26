@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
+using MillionsOfThings.Lib.Exceptions;
+using MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
+using MillionsOfThings.Lib.Features.SecurityFeature.Constants;
 using MillionsOfThings.Lib.Utility;
 using System.Reflection;
 
@@ -111,4 +114,14 @@ public abstract class BaseManager
 
     return updateInstructions;
   }
+
+  protected static void HasFullPermission(ClaimsUserModel currentUser)
+  {
+    if (HasPermission(currentUser, SecurityPermissions.Full)) return;
+
+    throw Forbidden.AccessDenied();
+  }
+
+  protected static bool HasPermission(ClaimsUserModel currentUser, string permission)
+    => currentUser.Permissions.Contains(permission);
 }

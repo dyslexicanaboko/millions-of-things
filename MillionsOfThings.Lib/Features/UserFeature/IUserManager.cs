@@ -1,4 +1,5 @@
-﻿using MillionsOfThings.Lib.Utility;
+﻿using MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
+using MillionsOfThings.Lib.Utility;
 
 namespace MillionsOfThings.Lib.Features.UserFeature
 {
@@ -6,7 +7,7 @@ namespace MillionsOfThings.Lib.Features.UserFeature
   {
     Task<UserEntity> Add(UserEntity? user);
 
-    Task<List<UserEntity>> GetAll();
+    Task<List<UserEntity>> GetAll(ClaimsUserModel currentUser);
 
     Task<UserEntity?> Get(int id);
 

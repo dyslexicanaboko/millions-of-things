@@ -24,6 +24,8 @@ public class SecurityUserRepository
                        SELECT
                          u.user_id,
                          u.is_allowed,
+                         u.firstname,
+                         u.lastname,
                          u.username,
                          u.password,
                          u.created_on,
@@ -50,6 +52,8 @@ public class SecurityUserRepository
                        SELECT
                          u.user_id,
                          u.is_allowed,
+                         u.firstname,
+                         u.lastname,
                          u.username,
                          '' as password,
                          u.created_on,

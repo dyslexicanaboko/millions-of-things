@@ -8,14 +8,14 @@ namespace MillionsOfThings.WebApi.Controllers;
 
 [Route("api/v1/users")]
 [ApiController]
-public class UserController
+public class UserV1Controller
   : BaseApiSecureController
 {
   private readonly IUserMapper _mapper;
 
   private readonly IUserManager _manager;
 
-  public UserController(
+  public UserV1Controller(
     IUserManager manager,
     IUserMapper mapper)
   {
@@ -42,7 +42,8 @@ public class UserController
   [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserV1Model))]
   public async Task<ActionResult<UserV1Model>> GetAll()
   {
-    var entity = await _manager.GetAll();
+    //TODO: This has to be paged eventually.
+    var entity = await _manager.GetAll(CurrentUser.Value);
 
     return Ok(_mapper.ToModel(entity));
   }
@@ -80,6 +81,8 @@ public class UserController
       "FirstName", 
       "LastName", 
       "EmailAddress"]);
+
+    //TODO: Continue working this out.
 
     return NoContent();
   }

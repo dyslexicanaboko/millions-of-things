@@ -1,4 +1,5 @@
-﻿using MillionsOfThings.Lib.Utility;
+﻿using MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
+using MillionsOfThings.Lib.Utility;
 
 namespace MillionsOfThings.Lib.Features.UserFeature;
 
@@ -22,8 +23,13 @@ public class UserManager
     => _mapper.ToEntity(await _repoUser.Read(id));
 
   //Password is purposely not returned
-  public async Task<List<UserEntity>> GetAll()
-    => _mapper.ToList(await _repoUser.ReadAll());
+  public async Task<List<UserEntity>> GetAll(ClaimsUserModel currentUser)
+  {
+    HasFullPermission(currentUser);
+
+    return _mapper.ToList(await _repoUser.ReadAll());
+  }
+    
 
   public async Task<UserEntity> Add(UserEntity? user)
   {

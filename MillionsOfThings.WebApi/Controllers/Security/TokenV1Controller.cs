@@ -7,11 +7,11 @@ namespace MillionsOfThings.WebApi.Controllers.Security
 {
   [Route("api/token")]
   [ApiController]
-  public class TokenController : Controller
+  public class TokenV1Controller : Controller
   {
     private readonly ITokenManager _service;
 
-    public TokenController(ITokenManager service) => _service = service;
+    public TokenV1Controller(ITokenManager service) => _service = service;
 
     [HttpPost]
     public async Task<IActionResult> Post(AuthenticationV1PostModel? model)

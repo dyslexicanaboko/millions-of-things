@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using MillionsOfThings.Lib.Exceptions;
+using MillionsOfThings.Lib.Features.SecurityFeature.Constants;
 using MillionsOfThings.Lib.Features.SecurityFeature.Models;
 using MillionsOfThings.Lib.Models;
 using System.IdentityModel.Tokens.Jwt;
@@ -126,7 +127,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
         new (JwtRegisteredClaimNames.Iat, offSet.ToUnixTimeSeconds().ToString()),
         new (JwtClaims.RefreshToken, refreshToken.Token),
         new (JwtClaims.UserId, user.UserId.ToString()),
-        new (JwtClaims.Name, $"{user.FirstName} {user.LastName}"),
+        new (JwtClaims.FullName, $"{user.FirstName} {user.LastName}"),
         new (JwtClaims.Username, user.Username),
         new (JwtClaims.Role, user.Role)
       };
