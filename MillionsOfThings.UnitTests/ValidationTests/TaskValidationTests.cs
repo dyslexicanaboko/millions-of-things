@@ -1,7 +1,7 @@
 ﻿using FakeItEasy;
 using FluentValidation.Results;
-using MillionsOfThings.Lib.Features.Category;
-using MillionsOfThings.Lib.Features.TaskF;
+using MillionsOfThings.Lib.Features.CategoryFeature;
+using MillionsOfThings.Lib.Features.TaskFeature;
 using NUnit.Framework;
 
 namespace MillionsOfThings.UnitTests.ValidationTests

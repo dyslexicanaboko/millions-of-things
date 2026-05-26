@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using MillionsOfThings.Lib.Features.UserF;
-using MillionsOfThings.Lib.Features.UserF.Models;
+using MillionsOfThings.Lib.Features.UserFeature;
+using MillionsOfThings.Lib.Features.UserFeature.Models;
 using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers;

@@ -1,7 +1,7 @@
 ﻿using FakeItEasy;
 using FluentValidation.Results;
 using MillionsOfThings.Lib.Exceptions;
-using MillionsOfThings.Lib.Features.Category;
+using MillionsOfThings.Lib.Features.CategoryFeature;
 using NUnit.Framework;
 
 namespace MillionsOfThings.UnitTests.ServicesTests

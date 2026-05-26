@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib.Features;
-using MillionsOfThings.Lib.Features.Category;
-using MillionsOfThings.Lib.Features.Category.Models;
+using MillionsOfThings.Lib.Features.CategoryFeature;
+using MillionsOfThings.Lib.Features.CategoryFeature.Models;
 using MillionsOfThings.Lib.Models;
 using E = MillionsOfThings.Lib.Exceptions;
 

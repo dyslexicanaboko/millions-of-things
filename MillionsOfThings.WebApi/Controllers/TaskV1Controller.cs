@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib.Features;
-using MillionsOfThings.Lib.Features.TaskF;
-using MillionsOfThings.Lib.Features.TaskF.Models;
+using MillionsOfThings.Lib.Features.TaskFeature;
+using MillionsOfThings.Lib.Features.TaskFeature.Models;
 using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers
