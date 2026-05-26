@@ -16,6 +16,8 @@ namespace MillionsOfThings.WebApi.Controllers
 
     private int _userId;
 
+    //TODO: Going to switch over to an object next chance so that the more sophisticated the
+    // security becomes the easier I can adapt the code.
     protected int UserId
     {
       get
@@ -42,7 +44,7 @@ namespace MillionsOfThings.WebApi.Controllers
 
       var jwt = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
-      var claim = jwt.Claims.Single(x => x.Type == Constants.ClaimsUserId);
+      var claim = jwt.Claims.Single(x => x.Type == JwtClaims.UserId);
 
       return Convert.ToInt32(claim.Value);
     }

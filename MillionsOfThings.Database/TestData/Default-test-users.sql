@@ -49,4 +49,24 @@ INSERT INTO public.user(
 		,'Other@testuser.com'
 	); 
 
+-- First administrative user
+-- PW: tmyX1zySyOSTeLqhLKD2
+INSERT INTO public.user(
+	username,
+	password,
+	security_role_id,
+	is_allowed,
+	firstname,
+	lastname,
+	emailaddress)
+	VALUES (
+		'Admin-test-user'
+		,'$2a$12$mwXaSE0JYT/G5Rfx4C2g5O7dWhj8TsYsZixMgUNlKHFcmUE.cpSgG'
+		,'8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid
+		,TRUE
+		,'Admin test user'
+		,'Admin test user'
+		,'admin@testuser.com'
+	);
+
 -- SELECT * FROM public.user

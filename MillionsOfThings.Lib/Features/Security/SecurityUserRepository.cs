@@ -35,18 +35,17 @@ public class SecurityUserRepository
                        WHERE u.username = @username
                        """;
 
-    await using var connection = await GetConnection();
-
     var p = new DynamicParameters();
-    p.Add("username", username, DbType.String, size:20);
+    p.Add("username", username, DbType.String, size: 20);
 
+    await using var connection = await GetConnection();
+    
     return await connection.QuerySingleOrDefaultAsync<SecurityUserRecord>(sql, p);
   }
 
   public async Task<SecurityUserRecord?> Read(int userId)
   {
-    //This is the only situation where password will be returned
-    //so it can be used with authentication.
+    //Password is not needed here, so blanking it out.
     const string sql = """
                        SELECT
                          u.user_id,
@@ -62,11 +61,30 @@ public class SecurityUserRepository
                        WHERE u.user_id = @user_id
                        """;
 
-    await using var connection = await GetConnection();
-
     var p = new DynamicParameters();
     p.Add("user_id", userId, DbType.Int32);
 
+    await using var connection = await GetConnection();
+    
     return await connection.QuerySingleOrDefaultAsync<SecurityUserRecord>(sql, p);
+  }
+
+  public async Task<List<SecurityPermissionRecord>> ReadPermissions(Guid securityRoleId)
+  {
+    const string sql = """
+                       select
+                        sp.permission
+                       from public.security_role_permission_link lnk
+                        inner join security_permission sp 
+                            on lnk.security_permission_id = sp.security_permission_id
+                       where lnk.security_role_id = @security_role_id
+                       """;
+
+    var p = new DynamicParameters();
+    p.Add("security_role_id", securityRoleId, DbType.Guid);
+
+    await using var connection = await GetConnection();
+
+    return (await connection.QueryAsync<SecurityPermissionRecord>(sql, p)).ToList();
   }
 }

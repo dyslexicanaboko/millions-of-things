@@ -2,7 +2,6 @@
   <Connection>
     <ID>203a5e2a-fb01-4ef4-9934-763dddf526f6</ID>
     <NamingServiceVersion>2</NamingServiceVersion>
-    <Persist>true</Persist>
     <Server>.</Server>
     <AllowDateOnlyTimeOnly>true</AllowDateOnlyTimeOnly>
     <Database>InStock</Database>
@@ -17,9 +16,11 @@
 
 void Main()
 {
+	//If you need a password generator use KeePass
 	//These are intended for testing, hence why they are in plain text
 	GetUpdatePasswordStatement(1, "emmC2YNvh%9LtNMHWo#T").Dump();
 	GetUpdatePasswordStatement(2, "6Uh@16n%jLZKOXZO").Dump();
+	GetUpdatePasswordStatement(3, "tmyX1zySyOSTeLqhLKD2").Dump();
 }
 
 public static string GetUpdatePasswordStatement(int userId, string plainTextPassword)

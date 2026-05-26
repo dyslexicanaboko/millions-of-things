@@ -80,8 +80,8 @@ select * from public.security_permission
 
 MERGE INTO public.security_role_permission_link AS t
 USING (VALUES 
-    ('58c2688c-a6bc-4cff-9681-f4d37d10494f'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406c'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e00'::uuid),
-    ('1dda98fa-4688-4371-9e63-21f20882c930'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e01'::uuid)
+    ('58c2688c-a6bc-4cff-9681-f4d37d10494f'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406c'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e01'::uuid),
+    ('1dda98fa-4688-4371-9e63-21f20882c930'::uuid, '8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid, '6e880f03-bbcf-4dd4-b529-312074159e00'::uuid)
 ) AS s(security_role_permission_link_id, security_role_id, security_permission_id)
 ON t.security_role_permission_link_id = s.security_role_permission_link_id
 WHEN matched 
@@ -107,6 +107,7 @@ from public.security_role_permission_link lnk
 			on lnk.security_role_id = sr.security_role_id	
 	inner join security_permission sp 
 			on lnk.security_permission_id = sp.security_permission_id
+			
 
 
 

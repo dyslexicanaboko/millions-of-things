@@ -119,17 +119,23 @@ namespace MillionsOfThings.Lib.Features.Security
       await _refreshTokenRepository.DeleteExpired(user.UserId);
 
       //create claims details based on the user information
-      var claims = new[]
+      var claims = new List<Claim>
       {
-        new Claim(JwtRegisteredClaimNames.Sub, _configuration.Value.Subject),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-        new Claim(JwtRegisteredClaimNames.Iat, offSet.ToUnixTimeSeconds().ToString()),
-        new Claim(Constants.RefreshToken, refreshToken.Token),
-        new Claim(Constants.ClaimsUserId, user.UserId.ToString()),
-        new Claim(Constants.Name, $"{user.FirstName} {user.LastName}"),
-        new Claim(Constants.Username, user.Username),
-        new Claim(Constants.Role, user.Role),
+        new (JwtRegisteredClaimNames.Sub, _configuration.Value.Subject),
+        new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new (JwtRegisteredClaimNames.Iat, offSet.ToUnixTimeSeconds().ToString()),
+        new (JwtClaims.RefreshToken, refreshToken.Token),
+        new (JwtClaims.UserId, user.UserId.ToString()),
+        new (JwtClaims.Name, $"{user.FirstName} {user.LastName}"),
+        new (JwtClaims.Username, user.Username),
+        new (JwtClaims.Role, user.Role)
       };
+
+      //Get the permissions for this user and include them as claims.
+      var permissions = await _securityUserRepository.ReadPermissions(user.SecurityRoleId);
+
+      //Apparently best practice is to add each permission as a separate claim, instead of using a JSON array.
+      claims.AddRange(permissions.Select(permission => new Claim(JwtClaims.Permission, permission.Permission)));
 
       var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.Key));
       var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
