@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using MillionsOfThings.Lib;
 using MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
+using MillionsOfThings.Lib.Features.SecurityFeature.Constants;
 using MillionsOfThings.Lib.Utility;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -47,8 +48,14 @@ namespace MillionsOfThings.WebApi.Controllers
       var jwt = JwtHandler.ReadJwtToken(token);
 
       var claims = jwt.Claims.ToLookup(c => c.Type, c => c.Value);
-
-      return new ClaimsUserModel(claims);
+      
+      return new ClaimsUserModel(
+        Convert.ToInt32(claims[JwtClaims.UserId].Single()),
+        claims[JwtClaims.FullName].Single(),
+        claims[JwtClaims.Username].Single(),
+        claims[JwtClaims.Role].Single(),
+        claims[JwtClaims.Permission].ToArray()
+      );
     }
 
     /// <summary>

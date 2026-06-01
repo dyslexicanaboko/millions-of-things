@@ -7,7 +7,7 @@ using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers
 {
-  [Route("api/v1/tasks")]
+  [Route("millionsofthings/v1/tasks")]
   public class TaskV1Controller
     : BaseApiSecureController
   {
@@ -24,7 +24,7 @@ namespace MillionsOfThings.WebApi.Controllers
       _mapper = mapper;
     }
 
-    // GET api/v1/tasks/5
+    // GET millionsofthings/v1/tasks/5
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -38,7 +38,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return Ok(_mapper.ToModel(entity));
     }
 
-    // GET api/v1/tasks
+    // GET millionsofthings/v1/tasks
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -49,7 +49,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return Ok(_mapper.ToModel(entity));
     }
 
-    // POST api/v1/tasks
+    // POST millionsofthings/v1/tasks
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ITask))]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -68,7 +68,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return CreatedAtAction(nameof(Get), new { id = m.TaskId }, m);
     }
 
-    // PATCH api/v1/tasks/5
+    // PATCH millionsofthings/v1/tasks/5
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -82,7 +82,7 @@ namespace MillionsOfThings.WebApi.Controllers
       return NoContent();
     }
 
-    // DELETE api/v1/tasks/5
+    // DELETE millionsofthings/v1/tasks/5
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

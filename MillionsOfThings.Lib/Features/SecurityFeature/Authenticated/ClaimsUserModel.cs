@@ -1,16 +1,14 @@
-﻿using MillionsOfThings.Lib.Features.SecurityFeature.Constants;
+﻿namespace MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
 
-namespace MillionsOfThings.Lib.Features.SecurityFeature.Authenticated;
-
-public class ClaimsUserModel(ILookup<string, string> claims)
+public class ClaimsUserModel(int userId, string fullName, string username, string role, string[] permissions)
 {
-  public int UserId => Convert.ToInt32(claims[JwtClaims.UserId].Single());
+  public int UserId => userId;
 
-  public string FullName => claims[JwtClaims.FullName].Single();
+  public string FullName => fullName;
 
-  public string Username => claims[JwtClaims.Username].Single();
+  public string Username => username;
 
-  public string Role => claims[JwtClaims.Role].Single();
+  public string Role => role;
 
-  public string[] Permissions  => claims[JwtClaims.Permission].ToArray();
+  public string[] Permissions  => permissions;
 }

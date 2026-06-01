@@ -9,7 +9,7 @@ import { Credentials } from "../credentials";
  * Please call the dispose method when finished.
  */
 export class ApiClient {
-  //  /api/v1/category
+  //  /millionsofthings/v1/category
   private context: APIRequestContext | undefined;
   private currentUser: Credentials = DefaultUser1;
   private currentToken: string = EmptyToken;
@@ -74,7 +74,7 @@ export class ApiClient {
       password: credentials.Password,
     });
 
-    const response = await context.post(this.buildUrl("api/token"), {
+    const response = await context.post(this.buildUrl("millionsofthings/v1/token"), {
       data: raw,
     });
 

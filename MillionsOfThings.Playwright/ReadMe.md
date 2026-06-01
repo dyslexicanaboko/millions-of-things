@@ -76,9 +76,10 @@ npx playwright test --ui
 npx playwright test --project=chromium
 	#Runs the tests only on Desktop Chrome.
 
-npx playwright test example
+npx playwright test example.spec.ts
 	#Runs the tests in a specific file.
 	#Example: npx playwright test api-client.spec.ts
+    #Every test that is run will open a results window. You have to close the window and re-run the command. Not idea for repeated re-runs.
 
 npx playwright test --debug
 	#Runs the tests in debug mode.

@@ -91,4 +91,40 @@ public class SecurityUserRepository
 
     return (await connection.QueryAsync<SecurityPermissionRecord>(sql, p)).ToList();
   }
+
+  public async Task<int> Create(SecurityUserCreateRecord record)
+  {
+    const string sql = """
+                       INSERT INTO public.user (
+                         is_allowed,
+                         username,
+                         password,
+                         firstname,
+                         lastname,
+                         emailaddress,
+                         security_role_id
+                       ) VALUES (
+                         @is_allowed,
+                         @username,
+                         @password,
+                         @firstname,
+                         @lastname,
+                         @emailaddress,
+                         @security_role_id
+                       ) RETURNING user_id AS PK;
+                       """;
+
+    await using var connection = await GetConnection();
+
+    var p = new DynamicParameters();
+    p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: record.IsAllowed);
+    p.Add(name: "@username", dbType: DbType.String, value: record.Username, size: 20);
+    p.Add(name: "@password", dbType: DbType.String, value: record.Password, size: 100);
+    p.Add(name: "@firstname", dbType: DbType.String, value: record.FirstName, size: 50);
+    p.Add(name: "@lastname", dbType: DbType.String, value: record.LastName, size: 50);
+    p.Add(name: "@emailaddress", dbType: DbType.String, value: record.EmailAddress, size: 100);
+    p.Add(name: "@security_role_id", dbType: DbType.Guid, value: record.SecurityRoleId);
+
+    return await connection.ExecuteScalarAsync<int>(sql, p);
+  }
 }

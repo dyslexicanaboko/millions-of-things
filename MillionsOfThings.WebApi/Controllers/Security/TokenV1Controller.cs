@@ -5,7 +5,7 @@ using MillionsOfThings.Lib.Features.SecurityFeature.Models;
 
 namespace MillionsOfThings.WebApi.Controllers.Security
 {
-  [Route("api/token")]
+  [Route("millionsofthings/v1/token")]
   [ApiController]
   public class TokenV1Controller : Controller
   {

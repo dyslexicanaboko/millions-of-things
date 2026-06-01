@@ -7,4 +7,6 @@ public interface ISecurityUserRepository : IRepository
   Task<SecurityUserRecord?> Read(int userId);
 
   Task<List<SecurityPermissionRecord>> ReadPermissions(Guid securityRoleId);
+
+  Task<int> Create(SecurityUserCreateRecord record);
 }

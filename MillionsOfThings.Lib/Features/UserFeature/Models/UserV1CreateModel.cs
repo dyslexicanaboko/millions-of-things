@@ -1,12 +1,14 @@
-﻿namespace MillionsOfThings.Lib.Features.UserFeature.Models
-{
-  public class UserV1CreateModel
-  {
-    public UserV1CreateModel(string name)
-    {
-      Name = name;
-    }
+﻿namespace MillionsOfThings.Lib.Features.UserFeature.Models;
 
-    public string Name { get; set; }
-  }
+public class UserV1CreateModel
+{
+  public string Username { get; set; }
+
+  public string FirstName { get; set; }
+
+  public string LastName { get; set; }
+    
+  public string EmailAddress { get; set; }
+
+  public string Role { get; set; }
 }

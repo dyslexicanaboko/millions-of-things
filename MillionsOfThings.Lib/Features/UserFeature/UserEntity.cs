@@ -1,5 +1,3 @@
-using MillionsOfThings.Lib.Features.UserFeature.Models;
-
 namespace MillionsOfThings.Lib.Features.UserFeature;
 
 //NOTE: Password is purposely not exposed in this object
@@ -19,11 +17,6 @@ public class UserEntity
     LastName = target.LastName;
     EmailAddress = target.EmailAddress;
     CreatedOn = target.CreatedOn;
-  }
-
-  public UserEntity(UserV1CreateModel model)
-  {
-    //TODO: I will be doing this soon
   }
 
   public int UserId { get; set; }

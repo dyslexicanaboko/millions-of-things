@@ -14,15 +14,6 @@ namespace MillionsOfThings.Lib.Features.UserFeature
       return model;
     }
 
-    public UserEntity? ToEntity(UserV1CreateModel? target)
-    {
-      if (target == null) return null;
-
-      var model = new UserEntity(target);
-
-      return model;
-    }
-
     public UserEntity? ToEntity(UserRecord? record)
       => record == null ? null : new UserEntity(record);
 

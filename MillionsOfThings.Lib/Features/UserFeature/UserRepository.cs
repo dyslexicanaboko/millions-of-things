@@ -54,40 +54,6 @@ public class UserRepository
     return (await connection.QueryAsync<UserRecord>(sql)).AsList();
   }
 
-  //TODO: This might move to the security version, not sure yet.
-  public async Task<int> Create(UserRecord entity)
-  {
-    const string sql = """
-                       INSERT INTO public.user (
-                         is_allowed,
-                         username,
-                       -- password,
-                         firstname,
-                         lastname,
-                         emailaddress
-                       ) VALUES (
-                         @is_allowed,
-                         @username,
-                       -- @password,
-                         @firstname,
-                         @lastname,
-                         @emailaddress,
-                       ) RETURNING user_id AS PK;
-                       """;
-
-    await using var connection = await GetConnection();
-
-    var p = new DynamicParameters();
-    p.Add(name: "@is_allowed", dbType: DbType.Boolean, value: entity.IsAllowed);
-    p.Add(name: "@username", dbType: DbType.String, value: entity.Username, size: 20);
-    //p.Add(name: "@password", dbType: DbType.String, value: entity.Password, size: 100);
-    p.Add(name: "@firstname", dbType: DbType.String, value: entity.FirstName, size: 50);
-    p.Add(name: "@lastname", dbType: DbType.String, value: entity.LastName, size: 50);
-    p.Add(name: "@emailaddress", dbType: DbType.String, value: entity.EmailAddress, size: 100);
-
-    return await connection.ExecuteScalarAsync<int>(sql, p);
-  }
-
   private static readonly List<ColumnSchema> UpdateableColumns = [
     new ("IsAllowed", "is_allowed", DbType.Boolean),
     //new ("Password", "password", DbType.String, 100),

@@ -6,7 +6,7 @@ using MillionsOfThings.Lib.Models;
 
 namespace MillionsOfThings.WebApi.Controllers;
 
-[Route("api/v1/users")]
+[Route("millionsofthings/v1/users")]
 [ApiController]
 public class UserV1Controller
   : BaseApiSecureController
@@ -24,7 +24,7 @@ public class UserV1Controller
     _mapper = mapper;
   }
 
-  // GET api/v1/users/5
+  // GET millionsofthings/v1/users/5
   [HttpGet("{id:int}")]
   [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserV1Model))]
   [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
@@ -37,7 +37,7 @@ public class UserV1Controller
     return Ok(_mapper.ToModel(entity));
   }
 
-  // GET api/v1/users
+  // GET millionsofthings/v1/users
   [HttpGet]
   [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(UserV1Model))]
   public async Task<ActionResult<UserV1Model>> GetAll()
@@ -48,7 +48,7 @@ public class UserV1Controller
     return Ok(_mapper.ToModel(entity));
   }
 
-  // POST api/v1/users
+  // POST millionsofthings/v1/users
   [HttpPost]
   [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(UserV1CreatedModel))]
   [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -56,6 +56,7 @@ public class UserV1Controller
   [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorModel))]
   public async Task<ActionResult<UserV1CreatedModel>> Post([FromBody] UserV1CreateModel model)
   {
+    //TODO: Remap all of this to the SecurityUserManager.
     var entity = _mapper.ToEntity(model);
 
     if (entity == null) throw Lib.Exceptions.InvalidArgument.Null(nameof(model));
@@ -67,7 +68,7 @@ public class UserV1Controller
     return CreatedAtAction(nameof(Get), new { id = m!.UserId }, m);
   }
 
-  // PATCH api/v1/users/5
+  // PATCH millionsofthings/v1/users/5
   [HttpPatch("{id:int}")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
@@ -87,7 +88,7 @@ public class UserV1Controller
     return NoContent();
   }
 
-  // DELETE api/v1/users/5
+  // DELETE millionsofthings/v1/users/5
   [HttpDelete("{id:int}")]
   [ProducesResponseType(StatusCodes.Status204NoContent)]
   public async Task<ActionResult> Delete(int id)
