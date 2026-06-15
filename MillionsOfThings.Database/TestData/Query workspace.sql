@@ -32,3 +32,9 @@ from public.security_role_permission_link lnk
 	inner join security_permission sp 
 			on lnk.security_permission_id = sp.security_permission_id
 where lnk.security_role_id = '8cf369f9-2da9-44eb-8c27-959ef824406d'::uuid
+
+SELECT EXISTS (
+    SELECT 1
+    FROM public.user
+    WHERE username = 'Other-test-user'
+)

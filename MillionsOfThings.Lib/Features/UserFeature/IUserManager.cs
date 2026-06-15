@@ -5,8 +5,6 @@ namespace MillionsOfThings.Lib.Features.UserFeature
 {
   public interface IUserManager
   {
-    Task<UserEntity> Add(UserEntity? user);
-
     Task<List<UserEntity>> GetAll(ClaimsUserModel currentUser);
 
     Task<UserEntity?> Get(int id);

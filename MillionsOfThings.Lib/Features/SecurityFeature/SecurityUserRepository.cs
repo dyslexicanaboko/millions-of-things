@@ -15,7 +15,6 @@ public class SecurityUserRepository
    * I am not sure yet.
    */
 
-  //NOTE: Search by exact username, this is where the CITEXT type may be required later
   public async Task<SecurityUserRecord?> Read(string username)
   {
     //This is the only situation where password will be returned
@@ -126,5 +125,57 @@ public class SecurityUserRepository
     p.Add(name: "@security_role_id", dbType: DbType.Guid, value: record.SecurityRoleId);
 
     return await connection.ExecuteScalarAsync<int>(sql, p);
+  }
+
+  public async Task<bool> DoesUsernameExist(string username)
+  {
+    const string sql = """
+                       SELECT EXISTS (
+                         SELECT 1
+                         FROM public.user
+                         WHERE username = @username
+                       )
+                       """;
+
+    var p = new DynamicParameters();
+    p.Add("username", username, DbType.String, size: 20);
+
+    await using var connection = await GetConnection();
+
+    return await connection.QuerySingleAsync<bool>(sql, p);
+  }
+
+  public async Task<bool> DoesEmailAddressExist(string emailAddress)
+  {
+    const string sql = """
+                       SELECT EXISTS (
+                         SELECT 1
+                         FROM public.user
+                         WHERE emailaddress = @emailaddress
+                       )
+                       """;
+
+    var p = new DynamicParameters();
+    p.Add("emailaddress", emailAddress, DbType.String, size: 100);
+
+    await using var connection = await GetConnection();
+
+    return await connection.QuerySingleAsync<bool>(sql, p);
+  }
+
+  public async Task<Guid?> ReadSecurityRole(string role)
+  {
+    const string sql = """
+                       SELECT security_role_id
+                       FROM public.security_role
+                       WHERE role = @role
+                       """;
+
+    var p = new DynamicParameters();
+    p.Add("role", role, DbType.String);
+
+    await using var connection = await GetConnection();
+
+    return await connection.QuerySingleAsync<Guid?>(sql, p);
   }
 }

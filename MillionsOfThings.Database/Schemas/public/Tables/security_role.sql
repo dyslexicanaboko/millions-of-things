@@ -4,11 +4,12 @@
 
 -- Enable the extension (only need to do this once per database)
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS citext;
 
 CREATE TABLE IF NOT EXISTS public.security_role
 (
     security_role_id UUID PRIMARY KEY DEFAULT uuid_generate_v1() NOT NULL,
-    role text UNIQUE COLLATE pg_catalog."default" NOT NULL,
+    role citext UNIQUE COLLATE pg_catalog."default" NOT NULL,
     description text COLLATE pg_catalog."default" NOT NULL,
     created_on timestamp(0) without time zone NOT NULL DEFAULT (now())::timestamp without time zone,
     modified_on timestamp(0) without time zone

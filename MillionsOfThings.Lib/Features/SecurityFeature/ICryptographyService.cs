@@ -5,4 +5,6 @@ public interface ICryptographyService
   string HashPassword(string plainTextPassword);
   
   bool IsPasswordValid(string password, string correctHash);
+
+  string GenerateHashedTemporaryPassword();
 }

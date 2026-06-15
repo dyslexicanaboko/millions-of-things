@@ -1,5 +1,6 @@
 using FluentValidation;
 using MillionsOfThings.Lib.Exceptions;
+using System.Data;
 
 namespace MillionsOfThings.Lib.Features.SecurityFeature;
 
@@ -11,33 +12,73 @@ public interface ISecurityUserValidation
 public class SecurityUserValidation
   : AbstractValidator<SecurityUserCreateEntity>, ISecurityUserValidation
 {
-  /* TODO:
-      1. Make sure username isn't in use
-      2. Make sure email address isn't in use
-      3. Make sure password is strong enough
-      4. Make sure incoming security role is valid (string)
-   */
-  public SecurityUserValidation()
+  public SecurityUserValidation(ISecurityUserRepository repo)
   {
     RuleFor(r => r.FirstName)
       .NotEmpty()
-      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.FirstName)));
+      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.FirstName)))
+      .DependentRules(() =>
+      {
+        RuleFor(r => r.FirstName)
+          .TestStringLength(nameof(SecurityUserCreateEntity.FirstName), 1, 50);
+      });
 
     RuleFor(r => r.LastName)
       .NotEmpty()
-      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.LastName)));
-
+      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.LastName)))
+      .DependentRules(() =>
+      {
+        RuleFor(r => r.LastName)
+          .TestStringLength(nameof(SecurityUserCreateEntity.LastName), 1, 50);
+      });
+    
     RuleFor(r => r.EmailAddress)
       .NotEmpty()
-      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.EmailAddress)));
+      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.EmailAddress)))
+      .DependentRules(() =>
+      {
+        RuleFor(r => r.EmailAddress)
+          .TestStringLength(nameof(SecurityUserCreateEntity.EmailAddress), 5, 100);
 
-    RuleFor(r => r.FirstName)
-      .TestStringLength(nameof(SecurityUserCreateEntity.FirstName), 1, 50);
+        RuleFor(r => r.EmailAddress)
+          .EmailAddress()
+          .WithMessageAndErrorCode(InvalidArgument.InvalidEmailAddress(nameof(SecurityUserCreateEntity.EmailAddress)));
+      }).DependentRules(() =>
+      {
+        RuleFor(r => r.EmailAddress)
+          .CustomAsync(async (email, context, cancellation) =>
+          {
+            //TODO: Implement cancellation tokens everywhere possible
+            var exists = await repo.DoesEmailAddressExist(email);
 
-    RuleFor(r => r.LastName)
-      .TestStringLength(nameof(SecurityUserCreateEntity.LastName), 1, 50);
+            if (exists)
+            {
+              context.AddFailure(nameof(SecurityUserCreateEntity.EmailAddress), "Email address is already in use.");
+            }
+          });
+      });
 
-    RuleFor(r => r.EmailAddress)
-      .TestStringLength(nameof(SecurityUserCreateEntity.EmailAddress), 1, 100);
+    RuleFor(r => r.Username)
+      .NotEmpty()
+      .WithMessageAndErrorCode(InvalidArgument.Empty(nameof(SecurityUserCreateEntity.Username)))
+      .DependentRules(() =>
+      {
+        RuleFor(r => r.Username)
+          .TestStringLength(nameof(SecurityUserCreateEntity.Username), 1, 20);
+      })
+      .DependentRules(() =>
+      {
+        RuleFor(r => r.Username)
+          .CustomAsync(async (username, context, cancellation) =>
+          {
+            //TODO: Implement cancellation tokens everywhere possible
+            var exists = await repo.DoesUsernameExist(username);
+
+            if (exists)
+            {
+              context.AddFailure(nameof(SecurityUserCreateEntity.Username), "Username is already in use.");
+            }
+          });
+      });
   }
 }

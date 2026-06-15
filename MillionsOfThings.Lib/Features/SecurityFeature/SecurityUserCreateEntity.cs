@@ -4,12 +4,19 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature;
 
 public class SecurityUserCreateEntity
 {
-  public SecurityUserCreateEntity(UserV1CreateModel model)
+  public SecurityUserCreateEntity(
+    UserV1CreateModel model,
+    bool isAllowed,
+    string password,
+    Guid securityRoleId)
   {
     Username = model.Username;
     FirstName = model.FirstName;
     LastName = model.LastName;
     EmailAddress = model.EmailAddress;
+    IsAllowed = isAllowed;
+    Password = password;
+    SecurityRoleId = securityRoleId;
   }
 
   public int UserId { get; set; }
@@ -25,4 +32,6 @@ public class SecurityUserCreateEntity
   public string LastName { get; set; }
 
   public string EmailAddress { get; set; }
+
+  public Guid SecurityRoleId { get; set; }
 }

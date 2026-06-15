@@ -31,14 +31,7 @@ public class UserManager
   }
     
 
-  public async Task<UserEntity> Add(UserEntity? user)
-  {
-    Validations.IsNotNull(user, nameof(user));
-
-    user.UserId = await _repoUser.Create(_mapper.ToRecord(user));
-
-    return user;
-  }
+  //Standard users cannot create users
 
   public async Task PartialEdit(int userId, List<UpdateInstruction> instructions)
   {

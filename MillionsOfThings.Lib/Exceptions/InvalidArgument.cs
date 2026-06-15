@@ -58,5 +58,17 @@ namespace MillionsOfThings.Lib.Exceptions
         argument,
         "The provided mapping argument does not exist.",
         BR.MappingDoesNotExist);
+
+    public static InvalidArgumentException InvalidEmailAddress(string argument)
+      => new(
+        argument,
+        "The provided email address is invalid.",
+        BR.InvalidEmailAddress);
+
+    public static InvalidArgumentException InvalidRole(string argument)
+      => new(
+        argument,
+        "The provided role is invalid.",
+        BR.InvalidRole);
   }
 }

@@ -35,6 +35,10 @@
       public const int EntityExistsAlready = 40014;
 
       public const int MaxEntries = 40015;
+
+      public const int InvalidEmailAddress = 40016;
+
+      public const int InvalidRole = 40017;
     }
 
     //HTTP 401xx Unauthorized - https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401
