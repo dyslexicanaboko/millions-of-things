@@ -1,7 +1,7 @@
 import { ApiClient } from "./api-client";
 import { PatchDoc } from "./patch-doc";
 
-export class CategoryClient extends ApiClient {
+export class CategoryV1Client extends ApiClient {
   private readonly Endpoint: string = "millionsofthings/v1/categories";
 
   constructor() {

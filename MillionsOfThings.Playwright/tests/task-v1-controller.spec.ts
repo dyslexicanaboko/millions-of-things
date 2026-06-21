@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { TaskClient } from "../api-clients/task-client";
+import { TaskV1Client } from "../api-clients/task-v1-client";
 import {
   SomeTask,
   SomeCategoryId,
@@ -16,7 +16,7 @@ test.describe("TaskV1Controller", () => {
   });
 
   test("Creating a task should have expected default audit values.", async () => {
-    const client = new TaskClient();
+    const client = new TaskV1Client();
 
     const response = await client.add(SomeTask, SomeCategoryId);
 
@@ -40,7 +40,7 @@ test.describe("TaskV1Controller", () => {
   });
 
   test("Updating a task's isFinished property should populate finishedOn and modifiedOn.", async () => {
-    const client = new TaskClient();
+    const client = new TaskV1Client();
 
     // Create the task
     const createResponse = await client.add(SomeTask, SomeCategoryId);
@@ -73,8 +73,8 @@ test.describe("TaskV1Controller", () => {
   });
 
   test("User 2 attempting to edit User 1's task should return 404.", async () => {
-    const clientUser1 = new TaskClient();
-    const clientUser2 = new TaskClient();
+    const clientUser1 = new TaskV1Client();
+    const clientUser2 = new TaskV1Client();
     clientUser2.changeToOtherUser();
 
     // User 1 creates the task

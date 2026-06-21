@@ -46,14 +46,13 @@ public class UserV1Controller(
   [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ErrorModel))]
   [ProducesResponseType(StatusCodes.Status404NotFound, Type = typeof(ErrorModel))]
   [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ErrorModel))]
-  public async Task<ActionResult<UserV1CreatedModel>> Post([FromBody] UserV1CreateModel model)
+  public async Task<ActionResult<UserV1CreatedModel>> Post([FromBody] UserV1CreateModel model, CancellationToken cancellationToken)
   {
     if (model == null) throw Lib.Exceptions.InvalidArgument.Null(nameof(model));
 
-    var result = await securityUserManager.Add(CurrentUser.Value, model);
+    var result = await securityUserManager.Add(CurrentUser.Value, model, cancellationToken);
 
-    //TODO: 2026-06-14 For next time - Continue by taking the result and converting it properly to the UserV1CreatedModel.
-    var m = mapper.ToModel(result);
+    var m = securityUserMapper.ToModel(result);
 
     return CreatedAtAction(nameof(Get), new { id = m!.UserId }, m);
   }

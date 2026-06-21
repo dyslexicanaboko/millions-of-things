@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { ApiClient } from "../api-clients/api-client";
-import { DefaultUser1 } from "../constants";
+import { StandardUser1 } from "../constants";
 import jwt from "jsonwebtoken";
 
 test.describe("ApiClient", () => {
@@ -16,7 +16,7 @@ test.describe("ApiClient", () => {
 
   test("should fetch a non-empty token", async () => {
     // @ts-expect-error: Accessing private method for testing
-    const token = await apiClient.fetchToken(DefaultUser1);
+    const token = await apiClient.fetchToken(StandardUser1);
     expect(token).toBeDefined();
     expect(typeof token).toBe("string");
     expect(token).not.toBe("");

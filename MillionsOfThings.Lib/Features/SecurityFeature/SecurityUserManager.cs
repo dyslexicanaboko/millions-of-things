@@ -9,7 +9,8 @@ public interface ISecurityUserManager
 {
   Task<SecurityUserCreateEntity> Add(
     ClaimsUserModel currentUser,
-    UserV1CreateModel? user);
+    UserV1CreateModel? user,
+    CancellationToken cancellationToken);
 }
 
 public class SecurityUserManager(
@@ -21,14 +22,15 @@ public class SecurityUserManager(
 {
   public async Task<SecurityUserCreateEntity> Add(
     ClaimsUserModel currentUser,
-    UserV1CreateModel? user)
+    UserV1CreateModel? user,
+    CancellationToken cancellationToken)
   {
     Validations.IsNotNull(user, nameof(user));
-    //Red test first - Standard user cannot do this
-    //HasFullPermission(currentUser);
+    //Standard user cannot do this
+    HasFullPermission(currentUser);
 
     //For now, going to check the Security Role here until I can think of a better way to do it.
-    var roleId = await ValidateRole(user.Role);
+    var roleId = await ValidateRole(user.Role, cancellationToken);
 
     var entity = mapper.ToEntity(
       user, 
@@ -38,14 +40,14 @@ public class SecurityUserManager(
     
     //TODO: How do I want to handle expected feedback?
     // Supposedly you should return the errors and not raise them as exceptions.
-    validation.Validate(entity!);
+    await validation.ValidateAsync(entity!, cancellationToken);
 
-    entity.UserId = await repository.Create(mapper.ToRecord(entity));
+    entity.UserId = await repository.Create(mapper.ToRecord(entity), cancellationToken);
 
     return entity;
   }
 
-  private async Task<Guid> ValidateRole(string role)
+  private async Task<Guid> ValidateRole(string role, CancellationToken cancellationToken)
   {
     //Precheck before hitting the database
     if (!SecurityRoles.Contains(role))
@@ -53,7 +55,7 @@ public class SecurityUserManager(
       throw InvalidArgument.InvalidRole(nameof(role));
     }
 
-    var roleId = await repository.ReadSecurityRole(role);
+    var roleId = await repository.ReadSecurityRole(role, cancellationToken);
     
     return roleId ?? throw InvalidArgument.InvalidRole(nameof(role));
   }

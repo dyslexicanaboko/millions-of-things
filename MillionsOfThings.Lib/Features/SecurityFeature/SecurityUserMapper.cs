@@ -27,4 +27,9 @@ public class SecurityUserMapper
       SecurityRoleId = target.SecurityRoleId
     };
   }
+
+  public UserV1CreatedModel? ToModel(SecurityUserCreateEntity? target)
+    => target == null ?
+      null :
+      new UserV1CreatedModel(target);
 }

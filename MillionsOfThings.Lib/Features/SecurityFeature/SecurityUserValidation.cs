@@ -1,6 +1,5 @@
 using FluentValidation;
 using MillionsOfThings.Lib.Exceptions;
-using System.Data;
 
 namespace MillionsOfThings.Lib.Features.SecurityFeature;
 
@@ -46,10 +45,10 @@ public class SecurityUserValidation
       }).DependentRules(() =>
       {
         RuleFor(r => r.EmailAddress)
-          .CustomAsync(async (email, context, cancellation) =>
+          .CustomAsync(async (email, context, cancellationToken) =>
           {
             //TODO: Implement cancellation tokens everywhere possible
-            var exists = await repo.DoesEmailAddressExist(email);
+            var exists = await repo.DoesEmailAddressExist(email, cancellationToken);
 
             if (exists)
             {
@@ -69,10 +68,10 @@ public class SecurityUserValidation
       .DependentRules(() =>
       {
         RuleFor(r => r.Username)
-          .CustomAsync(async (username, context, cancellation) =>
+          .CustomAsync(async (username, context, cancellationToken) =>
           {
             //TODO: Implement cancellation tokens everywhere possible
-            var exists = await repo.DoesUsernameExist(username);
+            var exists = await repo.DoesUsernameExist(username, cancellationToken);
 
             if (exists)
             {

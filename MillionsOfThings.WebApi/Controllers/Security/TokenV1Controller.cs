@@ -14,21 +14,21 @@ namespace MillionsOfThings.WebApi.Controllers.Security
     public TokenV1Controller(ITokenManager service) => _service = service;
 
     [HttpPost]
-    public async Task<IActionResult> Post(AuthenticationV1PostModel? model)
+    public async Task<IActionResult> Post(AuthenticationV1PostModel? model, CancellationToken cancellationToken)
     {
       if (model == null) throw Validations.IsMalformedModel();
 
-      var token = await _service.GetToken(model, GetIpAddress());
+      var token = await _service.GetToken(model, GetIpAddress(), cancellationToken);
 
       return Ok(token);
     }
 
     [HttpPost("refresh")]
-    public async Task<IActionResult> Post(RefreshTokenV1PostModel? model)
+    public async Task<IActionResult> Post(RefreshTokenV1PostModel? model, CancellationToken cancellationToken)
     {
       if (model == null) throw Validations.IsMalformedModel();
 
-      var token = await _service.GetToken(model, GetIpAddress());
+      var token = await _service.GetToken(model, GetIpAddress(), cancellationToken);
 
       return Ok(token);
     }

@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { CategoryClient } from "../api-clients/category-client";
+import { CategoryV1Client } from "../api-clients/category-v1-client";
 import {
   DefaultUserId1,
   OtherUserId2,
@@ -16,7 +16,7 @@ test.describe("CategoryV1Controller", () => {
   });
 
   test("User 1 cannot create a duplicate category", async () => {
-    const client = new CategoryClient();
+    const client = new CategoryV1Client();
 
     // 1. User 1 creates Category A
     const createRes1 = await client.add(SomeCategory);
@@ -35,8 +35,8 @@ test.describe("CategoryV1Controller", () => {
   });
 
   test("User 2 cannot update user 1's category", async () => {
-    const client1 = new CategoryClient();
-    const client2 = new CategoryClient();
+    const client1 = new CategoryV1Client();
+    const client2 = new CategoryV1Client();
     client2.changeToOtherUser();
 
     // 1. User 2 creates Category A

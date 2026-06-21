@@ -11,4 +11,6 @@ public interface ISecurityUserMapper
     Guid securityRoleId);
 
   SecurityUserCreateRecord ToRecord(SecurityUserCreateEntity target);
+
+  UserV1CreatedModel? ToModel(SecurityUserCreateEntity? target);
 }

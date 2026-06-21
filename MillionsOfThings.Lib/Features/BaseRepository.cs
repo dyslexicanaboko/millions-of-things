@@ -18,13 +18,13 @@ public abstract class BaseRepository
   //Primary constructor
   protected BaseRepository(IAppConfiguration configuration) => ConnectionString = configuration.GetConnectionString();
 
-  protected async Task<NpgsqlConnection> GetConnection()
+  protected async Task<NpgsqlConnection> GetConnection(CancellationToken cancellationToken = default)
   {
     if (string.IsNullOrWhiteSpace(ConnectionString)) throw new ApplicationException("Connection string cannot be blank, whitespace, or null.");
 
     var conn = new NpgsqlConnection(ConnectionString);
       
-    await conn.OpenAsync();
+    await conn.OpenAsync(cancellationToken);
 
     return conn;
   }

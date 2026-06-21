@@ -1,7 +1,7 @@
 import { ApiClient } from "./api-client";
+import { UserV1CreateModel } from "./models/UserV1CreateModel";
 
-//TODO: Add the version number to the class name
-export class UserClient extends ApiClient {
+export class UserV1Client extends ApiClient {
   private readonly Endpoint: string = "millionsofthings/v1/users";
 
   constructor() {
@@ -16,7 +16,7 @@ export class UserClient extends ApiClient {
     return this.get(this.Endpoint);
   }
 
-  async add(name: string) {
-    return this.post(this.Endpoint, { name });
+  async add(user: UserV1CreateModel) {
+    return this.post(this.Endpoint, user);
   }
 }

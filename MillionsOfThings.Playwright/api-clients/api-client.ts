@@ -1,6 +1,6 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
 import { PatchDoc } from "./patch-doc";
-import { EmptyToken, BaseUrl, DefaultUser1, OtherUser2 } from "../constants";
+import { EmptyToken, BaseUrl, StandardUser1, StandardUser2 } from "../constants";
 import { Credentials } from "../credentials";
 /**
  * Base API client with common functionality for all API clients.
@@ -11,7 +11,7 @@ import { Credentials } from "../credentials";
 export class ApiClient {
   //  /millionsofthings/v1/category
   private context: APIRequestContext | undefined;
-  private currentUser: Credentials = DefaultUser1;
+  private currentUser: Credentials = StandardUser1;
   private currentToken: string = EmptyToken;
 
   constructor() {}
@@ -23,8 +23,8 @@ export class ApiClient {
     if (this.context !== undefined) {
       throw new Error("You cannot change users after making a request.");
     }
-
-    this.currentUser = OtherUser2;
+    //TODO: I'll use an enumeration so that I can switch to different types of users
+    this.currentUser = StandardUser2;
   }
 
   /**

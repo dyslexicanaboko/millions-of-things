@@ -43,18 +43,18 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
       _authenticationService = authenticationService;
     }
 
-    public async Task<JwtTokenV1Model> GetToken(AuthenticationV1PostModel model, string ipAddress)
+    public async Task<JwtTokenV1Model> GetToken(AuthenticationV1PostModel model, string ipAddress, CancellationToken cancellationToken)
     {
-      var user = await Authenticate(model.Username, model.Password);
+      var user = await Authenticate(model.Username, model.Password, cancellationToken);
 
-      return await GetToken(user, ipAddress);
+      return await GetToken(user, ipAddress, cancellationToken);
     }
 
-    private async Task<SecurityUserRecord> Authenticate(string username, string password)
+    private async Task<SecurityUserRecord> Authenticate(string username, string password, CancellationToken cancellationToken)
     {
       //Direct Repo access on purpose to have a separation of concerns between the UserService and Authentication
       //The password is needed only in this situation.
-      var record = await _securityUserRepository.Read(username);
+      var record = await _securityUserRepository.Read(username, cancellationToken);
 
       //If user isn't found
       if (record == null)
@@ -74,7 +74,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
       return record;
     }
 
-    public async Task<JwtTokenV1Model> GetToken(RefreshTokenV1PostModel model, string ipAddress)
+    public async Task<JwtTokenV1Model> GetToken(RefreshTokenV1PostModel model, string ipAddress, CancellationToken cancellationToken)
     {
       //Hit the DB one time - lookup user by refresh-token
       var record = await _refreshTokenRepository.Read(model.Token);
@@ -87,7 +87,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
       //On the off chance the refresh token has expired
       if (refreshToken.IsExpired()) throw Unauthorized.NotAuthenticated();
 
-      var user = await _securityUserRepository.Read(refreshToken.UserId);
+      var user = await _securityUserRepository.Read(refreshToken.UserId, cancellationToken);
 
       //TODO: Re-authenticate the user - as in, are they still allowed to login? #26
 
@@ -99,7 +99,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
         throw Unauthorized.FailedAuthentication();
       }
 
-      var token = await GetToken(user, ipAddress);
+      var token = await GetToken(user, ipAddress, cancellationToken);
 
       //Only delete if and only if the token is returned successfully
       await _refreshTokenRepository.Delete(user.UserId, refreshToken.Token);
@@ -110,7 +110,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
     //NOTE: You have to make sure that every part of the JWT adheres to the standard
     // Otherwise you can get an error like this: `IDX14101: Unable to decode the payload as Base64Url encoded string.`
     // And authentication will fail. In my case `iat` was being sent as a date instead of a long integer.
-    private async Task<JwtTokenV1Model> GetToken(SecurityUserRecord user, string ipAddress)
+    private async Task<JwtTokenV1Model> GetToken(SecurityUserRecord user, string ipAddress, CancellationToken cancellationToken)
     {
       var utcNow = _dateTimeService.UtcNow;
       var offSet = new DateTimeOffset(utcNow);
@@ -133,7 +133,7 @@ namespace MillionsOfThings.Lib.Features.SecurityFeature
       };
 
       //Get the permissions for this user and include them as claims.
-      var permissions = await _securityUserRepository.ReadPermissions(user.SecurityRoleId);
+      var permissions = await _securityUserRepository.ReadPermissions(user.SecurityRoleId, cancellationToken);
 
       //Apparently best practice is to add each permission as a separate claim, instead of using a JSON array.
       claims.AddRange(permissions.Select(permission => new Claim(JwtClaims.Permission, permission.Permission)));

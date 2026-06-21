@@ -1,7 +1,7 @@
 import { ApiClient } from "./api-client";
 import { PatchDoc } from "./patch-doc";
 
-export class TaskClient extends ApiClient {
+export class TaskV1Client extends ApiClient {
   private readonly Endpoint: string = "millionsofthings/v1/tasks";
 
   constructor() {
