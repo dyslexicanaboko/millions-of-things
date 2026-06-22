@@ -1,17 +1,18 @@
 import { test, expect } from "@playwright/test";
 import { CategoryV1Client } from "../api-clients/category-v1-client";
 import {
-  DefaultUserId1,
-  OtherUserId2,
+  StandardUserId1,
+  StandardUserId2,
   SomeCategory,
 } from "./common-test-values";
 import { CategoryRepository } from "../repositories/category-repository";
+import { TestUsers } from "../constants";
 
 test.describe("CategoryV1Controller", () => {
   test.afterAll(async () => {
     const repo = new CategoryRepository();
-    await repo.delete(SomeCategory, DefaultUserId1);
-    await repo.delete(SomeCategory, OtherUserId2);
+    await repo.delete(SomeCategory, StandardUserId1);
+    await repo.delete(SomeCategory, StandardUserId2);
     console.log("Categories deleted");
   });
 
@@ -37,7 +38,7 @@ test.describe("CategoryV1Controller", () => {
   test("User 2 cannot update user 1's category", async () => {
     const client1 = new CategoryV1Client();
     const client2 = new CategoryV1Client();
-    client2.changeToOtherUser();
+    client2.changeUser(TestUsers.StandardUser2);
 
     // 1. User 2 creates Category A
     const response2 = await client2.add(SomeCategory);

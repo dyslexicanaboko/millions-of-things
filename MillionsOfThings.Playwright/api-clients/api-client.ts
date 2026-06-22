@@ -1,6 +1,6 @@
 import { APIRequestContext, request, APIResponse } from "@playwright/test";
 import { PatchDoc } from "./patch-doc";
-import { EmptyToken, BaseUrl, StandardUser1, StandardUser2 } from "../constants";
+import { EmptyToken, BaseUrl, StandardUser1, StandardUser2, AdminUser1, TestUsers } from "../constants";
 import { Credentials } from "../credentials";
 /**
  * Base API client with common functionality for all API clients.
@@ -19,12 +19,22 @@ export class ApiClient {
   /**
    * Switch the current user to the other set of credentials.
    */
-  public changeToOtherUser() {
+  public changeUser(user: TestUsers) {
     if (this.context !== undefined) {
       throw new Error("You cannot change users after making a request.");
     }
-    //TODO: I'll use an enumeration so that I can switch to different types of users
-    this.currentUser = StandardUser2;
+    
+    switch (user) {
+      case TestUsers.StandardUser1:
+        this.currentUser = StandardUser1;
+        break;
+      case TestUsers.StandardUser2:
+        this.currentUser = StandardUser2;
+        break;
+      case TestUsers.AdminUser1:
+        this.currentUser = AdminUser1;
+        break;
+    }
   }
 
   /**

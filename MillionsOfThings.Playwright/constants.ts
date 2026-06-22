@@ -19,3 +19,8 @@ export const AdminUser1 = new Credentials(
   "Admin-test-user",
   "tmyX1zySyOSTeLqhLKD2"
 );
+export enum TestUsers {
+  StandardUser1,
+  StandardUser2,
+  AdminUser1,
+}

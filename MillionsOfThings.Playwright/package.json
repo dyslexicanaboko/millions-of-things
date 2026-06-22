@@ -10,7 +10,8 @@
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.55.0",
-    "@types/node": "^24.12.4"
+    "@types/node": "^24.12.4",
+    "@types/pg": "^8.20.0"
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.10",

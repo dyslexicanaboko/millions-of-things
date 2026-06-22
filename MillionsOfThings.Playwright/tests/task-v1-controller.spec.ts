@@ -4,14 +4,15 @@ import {
   SomeTask,
   SomeCategoryId,
   DefaultDateTime,
-  DefaultUserId1,
+  StandardUserId1,
 } from "./common-test-values";
 import { TaskRepository } from "../repositories/task-repository";
+import { TestUsers } from "../constants";
 
 test.describe("TaskV1Controller", () => {
   test.afterAll(async () => {
     const repo = new TaskRepository();
-    await repo.delete(SomeTask, DefaultUserId1);
+    await repo.delete(SomeTask, StandardUserId1);
     console.log("Tasks deleted");
   });
 
@@ -75,7 +76,7 @@ test.describe("TaskV1Controller", () => {
   test("User 2 attempting to edit User 1's task should return 404.", async () => {
     const clientUser1 = new TaskV1Client();
     const clientUser2 = new TaskV1Client();
-    clientUser2.changeToOtherUser();
+    clientUser2.changeUser(TestUsers.StandardUser2);
 
     // User 1 creates the task
     const createResponse = await clientUser1.add(SomeTask, SomeCategoryId);

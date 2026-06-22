@@ -9,6 +9,6 @@ export class TaskRepository extends PostgresSqlClient {
     const query =
       "DELETE FROM public.task WHERE user_id = $1 AND description = $2";
     const params = [userId, description];
-    await this.executeQuery(query, params);
+    await this.executeNonQuery(query, params);
   }
 }

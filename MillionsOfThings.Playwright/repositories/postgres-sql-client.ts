@@ -18,9 +18,16 @@ export default class PostgresSqlClient {
     return client;
   }
 
-  public async executeQuery(query: string, params: any[]) {
+  public async executeNonQuery(query: string, params: any[]) {
     const client = await this.getClient();
     await client.query(query, params);
     await client.end();
+  }
+
+  public async executeQuery<T>(query: string, params: any[]): Promise<T[]> {
+    const client = await this.getClient();
+    const result = await client.query(query, params);
+    await client.end();
+    return result.rows as unknown as T[];
   }
 }

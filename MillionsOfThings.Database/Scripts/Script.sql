@@ -68,3 +68,10 @@ from public.user u
 	inner join public.security_role sr 
 		on u.security_role_id = sr.security_role_id 
 		
+select
+	 username 
+from public.user
+
+delete from public.user
+where username = 'testuser'::citext
+

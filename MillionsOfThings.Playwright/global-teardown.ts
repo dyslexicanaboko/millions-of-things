@@ -2,8 +2,8 @@ import { CategoryRepository } from "./repositories/category-repository";
 import { TaskRepository } from "./repositories/task-repository";
 import {
   SomeTask,
-  DefaultUserId1,
-  OtherUserId2,
+  StandardUserId1,
+  StandardUserId2,
   SomeCategory,
 } from "./tests/common-test-values";
 
@@ -20,14 +20,14 @@ async function globalTeardown() {
 
 async function taskV1ControllerTeardown() {
   const repo = new TaskRepository();
-  await repo.delete(SomeTask, DefaultUserId1);
+  await repo.delete(SomeTask, StandardUserId1);
   console.log("Tasks deleted");
 }
 
 async function categoryV1ControllerTeardown() {
   const repo = new CategoryRepository();
-  await repo.delete(SomeCategory, DefaultUserId1);
-  await repo.delete(SomeCategory, OtherUserId2);
+  await repo.delete(SomeCategory, StandardUserId1);
+  await repo.delete(SomeCategory, StandardUserId2);
   console.log("Categories deleted");
 }
 

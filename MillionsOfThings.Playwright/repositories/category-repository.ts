@@ -9,6 +9,6 @@ export class CategoryRepository extends PostgresSqlClient {
     const query =
       "DELETE FROM public.category WHERE user_id = $1 AND name = $2";
     const params = [userId, name];
-    await this.executeQuery(query, params);
+    await this.executeNonQuery(query, params);
   }
 }

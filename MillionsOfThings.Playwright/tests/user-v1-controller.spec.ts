@@ -4,13 +4,35 @@ import {
   SomeTask,
   SomeCategoryId,
   DefaultDateTime,
-  DefaultUserId1,
+  StandardUserId1,
 } from "./common-test-values";
-import { TaskRepository } from "../repositories/task-repository";
+import { UserRepository } from "../repositories/user-repository";
+
+//Unit Test User can be created, updated, and ultimately deleted.
+const unitTestUser = {
+  username: "unittestuser",
+  firstName: "Unit",
+  lastName: "Test",
+  emailAddress: "unittest@user.com",
+  role: "standard"
+};
+
+const getExistingTestUser = () => {
+  return {
+    username: "Default-test-User",
+    firstName: "does not matter",
+    lastName: "does not matter",
+    emailAddress: "Default@testuser.com",
+    role: "standard"
+  };
+}
+
+const userRepo = new UserRepository();
 
 test.describe("UserV1Controller", () => {
   test.afterAll(async () => {
     //console.log("Tasks deleted");
+    //await userRepo.delete(unitTestUser.username);
   });
 
   /*
@@ -18,29 +40,74 @@ test.describe("UserV1Controller", () => {
   */
 
   test("Standard user attempting to access get-all-users endpoint should return 403.", async () => {
-    const clientUser1 = new UserV1Client();
+    const client = new UserV1Client();
 
-    // User 1 attempts to read all users.
-    const getResponse = await clientUser1.readAll();
+    // Standard user attempts to read all users.
+    const getResponse = await client.readAll();
     expect(getResponse.status()).toBe(403);
 
-    await clientUser1.dispose();
+    await client.dispose();
   });
 
   test("Standard user attempting to create users should return 403.", async () => {
-    const clientUser1 = new UserV1Client();
+    const client = new UserV1Client();
 
-    // Standard User 1 attempts to create a user.
-    const response = await clientUser1.add({
-      username: "testuser",
-      firstName: "Test",
-      lastName: "User",
-      emailAddress: "testuser@example.com",
-      role: "standard"
-    });
+    // Standard user attempts to create a user.
+    const response = await client.add(unitTestUser);
+
     expect(response.status()).toBe(403);
 
-    await clientUser1.dispose();
+    await client.dispose();
+  });
+
+  test("Administrator user creating user should return 201.", async () => {
+    const client = new UserV1Client();
+    //TODO: 2026-06-21 change the client to Admin for the next three tests to pass.
+    // Should there just be a method that starts the ApiClient with the Administrator?
+
+    // Administrator user creates a user.
+    const response = await client.add(unitTestUser);
+    expect(response.status()).toBe(201);
+
+    const createdUser = await response.json();
+
+    userRepo.read(createdUser.userId).then((userRecord) => {
+      expect(userRecord.isAllowed).toBe(false);
+      expect(userRecord.username).toBe(unitTestUser.username);
+      expect(userRecord.firstName).toBe(unitTestUser.firstName);
+      expect(userRecord.lastName).toBe(unitTestUser.lastName);
+      expect(userRecord.emailAddress).toBe(unitTestUser.emailAddress);
+    });
+
+    await client.dispose();
+  });
+
+  test("Administrator user creating user with existing username should return 400.", async () => {
+    const client = new UserV1Client();
+
+    var user = getExistingTestUser();
+    //Testing duplicated username.
+    user.emailAddress = "123456789@user.com"; // Assuming this doesn't exist
+
+    const response = await client.add(user);
+    
+    expect(response.status()).toBe(400);
+
+    await client.dispose();
+  });
+
+  test("Administrator user creating user with existing email should return 400.", async () => {
+    const client = new UserV1Client();
+
+    var user = getExistingTestUser();
+    //Testing duplicated email.
+    user.username = "unique-username"; // Assuming this doesn't exist
+
+    const response = await client.add(user);
+    
+    expect(response.status()).toBe(400);
+
+    await client.dispose();
   });
 
   /* 2026-06-20 tests to do
